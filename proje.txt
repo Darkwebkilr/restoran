@@ -1,0 +1,36 @@
+Proje: Next.js 14 + Supabase ile restoran rezervasyon platformu
+Teknoloji stack:
+
+Next.js 14 App Router + TypeScript
+Tailwind CSS + shadcn/ui
+Supabase (Auth + PostgreSQL + Storage)
+Resend (email bildirimleri)
+Vercel (deploy)
+
+3 kullanıcı rolü var:
+
+Müşteri — restoran arar, rezervasyon yapar, email ile kod alır
+Restoran sahibi — kaydolur, admin onayı bekler, gelen rezervasyonları yönetir, reklam talebi oluşturur
+Admin — restoranları onaylar/reddeder, reklam taleplerini yönetir, tüm sistemi görür
+
+Ana modüller:
+
+Auth sistemi — Supabase Auth, rol tabanlı (profiles tablosunda role alanı)
+Restoran modülü — kayıt formu, admin onay akışı, profil/saat/fotoğraf yönetimi
+Rezervasyon modülü — tarih/saat/kişi seçimi, benzersiz kod üretimi (RZV-XXXX formatı), Resend ile email gönderimi
+Reklam modülü — öne çıkan ve banner tipleri, ödeme yok, admin manuel onaylar
+Admin paneli — restoran onayı, reklam onayı, kullanıcı yönetimi
+
+Fotoğraf optimizasyonu:
+
+Yükleme sırasında tarayıcıda browser-image-compression ile sıkıştırma
+Supabase Storage'a kayıt
+Gösterimde Next.js <Image> bileşeni ile otomatik WebP + lazy loading
+
+Güvenlik:
+
+Supabase RLS ile her kullanıcı sadece kendi verisini görür
+Next.js middleware ile rol bazlı route koruması
+Admin rotaları /app/(admin)/ altında, layout.tsx'te rol kontrolü
+
+Başlangıç noktası: Önce Supabase şeması — profiles, restaurants, reservations, ads tabloları ve RLS kuralları
