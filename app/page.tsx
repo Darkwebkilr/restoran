@@ -172,13 +172,13 @@ export default function Home() {
             </div>
 
             {/* Logo Marquee (Top) */}
-            <div className="fixed top-20 md:top-28 z-40 w-full bg-white/[0.05] backdrop-blur-xl border-y border-white/10 py-2 md:py-3 overflow-hidden">
+            <div className="fixed top-20 md:top-28 z-40 w-full bg-accent border-y border-black/10 py-2 md:py-3 overflow-hidden">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="flex items-center">
                             {RESTAURANT_LOGOS.map((logo) => (
-                                <div key={logo} className="mx-1 md:mx-2 px-2 md:px-4 py-1.5 md:py-2 bg-white/10 border border-white/30 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
-                                    <span className="text-[8px] md:text-[10px] font-black text-white tracking-[0.3em] uppercase group-hover:text-accent transition-colors">
+                                <div key={logo} className="mx-1 md:mx-2 px-2 md:px-4 py-1.5 md:py-2 bg-black/5 border border-black/20 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
+                                    <span className="text-[8px] md:text-[10px] font-black text-black tracking-[0.3em] uppercase group-hover:text-accent transition-colors">
                                         {logo}
                                     </span>
                                 </div>
@@ -322,7 +322,7 @@ export default function Home() {
                         <h2 className="font-display text-5xl md:text-8xl font-black mb-6 tracking-tighter leading-[0.8] uppercase">SEÇKİN <br /><span className="text-accent italic">MASALAR</span></h2>
                         <p className="text-muted text-xs md:text-sm font-black uppercase opacity-60 tracking-widest">Şehrin en ikonik noktaları.</p>
                     </div>
-                    <Link href="/restaurants" className="px-10 py-5 bg-white/10 text-white font-black rounded-2xl hover:bg-accent hover:text-black border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
+                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
@@ -366,13 +366,13 @@ export default function Home() {
                     {[...Array(8)].map((_, i) => (
                         <span key={i} className="mx-4 md:mx-8 text-black font-display font-black text-lg md:text-2xl tracking-tighter uppercase italic flex items-center gap-4 md:gap-6">
                             ZUMA: ÖZEL TADIM MENÜSÜ
-                            <span className="text-black/40">•</span>
+                            <span className="opacity-40">•</span>
                             PAPER MOON: BODRUM GECELERİ
-                            <span className="text-black/40">•</span>
+                            <span className="opacity-40">•</span>
                             EVOLUTION AJANS AYRICALIĞI
-                            <span className="text-black/40">•</span>
+                            <span className="opacity-40">•</span>
                             ŞEHRİN EN İYİLERİ BURADA
-                            <span className="text-black/40">•</span>
+                            <span className="opacity-40">•</span>
                         </span>
                     ))}
                 </div>

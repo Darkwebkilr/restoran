@@ -41,16 +41,16 @@ export default function Header() {
                             <SiFacebook color="default" className="cursor-pointer hover:scale-110 transition-transform" size={24} />
                             <SiInstagram color="default" className="cursor-pointer hover:scale-110 transition-transform" size={24} />
                         </div>
-                        <div className="hidden lg:flex items-center gap-8">
-                            <Link href="/#how-it-works" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Nasıl Çalışır?</Link>
-                            <Link href="/restaurants" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Mekanlar</Link>
-                            <Link href="/categories" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Kategoriler</Link>
+                        <div className="hidden lg:flex items-center gap-10">
+                            <Link href="/#how-it-works" className="text-[12px] font-black tracking-[0.2em] text-white/90 hover:text-accent transition-colors uppercase whitespace-nowrap">Nasıl Çalışır?</Link>
+                            <Link href="/restaurants" className="text-[12px] font-black tracking-[0.2em] text-white/90 hover:text-accent transition-colors uppercase whitespace-nowrap">Mekanlar</Link>
+                            <Link href="/categories" className="text-[12px] font-black tracking-[0.2em] text-white/90 hover:text-accent transition-colors uppercase whitespace-nowrap">Kategoriler</Link>
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-2 lg:gap-3">
-                        <Link href="/login/member" className="px-3 lg:px-5 py-2.5 glass text-white font-black rounded-xl text-[9px] tracking-[0.1em] hover:bg-white/10 transition-all uppercase border border-white/5 whitespace-nowrap">ÜYE GİRİŞİ</Link>
-                        <Link href="/login/restaurant" className="px-3 lg:px-5 py-2.5 bg-accent text-black font-black rounded-xl text-[9px] tracking-[0.1em] hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all active:scale-95 uppercase whitespace-nowrap">RESTORAN GİRİŞİ</Link>
+                    <div className="flex items-center gap-3 lg:gap-4">
+                        <Link href="/login/member" className="px-5 lg:px-8 py-3.5 glass text-white font-black rounded-2xl text-[10px] tracking-[0.1em] hover:bg-black hover:text-accent transition-all uppercase border-2 border-white/40 whitespace-nowrap">ÜYE GİRİŞİ</Link>
+                        <Link href="/login/restaurant" className="px-5 lg:px-8 py-3.5 bg-accent text-black font-black rounded-2xl text-[10px] tracking-[0.1em] hover:bg-black hover:text-accent border-2 border-accent transition-all active:scale-95 uppercase whitespace-nowrap shadow-lg">RESTORAN GİRİŞİ</Link>
                     </div>
                 </div>
 
