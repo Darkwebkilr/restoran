@@ -19,11 +19,7 @@ export default function Header() {
     return (
         <>
             <nav className="fixed top-0 z-[70] w-full flex items-center justify-between px-4 py-4 glass border-b border-white/5 md:px-12 md:py-6 transition-all duration-500">
-                <div className="hidden lg:flex flex-row gap-10 items-center justify-center flex-1">
-                    <SiFacebook color="default" className="cursor-pointer" size={24} />
-                    <SiInstagram color="default" className="cursor-pointer" size={24} />
-                </div>
-                
+
                 <div className="flex-1 flex justify-start lg:justify-center">
                     <Link
                         href="/"
@@ -39,13 +35,20 @@ export default function Header() {
                 </div>
 
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-4 lg:gap-6 flex-1 justify-end">
-                    <div className="hidden lg:flex items-center gap-6">
-                        <Link href="/#how-it-works" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Nasıl Çalışır?</Link>
-                        <Link href="/restaurants" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Mekanlar</Link>
-                        <Link href="/categories" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Kategoriler</Link>
+                <div className="hidden md:flex items-center gap-8 lg:gap-12 flex-1 justify-end">
+                    <div className="flex flex-col items-end gap-4">
+                        <div className="hidden lg:flex flex-row gap-8 items-center">
+                            <SiFacebook color="default" className="cursor-pointer hover:scale-110 transition-transform" size={24} />
+                            <SiInstagram color="default" className="cursor-pointer hover:scale-110 transition-transform" size={24} />
+                        </div>
+                        <div className="hidden lg:flex items-center gap-8">
+                            <Link href="/#how-it-works" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Nasıl Çalışır?</Link>
+                            <Link href="/restaurants" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Mekanlar</Link>
+                            <Link href="/categories" className="text-[10px] font-black tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase whitespace-nowrap">Kategoriler</Link>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2 lg:gap-3 lg:ml-4">
+                    
+                    <div className="flex items-center gap-2 lg:gap-3">
                         <Link href="/login/member" className="px-3 lg:px-5 py-2.5 glass text-white font-black rounded-xl text-[9px] tracking-[0.1em] hover:bg-white/10 transition-all uppercase border border-white/5 whitespace-nowrap">ÜYE GİRİŞİ</Link>
                         <Link href="/login/restaurant" className="px-3 lg:px-5 py-2.5 bg-accent text-black font-black rounded-xl text-[9px] tracking-[0.1em] hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all active:scale-95 uppercase whitespace-nowrap">RESTORAN GİRİŞİ</Link>
                     </div>
@@ -68,13 +71,16 @@ export default function Header() {
             </nav>
 
             {/* Mobile Menu Overlay */}
-            <div className={`fixed inset-0 z-[65] bg-background/95 backdrop-blur-2xl transition-all duration-500 md:hidden ${isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+            <div className={`fixed inset-0 z-[65] bg-background/95 backdrop-blur-2xl transition-all duration-500 md:hidden overflow-y-auto ${isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
                 {/* Decorative Background Elements */}
                 <div className="absolute top-0 left-0 w-full h-full noise-overlay opacity-20 pointer-events-none" />
                 <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full" />
                 <div className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-accent/5 blur-[120px] rounded-full" />
 
-                <div className="relative flex flex-col items-center justify-center h-full gap-6 p-6 text-center">
+                <div className="relative flex flex-col items-center justify-center min-h-full gap-6 p-8 text-center">
+                    <div className="w-full flex justify-center mb-4">
+                        <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center font-display font-black text-2xl text-black italic">E</div>
+                    </div>
                     <Link
                         onClick={() => setIsMenuOpen(false)}
                         href="/#how-it-works"
@@ -96,7 +102,7 @@ export default function Header() {
                     >
                         Kategoriler
                     </Link>
-                    
+
                     <div className="flex flex-col w-full max-w-xs gap-3 mt-4">
                         <Link
                             onClick={() => setIsMenuOpen(false)}

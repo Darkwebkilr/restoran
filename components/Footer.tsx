@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SiInstagram, SiX, SiFacebook, SiTiktok, SiTelegram } from "@icons-pack/react-simple-icons";
 
 export default function Footer() {
     return (
@@ -28,14 +29,35 @@ export default function Footer() {
                     <div className="flex flex-col gap-6 md:gap-8 items-center md:items-start sm:col-span-2 lg:col-span-1">
                         <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Sosyal Medya</span>
                         <div className="flex flex-row md:flex-col gap-6 md:gap-4 flex-wrap justify-center md:justify-start">
-                            <a href="#" className="text-muted hover:text-accent text-[11px] font-black uppercase tracking-widest transition-colors flex items-center gap-3">
-                                <span className="w-5 h-5 flex items-center justify-center bg-white/5 rounded-lg">📸</span> Instagram
+                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                                <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
+                                    <SiInstagram color="default" size={20} />
+                                </span> 
+                                Instagram
                             </a>
-                            <a href="#" className="text-muted hover:text-accent text-[11px] font-black uppercase tracking-widest transition-colors flex items-center gap-3">
-                                <span className="w-5 h-5 flex items-center justify-center bg-white/5 rounded-lg">🐦</span> Twitter
+                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                                <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
+                                    <SiX color="default" size={20} />
+                                </span> 
+                                Twitter
                             </a>
-                            <a href="#" className="text-muted hover:text-accent text-[11px] font-black uppercase tracking-widest transition-colors flex items-center gap-3">
-                                <span className="w-5 h-5 flex items-center justify-center bg-white/5 rounded-lg">📘</span> Facebook
+                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                                <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
+                                    <SiTiktok color="default" size={20} />
+                                </span> 
+                                TikTok
+                            </a>
+                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                                <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
+                                    <SiTelegram color="default" size={20} />
+                                </span> 
+                                Telegram
+                            </a>
+                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                                <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
+                                    <SiFacebook color="default" size={20} />
+                                </span> 
+                                Facebook
                             </a>
                         </div>
                     </div>

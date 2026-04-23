@@ -63,6 +63,7 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
   const restaurant = MOCK_RESTAURANTS.find(r => r.id === id) || MOCK_RESTAURANTS[0];
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   const times = ["19:00", "19:30", "20:00", "20:30", "21:00", "21:30"];
 
@@ -82,10 +83,10 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
 
   return (
     <main className="min-h-screen noise-overlay mesh-gradient pb-20 pt-24">
-      {/* Lightbox Modal */}
+      {/* Image Lightbox Modal */}
       {selectedIndex !== null && (
         <div 
-          className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-20 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-20 animate-in fade-in duration-300"
           onClick={() => setSelectedIndex(null)}
         >
           <button 
@@ -95,7 +96,6 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
             ✕
           </button>
 
-          {/* Navigation Arrows */}
           <button 
             className="absolute left-4 md:left-10 w-14 h-14 bg-white/5 hover:bg-accent hover:text-black rounded-full flex items-center justify-center text-white text-2xl transition-all z-[110] border border-white/10"
             onClick={prevImage}
@@ -109,23 +109,43 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
             →
           </button>
 
-          <div className="relative w-full h-full max-w-5xl animate-in zoom-in-95 duration-500">
+          <div className="relative w-full h-full max-w-6xl animate-in zoom-in-95 duration-500">
             <Image 
-              src={`https://images.unsplash.com/photo-${GALLERY_IMAGES[selectedIndex]}?q=80&w=1200&auto=format&fit=crop`} 
+              src={`https://images.unsplash.com/photo-${GALLERY_IMAGES[selectedIndex]}?q=80&w=1600&auto=format&fit=crop`} 
               alt="Büyük Görsel"
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               className="object-contain"
               priority
             />
           </div>
 
-          {/* Counter */}
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 glass rounded-full text-[10px] font-black tracking-widest text-white/50">
             {selectedIndex + 1} / {GALLERY_IMAGES.length}
           </div>
         </div>
       )}
+
+      {/* Video Modal */}
+      {isVideoOpen && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-20 animate-in fade-in duration-300"
+          onClick={() => setIsVideoOpen(false)}
+        >
+          <button 
+            className="absolute top-10 right-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white text-2xl transition-colors z-[110]"
+            onClick={() => setIsVideoOpen(false)}
+          >
+            ✕
+          </button>
+
+          <div className="relative w-full max-w-6xl aspect-video rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-black flex flex-col items-center justify-center group cursor-default" onClick={(e) => e.stopPropagation()}>
+            <span className="text-6xl mb-6">🎥</span>
+            <span className="text-[12px] font-black tracking-[0.4em] uppercase text-white/50 animate-pulse">RESTORAN VİDEOSU OYNATILIYOR</span>
+            <div className="absolute inset-0 bg-accent/5 pointer-events-none" />
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-6 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Left Content */}
         <div className="lg:col-span-2">
@@ -138,13 +158,44 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
               className="object-cover"
               priority
             />
-            <div className="absolute top-8 left-8 glass px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase border border-white/10">
+            <div className="absolute top-8 left-8 glass px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase border border-white/10 z-10">
               {restaurant.category}
+            </div>
+
+            {/* Logo and District Overlay */}
+            <div className="absolute bottom-8 left-8 z-10">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-accent rounded-full border-4 border-white/10 flex items-center justify-center font-display font-black text-2xl md:text-3xl text-black italic shadow-2xl">
+                {restaurant.name.charAt(0)}
+              </div>
+            </div>
+            
+            <div className="absolute bottom-8 right-8 z-10">
+              <div className="glass px-6 py-2.5 rounded-2xl border border-white/10 backdrop-blur-md shadow-2xl">
+                <span className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-white uppercase italic">
+                  {restaurant.location.split(',')[0]}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="mb-12">
             <h1 className="font-display text-4xl md:text-7xl font-black mb-6 tracking-tighter uppercase">{restaurant.name}</h1>
+            
+            <div className="flex gap-4 mb-8">
+              <button 
+                onClick={() => setSelectedIndex(0)}
+                className="px-8 py-4 bg-accent text-black font-black rounded-2xl text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase shadow-xl"
+              >
+                GÖRSELLER
+              </button>
+              <button 
+                onClick={() => setIsVideoOpen(true)}
+                className="px-8 py-4 glass text-white font-black rounded-2xl text-[10px] tracking-widest hover:bg-black hover:border-accent transition-all border border-white/20 uppercase"
+              >
+                VİDEO
+              </button>
+            </div>
+
             <div className="flex flex-wrap items-center gap-6 text-muted mb-8 font-bold text-[10px] md:text-xs tracking-widest uppercase">
               <span className="flex items-center gap-2 text-accent">⭐ {restaurant.rating} <span className="text-white/20">|</span> {restaurant.reviews} Yorum</span>
               <span>•</span>
@@ -180,46 +231,6 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
                   {f}
                 </span>
               ))}
-            </div>
-          </div>
-
-          {/* Experience Section (Video) */}
-          <div className="mb-20">
-            <h2 className="font-display text-3xl md:text-5xl font-black mb-8 tracking-tighter uppercase italic">DENEYİMİ <span className="text-accent">YAŞA.</span></h2>
-            <div className="w-full">
-              <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 group cursor-pointer bg-black">
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-                  <span className="text-5xl mb-4 group-hover:scale-110 transition-transform">🎥</span>
-                  <span className="text-[10px] font-black tracking-[0.3em] uppercase">VİDEO TURU İZLE</span>
-                </div>
-                <div className="absolute inset-0 bg-accent/10 opacity-50 group-hover:opacity-20 transition-opacity" />
-              </div>
-            </div>
-          </div>
-
-          {/* Gallery Section */}
-          <div className="mb-20">
-            <h2 className="font-display text-3xl md:text-5xl font-black mb-8 tracking-tighter uppercase italic">GALERİ.</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {GALLERY_IMAGES.map((id, i) => (
-                    <div 
-                        key={i} 
-                        onClick={() => setSelectedIndex(i)}
-                        className="relative aspect-square rounded-3xl overflow-hidden border border-white/10 group cursor-pointer bg-white/5"
-                    >
-                        <Image 
-                            src={`https://images.unsplash.com/photo-${id}?q=80&w=800&auto=format&fit=crop`}
-                            alt="Galeri Görseli"
-                            fill
-                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 300px"
-                            className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
-                        />
-                        <div className="absolute inset-0 bg-black/20 group-hover:opacity-0 transition-opacity" />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl">🔍</span>
-                        </div>
-                    </div>
-                ))}
             </div>
           </div>
 
