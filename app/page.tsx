@@ -159,25 +159,12 @@ export default function Home() {
     return (
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
 
-            {/* Background Image */}
-            <div className="fixed inset-0 z-0">
-                <Image
-                    src="https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?q=80&w=2000&auto=format&fit=crop"
-                    alt="Bodrum"
-                    fill
-                    className="object-cover opacity-30"
-                    priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-card via-card/80 to-card" />
-            </div>
-
-            {/* Logo Marquee (Top) */}
-            <div className="fixed top-20 md:top-28 z-40 w-full bg-accent border-y border-black/10 py-2 md:py-3 overflow-hidden">
+            <div className="fixed top-20 md:top-28 z-40 w-full bg-gray-400/70 border-y border-black/10 py-2 md:py-3 overflow-hidden">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="flex items-center">
                             {RESTAURANT_LOGOS.map((logo) => (
-                                <div key={logo} className="mx-1 md:mx-2 px-2 md:px-4 py-1.5 md:py-2 bg-black/5 border border-black/20 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
+                                <div key={logo} className="mx-0.5 md:mx-1 px-1.5 md:px-3 py-1 md:py-1.5 bg-accent border border-black/20 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
                                     <span className="text-[8px] md:text-[10px] font-black text-black tracking-[0.3em] uppercase group-hover:text-accent transition-colors">
                                         {logo}
                                     </span>
@@ -188,99 +175,95 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Hero Section */}
-            <section className="relative pt-32 md:pt-48 pb-10 md:pb-16 px-6 flex flex-col items-center text-center max-w-6xl w-full z-10">
-
-                <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 md:mb-8 leading-[0.9] md:leading-[0.8] animate-in fade-in slide-in-from-bottom-8 duration-1000 uppercase text-balance">
-                    BODRUMUN EN İYİ <br />
-                    <span className="text-accent italic">
-                        MASALARI.
-                    </span>
-                </h1>
-
-                {/* Search Bar - Moved above Slider */}
-                <div className="w-full max-w-4xl glass p-2 md:p-3 rounded-[2rem] md:rounded-[3rem] border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center gap-2 animate-in fade-in slide-in-from-bottom-12 duration-1000 mb-8">
-                    <div className="flex-1 w-full relative flex items-center">
-                        <span className="absolute left-6 text-lg">🔍</span>
-                        <input
-                            type="text"
-                            placeholder="Restoran veya mutfak ara..."
-                            className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] pl-14 pr-6 py-4 md:py-5 outline-none focus:border-accent/50 transition-all font-bold text-sm placeholder:text-white/20"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+            {/* Full Screen Slider Hero */}
+            <section className="relative w-full h-screen overflow-hidden group touch-pan-y">
+                {SLIDER_IMAGES.map((slide, index) => (
+                    <div
+                        key={index}
+                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
+                    >
+                        <Image
+                            src={slide.image}
+                            alt={slide.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-[10s]"
+                            priority={index === 0}
                         />
+                        <div className="absolute inset-0 bg-black/40" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-card" />
                     </div>
-                    <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2">
-                        <select
-                            className="w-full sm:w-auto bg-card border border-white/10 rounded-[1.5rem] md:rounded-[2rem] px-6 py-4 md:py-5 outline-none focus:border-accent/50 transition-all font-black text-[10px] tracking-widest uppercase appearance-none cursor-pointer min-w-[160px]"
-                            value={selectedCat}
-                            onChange={(e) => setSelectedCat(e.target.value)}
-                        >
-                            <option>Tüm Kategoriler</option>
-                            {CATEGORIES.map(cat => (
-                                <option key={cat.name} value={cat.name}>{cat.name}</option>
-                            ))}
-                        </select>
-                        <button className="w-full sm:w-auto px-10 py-4 md:py-5 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase">
-                            BUL
-                        </button>
-                    </div>
-                </div>
+                ))}
 
-                {/* Main Slider with Multiple Images */}
-                <div 
-                    className="w-full max-w-6xl aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border-2 border-white/10 shadow-2xl relative mb-8 group touch-pan-y"
-                    onTouchStart={onTouchStart}
-                    onTouchMove={onTouchMove}
-                    onTouchEnd={onTouchEnd}
-                >
-                    {SLIDER_IMAGES.map((slide, index) => (
-                        <div
-                            key={index}
-                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
-                        >
-                            <Image
-                                src={slide.image}
-                                alt={slide.title}
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-[2s]"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                            <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 text-left">
-                                <span className="px-3 md:px-4 py-1 md:py-1.5 bg-accent text-black text-[8px] md:text-[9px] font-black rounded-full uppercase tracking-widest mb-2 md:mb-4 inline-block">{slide.tag}</span>
-                                <h2 className="font-display text-2xl md:text-5xl font-black text-white uppercase tracking-tighter">{slide.title}</h2>
+                {/* Hero Content Overlay */}
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pt-20">
+                    <div className="max-w-6xl w-full flex flex-col items-center text-center">
+                        <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 md:mb-8 leading-[0.9] md:leading-[0.8] animate-in fade-in slide-in-from-bottom-8 duration-1000 uppercase text-balance">
+                            BODRUMUN EN İYİ <br />
+                            <span className="text-accent italic">
+                                MASALARI.
+                            </span>
+                        </h1>
+
+                        {/* Search Bar */}
+                        <div className="w-full max-w-4xl glass p-2 md:p-3 rounded-[2rem] md:rounded-[3rem] border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center gap-2 animate-in fade-in slide-in-from-bottom-12 duration-1000 mb-8">
+                            <div className="flex-1 w-full relative flex items-center">
+                                <span className="absolute left-6 text-lg">🔍</span>
+                                <input
+                                    type="text"
+                                    placeholder="Restoran veya mutfak ara..."
+                                    className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] pl-14 pr-6 py-4 md:py-5 outline-none focus:border-accent/50 transition-all font-bold text-sm placeholder:text-white/20"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2">
+                                <select
+                                    className="w-full sm:w-auto bg-card border border-white/10 rounded-[1.5rem] md:rounded-[2rem] px-6 py-4 md:py-5 outline-none focus:border-accent/50 transition-all font-black text-[10px] tracking-widest uppercase appearance-none cursor-pointer min-w-[160px]"
+                                    value={selectedCat}
+                                    onChange={(e) => setSelectedCat(e.target.value)}
+                                >
+                                    <option>Tüm Kategoriler</option>
+                                    {CATEGORIES.map(cat => (
+                                        <option key={cat.name} value={cat.name}>{cat.name}</option>
+                                    ))}
+                                </select>
+                                <button className="w-full sm:w-auto px-10 py-4 md:py-5 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase">
+                                    BUL
+                                </button>
                             </div>
                         </div>
-                    ))}
-
-                    {/* Navigation Buttons */}
-                    <button 
-                        onClick={prevSlide}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-accent hover:text-black"
-                    >
-                        ←
-                    </button>
-                    <button 
-                        onClick={nextSlide}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-accent hover:text-black"
-                    >
-                        →
-                    </button>
-
-                    {/* Navigation Dots */}
-                    <div className="absolute bottom-6 right-6 md:right-10 flex gap-2 z-20">
-                        {SLIDER_IMAGES.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentSlide(index)}
-                                className={`w-3 h-3 rounded-full border border-white/50 transition-all ${index === currentSlide ? "bg-accent w-8" : "bg-white/20 hover:bg-white/50"}`}
-                            />
-                        ))}
                     </div>
                 </div>
 
-                {/* Shrunk Ad Banner */}
-                <div className="w-full max-w-6xl h-20 md:h-28 glass rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-accent/50 flex items-center justify-center relative overflow-hidden group cursor-pointer mb-12">
+                {/* Navigation Buttons */}
+                <button
+                    onClick={prevSlide}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-accent hover:text-black"
+                >
+                    ←
+                </button>
+                <button
+                    onClick={nextSlide}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-accent hover:text-black"
+                >
+                    →
+                </button>
+
+                {/* Navigation Dots */}
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                    {SLIDER_IMAGES.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentSlide(index)}
+                            className={`w-3 h-3 rounded-full border border-white/50 transition-all ${index === currentSlide ? "bg-accent w-8" : "bg-white/20 hover:bg-white/50"}`}
+                        />
+                    ))}
+                </div>
+            </section>
+
+            {/* Shrunk Ad Banner */}
+            <section className="w-full max-w-6xl px-6 -mt-10 md:-mt-14 relative z-30">
+                <div className="w-full h-20 md:h-28 glass rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-accent/50 flex items-center justify-center relative overflow-hidden group cursor-pointer mb-12">
                     <div className="absolute inset-0 bg-gradient-to-r from-accent/10 via-transparent to-accent/10 group-hover:opacity-50 transition-opacity" />
                     <div className="relative z-10 flex flex-row items-center gap-6">
                         <span className="px-3 py-1 bg-accent text-black text-[8px] font-black rounded-full uppercase tracking-widest">REKLAM</span>
@@ -364,7 +347,7 @@ export default function Home() {
             <div className="w-full bg-accent py-3 md:py-4 border-y border-black/20 z-10 shadow-2xl flex items-center">
                 <div className="animate-marquee whitespace-nowrap">
                     {[...Array(8)].map((_, i) => (
-                        <span key={i} className="mx-4 md:mx-8 text-black font-display font-black text-lg md:text-2xl tracking-tighter uppercase italic flex items-center gap-4 md:gap-6">
+                        <span key={i} className="mx-2 md:mx-4 text-black font-display font-black text-lg md:text-2xl tracking-tighter uppercase italic flex items-center gap-2 md:gap-3">
                             ZUMA: ÖZEL TADIM MENÜSÜ
                             <span className="opacity-40">•</span>
                             PAPER MOON: BODRUM GECELERİ

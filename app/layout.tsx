@@ -32,9 +32,9 @@ export default function RootLayout({
         >
             <body className="min-h-full  flex flex-col font-sans bg-background text-foreground selection:bg-accent selection:text-black">
                 <Header />
-                <div className="z-30 cursor-pointer fixed bottom-12 right-10 text-white items-center text-lg bg-green-600/50 rounded-2xl p-2 gap-3 flex">
+                <div className="z-50 cursor-pointer fixed bottom-12 right-6 text-white items-center text-lg bg-green-600/50 rounded-2xl p-2 gap-3 flex">
                     <span>Whatsapp Destek</span>
-                    <SiWhatsapp className="" color="default" size={64}></SiWhatsapp>
+                    <SiWhatsapp className="" color="default" size={48}></SiWhatsapp>
                 </div>
                 {children}
                 <Footer />
