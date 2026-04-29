@@ -46,15 +46,43 @@ const STATS = [
 ];
 
 const ADS = [
-    { title: "ZUMA: ÖZEL TADIM MENÜSÜ", subtitle: "Uzak Doğu'nun gizemli tatlarını keşfedin.", image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop", tag: "SPONSORLU" },
-    { title: "NUSR-ET VIP GEÇİŞ", subtitle: "Evolution Ajans üyelerine özel beklemeden geçiş.", image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop", tag: "SPONSORLU" },
-    { title: "PAPER MOON: BODRUM GECELERİ", subtitle: "Marinada unutulmaz bir akşam.", image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=1200&auto=format&fit=crop", tag: "ÖNE ÇIKAN" }
+    { 
+        title: "ZUMA: ÖZEL TADIM MENÜSÜ", 
+        logo: "ZUMA", 
+        subtitle: "Uzak Doğu'nun gizemli tatlarını keşfedin.", 
+        location: "İSTİNYE", 
+        address: "İstinye Park AVM, No: 461",
+        phone: "+90 (212) 345 67 89",
+        image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop", 
+        tag: "SPONSORLU" 
+    },
+    { 
+        title: "NUSR-ET VIP GEÇİŞ", 
+        logo: "NUSR-ET", 
+        subtitle: "Evolution Ajans üyelerine özel beklemeden geçiş.", 
+        location: "ETİLER", 
+        address: "Etiler, Nispetiye Cad. No:87",
+        phone: "+90 (212) 335 45 00",
+        image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop", 
+        tag: "SPONSORLU" 
+    },
+    { 
+        title: "PAPER MOON: BODRUM GECELERİ", 
+        logo: "PAPER MOON", 
+        subtitle: "Marinada unutulmaz bir akşam.", 
+        location: "BODRUM", 
+        address: "Milta Bodrum Marina",
+        phone: "+90 (252) 316 74 74",
+        image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=1200&auto=format&fit=crop", 
+        tag: "ÖNE ÇIKAN" 
+    }
 ];
 
 const MOCK_RESTAURANTS = [
     {
         id: "2",
         name: "Zuma Istanbul",
+        logo: "ZUMA",
         category: "Modern Japon",
         rating: 4.8,
         image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=800&auto=format&fit=crop",
@@ -65,6 +93,7 @@ const MOCK_RESTAURANTS = [
     {
         id: "4",
         name: "Mikla",
+        logo: "MIKLA",
         category: "Yeni Anadolu",
         rating: 4.9,
         image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=800&auto=format&fit=crop",
@@ -75,6 +104,7 @@ const MOCK_RESTAURANTS = [
     {
         id: "5",
         name: "Ulus 29",
+        logo: "ULUS 29",
         category: "Dünya Mutfağı",
         rating: 4.7,
         image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?q=80&w=800&auto=format&fit=crop",
@@ -85,6 +115,7 @@ const MOCK_RESTAURANTS = [
     {
         id: "6",
         name: "Paper Moon",
+        logo: "PAPER MOON",
         category: "İtalyan Mutfağı",
         rating: 4.8,
         image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=800&auto=format&fit=crop",
@@ -164,8 +195,8 @@ export default function Home() {
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="flex items-center">
                             {RESTAURANT_LOGOS.map((logo) => (
-                                <div key={logo} className="mx-0.5 md:mx-1 px-1.5 md:px-3 py-1 md:py-1.5 bg-accent border border-black/20 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
-                                    <span className="text-[8px] md:text-[10px] font-black text-black tracking-[0.3em] uppercase group-hover:text-accent transition-colors">
+                                <div key={logo} className="mx-1 md:mx-2 px-3 md:px-6 py-2 md:py-3 bg-accent border border-black/20 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
+                                    <span className="text-[10px] md:text-[14px] font-black text-black tracking-[0.3em] uppercase group-hover:text-accent transition-colors">
                                         {logo}
                                     </span>
                                 </div>
@@ -273,8 +304,51 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Advertisements Set 1 - Moved here */}
+            <section className="w-full max-w-7xl px-6 py-10 z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {ADS.slice(0, 2).map((ad, i) => (
+                        <div key={i} className="group relative flex flex-col sm:flex-row rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-card min-h-[400px]">
+                            <div className="relative w-full sm:w-1/2 h-64 sm:h-auto">
+                                <Image src={ad.image} alt={ad.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80" />
+                                <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-black via-black/40 to-transparent opacity-90" />
+                                
+                                {/* Logo Overlay (Circular) */}
+                                <div className="absolute bottom-6 left-6 z-20">
+                                    <div className="w-14 h-14 md:w-20 md:h-20 bg-accent rounded-full border-4 border-white/10 flex items-center justify-center font-display font-black text-[10px] md:text-xs text-black italic shadow-2xl group-hover:scale-110 transition-transform duration-500 text-center px-2 overflow-hidden leading-tight">
+                                        {ad.logo}
+                                    </div>
+                                </div>
+
+                                {/* District Horizontal Badge */}
+                                <div className="absolute top-6 right-6 z-20">
+                                    <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 group-hover:border-accent transition-colors">
+                                        <span className="text-[10px] font-black text-white tracking-[0.2em] uppercase whitespace-nowrap">
+                                            {ad.location}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="relative w-full sm:w-1/2 p-8 flex flex-col justify-center items-start bg-black/40 backdrop-blur-sm sm:bg-transparent">
+                                <span className="px-3 py-1.5 bg-accent text-black text-[8px] font-black rounded-full uppercase tracking-widest mb-6">{ad.tag}</span>
+                                <h3 className="font-display text-3xl font-black text-white mb-2 tracking-tighter uppercase leading-[0.9] italic">{ad.title}</h3>
+                                
+                                <div className="mb-6 flex flex-col gap-1">
+                                    <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider">{ad.address}</span>
+                                    <span className="text-[12px] text-accent font-black tracking-widest">{ad.phone}</span>
+                                </div>
+
+                                <p className="text-white/70 text-xs font-bold uppercase tracking-tight mb-8 leading-relaxed max-w-xs">{ad.subtitle}</p>
+                                <button className="w-full sm:w-auto px-10 py-4 bg-white text-black font-black rounded-xl text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-white transition-all uppercase shadow-xl">REZERVE ET</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Featured Categories - Moved below Slider/Ad */}
             <section id="categories" className="w-full max-w-7xl px-6 py-10 md:py-20 z-10">
+
                 <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-12 gap-6">
                     <div className="max-w-2xl text-left">
                         <h2 className="font-display text-4xl md:text-6xl font-black mb-4 tracking-tighter uppercase leading-[0.9]">ÖNE ÇIKAN <br /><span className="text-accent italic">KATEGORİLER</span></h2>
@@ -308,34 +382,66 @@ export default function Home() {
                     <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {MOCK_RESTAURANTS.map((res) => (
-                        <Link key={res.id} href={`/restaurant/${res.id}`} className="group relative">
-                            <div className="relative aspect-[4/5] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border-2 border-white/10 mb-4 shadow-2xl bg-card transition-all duration-500 hover:border-accent hover:bg-black">
+                        <Link key={res.id} href={`/restaurant/${res.id}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl flex flex-col">
+                            {/* Image Section */}
+                            <div className="relative aspect-[16/9] w-full overflow-hidden">
                                 <Image
                                     src={res.image}
                                     alt={res.name}
                                     fill
-                                    className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-90"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                                
+                                {/* Category Badge - Purple */}
+                                <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.category}</span>
+                                </div>
 
-                                <div className="absolute bottom-6 left-6 right-6">
-                                    <span className="px-3 py-1 bg-accent text-black text-[8px] font-black rounded-full uppercase tracking-widest mb-3 inline-block">{res.category}</span>
-                                    <h3 className="font-display text-xl md:text-3xl font-black text-white leading-none tracking-tighter group-hover:text-accent transition-colors uppercase mb-4">{res.name}</h3>
+                                {/* Location Badge - Red */}
+                                <div className="absolute bottom-4 right-4 bg-[#EF4444] px-4 py-1.5 rounded-lg shadow-lg">
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.location}</span>
+                                </div>
+                            </div>
 
-                                    <div className="flex flex-col gap-2 border-t border-white/10 pt-4">
-                                        <div className="flex items-center gap-2 text-white/70">
-                                            <span className="text-[11px] md:text-[13px] font-bold uppercase tracking-wider line-clamp-1">{res.address}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-white/90">
-                                            <span className="text-[14px] md:text-[16px] font-black uppercase tracking-widest text-accent">{res.phone}</span>
-                                        </div>
+                            {/* Content Section */}
+                            <div className="relative p-6 pt-10 flex-1 flex flex-col">
+                                {/* Logo Overlay (Circular) */}
+                                <div className="absolute -top-10 left-6 w-20 h-20 bg-white rounded-full border-4 border-white shadow-xl overflow-hidden flex items-center justify-center">
+                                    <div className="w-full h-full bg-accent flex items-center justify-center font-display font-black text-black italic text-sm">
+                                        {res.logo}
                                     </div>
                                 </div>
 
-                                <div className="absolute top-6 right-6 glass w-10 h-10 rounded-full flex items-center justify-center font-black text-xs border border-white/20 group-hover:border-accent group-hover:text-accent transition-all">
-                                    {res.rating}
+                                {/* Rating Section */}
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="flex gap-0.5">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span key={i} className="text-[#FBBF24] text-sm">★</span>
+                                        ))}
+                                    </div>
+                                    <span className="text-gray-400 text-[10px] font-bold">(120 Yorum)</span>
+                                </div>
+
+                                {/* Title */}
+                                <h3 className="font-display text-2xl font-black text-gray-900 leading-tight mb-4 group-hover:text-accent transition-colors uppercase italic">
+                                    {res.name}
+                                </h3>
+
+                                {/* Address Section */}
+                                <div className="mt-auto flex items-start gap-2 pt-4 border-t border-gray-100">
+                                    <span className="text-gray-400 text-sm">📍</span>
+                                    <p className="text-gray-600 text-[11px] font-medium leading-relaxed line-clamp-2 uppercase">
+                                        {res.address}
+                                    </p>
+                                </div>
+                                
+                                {/* Phone (Added for completeness as per previous request) */}
+                                <div className="mt-2 flex items-center gap-2">
+                                    <span className="text-gray-400 text-sm">📞</span>
+                                    <span className="text-accent font-black text-xs tracking-widest">{res.phone}</span>
                                 </div>
                             </div>
                         </Link>
@@ -344,10 +450,10 @@ export default function Home() {
             </section>
 
             {/* Scrolling Ticker (Marquee) - Reduced Gaps */}
-            <div className="w-full bg-accent py-3 md:py-4 border-y border-black/20 z-10 shadow-2xl flex items-center">
+            <div className="w-full bg-accent py-4 md:py-6 border-y border-black/20 z-10 shadow-2xl flex items-center">
                 <div className="animate-marquee whitespace-nowrap">
                     {[...Array(8)].map((_, i) => (
-                        <span key={i} className="mx-2 md:mx-4 text-black font-display font-black text-lg md:text-2xl tracking-tighter uppercase italic flex items-center gap-2 md:gap-3">
+                        <span key={i} className="mx-4 md:mx-8 text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic flex items-center gap-4 md:gap-6">
                             ZUMA: ÖZEL TADIM MENÜSÜ
                             <span className="opacity-40">•</span>
                             PAPER MOON: BODRUM GECELERİ
@@ -376,26 +482,6 @@ export default function Home() {
                             <div className="font-display text-6xl font-black text-accent/[0.1] absolute top-8 right-8 italic leading-none">{step.number}</div>
                             <h3 className="font-display text-2xl font-black mb-4 tracking-tighter uppercase text-white">{step.title}</h3>
                             <p className="text-white font-bold leading-relaxed text-sm opacity-90">{step.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Advertisements Set 1 */}
-            <section className="w-full max-w-7xl px-6 py-10 z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {ADS.slice(0, 2).map((ad, i) => (
-                        <div key={i} className="group relative flex flex-col sm:flex-row rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-card min-h-[400px]">
-                            <div className="relative w-full sm:w-1/2 h-64 sm:h-auto">
-                                <Image src={ad.image} alt={ad.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80" />
-                                <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-black via-black/40 to-transparent opacity-90" />
-                            </div>
-                            <div className="relative w-full sm:w-1/2 p-8 flex flex-col justify-center items-start bg-black/40 backdrop-blur-sm sm:bg-transparent">
-                                <span className="px-3 py-1.5 bg-accent text-black text-[8px] font-black rounded-full uppercase tracking-widest mb-6">{ad.tag}</span>
-                                <h3 className="font-display text-3xl font-black text-white mb-4 tracking-tighter uppercase leading-[0.9]">{ad.title}</h3>
-                                <p className="text-white/70 text-xs font-bold uppercase tracking-tight mb-8 leading-relaxed max-w-xs">{ad.subtitle}</p>
-                                <button className="w-full sm:w-auto px-10 py-4 bg-white text-black font-black rounded-xl text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-white transition-all uppercase shadow-xl">REZERVE ET</button>
-                            </div>
                         </div>
                     ))}
                 </div>

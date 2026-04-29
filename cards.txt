@@ -1,0 +1,31 @@
+Genel Yapı:
+
+Konteyner: Kenarları yuvarlatılmış (rounded-2xl veya 3xl), hafif gölgeli (shadow-lg) ve beyaz arka planlı dikey bir kart yapısı.
+
+Düzen: Üstte görsel alanı, ortada görselin üzerine binen bir logo ve altta metin içerikleri.
+
+1. Görsel Alanı (Header Section):
+
+Aspect Ratio: 16:9 veya 4:3 oranında, object-cover özelliğinde bir restoran görseli.
+
+Sol Üst Rozet (Badge): Mor arka planlı, beyaz yazılı, köşeleri hafif yuvarlak bir "Kategori" etiketi (Örn: Pansiyon & Apart).
+
+Sağ Orta/Alt Rozet: Kırmızı arka planlı, beyaz yazılı "Konum" etiketi (Örn: Gümbet).
+
+Overlay (Opsiyonel): Yazıların daha okunaklı olması için görselin üzerine çok hafif bir gradient atılabilir.
+
+2. Logo Bölümü (Profile Overlay):
+
+Pozisyon: Görselin alt kenarı ile metin alanının birleştiği tam orta-sol noktada, dışarı taşacak şekilde (absolute positioning) konumlandırılmış dairesel bir alan.
+
+Stil: Beyaz kalın çerçeveli (border-4 border-white), içinde restoranın logosu olan tam daire (rounded-full) görsel.
+
+3. İçerik Alanı (Details Section):
+
+Padding: İçeriklerin nefes alması için yeterli iç boşluk (p-4 veya p-6).
+
+Puanlama: Yan yana dizilmiş 5 adet altın sarısı yıldız ikonu ve yanında parantez içinde yorum sayısı (gri renkte, küçük font).
+
+Başlık: Büyük, kalın (bold) ve koyu renkli restoran adı (H3 veya H2 seviyesinde).
+
+Adres: En altta, yanında bir "location" ikonu bulunan, iki satırı geçmeyen, gri tonlarda (text-gray-600) açıklayıcı adres metni.
