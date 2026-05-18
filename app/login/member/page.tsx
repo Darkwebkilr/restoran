@@ -76,7 +76,7 @@ export default function MemberLoginPage() {
               <div className="w-full border-t border-white/5"></div>
             </div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-              <span className="bg-[#000B18] px-4 text-muted font-black">VEYA</span>
+              <span className="bg-[#000000] px-4 text-muted font-black">VEYA</span>
             </div>
           </div>
 

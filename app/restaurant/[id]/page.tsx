@@ -35,6 +35,76 @@ const MOCK_RESTAURANTS = [
   },
   {
     id: "3",
+    name: "Nusr-Et Steakhouse",
+    category: "Steakhouse",
+    rating: 4.7,
+    reviews: 3200,
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop",
+    location: "Etiler, İstanbul",
+    address: "Etiler, Nispetiye Cad. No:87",
+    phone: "+90 (212) 335 45 00",
+    description: "Dünyaca ünlü steakhouse deneyimi. Nusr-Et'in ikonik sunumları ve en kaliteli et çeşitleriyle gastronomi dünyasında bir yolculuğa çıkın.",
+    priceRange: "₺₺₺₺",
+    features: ["Vale Park", "Açık Hava", "VIP Oda", "Özel Sunumlar"],
+  },
+  {
+    id: "4",
+    name: "Mikla",
+    category: "Yeni Anadolu",
+    rating: 4.9,
+    reviews: 1500,
+    image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop",
+    location: "Beyoğlu, İstanbul",
+    address: "The Marmara Pera, Meşrutiyet Cad. No:15",
+    phone: "+90 (212) 293 56 56",
+    description: "Modern ve rafine Yeni Anadolu Mutfağı. İstanbul'un büyüleyici manzarası eşliğinde, yerel malzemelerin en üst düzeyde işlendiği bir menü.",
+    priceRange: "₺₺₺₺",
+    features: ["Panoramik Manzara", "Teras Bar", "Michelin Rehberi", "Geniş Kav"],
+  },
+  {
+    id: "5",
+    name: "Ulus 29",
+    category: "Dünya Mutfağı",
+    rating: 4.7,
+    reviews: 1800,
+    image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?q=80&w=1200&auto=format&fit=crop",
+    location: "Ulus, İstanbul",
+    address: "Adnan Saygun Cad. Ulus Parkı İçi",
+    phone: "+90 (212) 358 29 29",
+    description: "İstanbul gece hayatının ve gastronomisinin klasiği. Geleneksel Türk lezzetlerinden dünya mutfağına uzanan geniş bir yelpaze.",
+    priceRange: "₺₺₺₺",
+    features: ["Boğaz Manzarası", "Gece Kulübü", "Teras", "Vale Park"],
+  },
+  {
+    id: "6",
+    name: "Paper Moon",
+    category: "İtalyan Mutfağı",
+    rating: 4.8,
+    reviews: 1400,
+    image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=1200&auto=format&fit=crop",
+    location: "Bodrum, Muğla",
+    address: "Milta Bodrum Marina",
+    phone: "+90 (252) 316 74 74",
+    description: "Milano stilini yansıtan zamansız bir İtalyan klasiği. Akdeniz'in taze ürünleriyle hazırlanan otantik lezzetler.",
+    priceRange: "₺₺₺₺",
+    features: ["Marina Manzarası", "Açık Hava", "Şık Dekor", "İtalyan Şef"],
+  },
+  {
+    id: "7",
+    name: "Vogue Restaurant",
+    category: "Dünya Mutfağı",
+    rating: 4.6,
+    reviews: 1650,
+    image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200&auto=format&fit=crop",
+    location: "Akaretler, İstanbul",
+    address: "BJK Plaza, A Blok, Spor Cad. No:92",
+    phone: "+90 (212) 227 44 04",
+    description: "Şehrin en iyi manzaralarından birine sahip şık bir mekan. Modern dünya mutfağı ve geniş suşi menüsüyle fark yaratıyor.",
+    priceRange: "₺₺₺₺",
+    features: ["Panoramik Manzara", "Suşi Bar", "Kokteyl Menüsü", "Vale Park"],
+  },
+  {
+    id: "8",
     name: "Sunset Grill & Bar",
     category: "Akdeniz & Sushi",
     rating: 4.7,
@@ -287,10 +357,10 @@ export default function RestaurantDetail({ params }: { params: Promise<{ id: str
                 <div className="space-y-2">
                   <label className="text-[9px] font-black text-muted uppercase tracking-[0.2em] ml-1">KİŞİ</label>
                   <select className="w-full bg-card border border-white/10 rounded-2xl px-4 py-3.5 outline-none focus:border-accent transition-colors font-bold text-sm text-white appearance-none cursor-pointer">
-                    <option className="bg-[#001529]">2 KİŞİ</option>
-                    <option className="bg-[#001529]">3 KİŞİ</option>
-                    <option className="bg-[#001529]">4 KİŞİ</option>
-                    <option className="bg-[#001529]">5+ KİŞİ</option>
+                    <option className="bg-[#000000]">2 KİŞİ</option>
+                    <option className="bg-[#000000]">3 KİŞİ</option>
+                    <option className="bg-[#000000]">4 KİŞİ</option>
+                    <option className="bg-[#000000]">5+ KİŞİ</option>
                   </select>
                 </div>
                 <div className="space-y-2">

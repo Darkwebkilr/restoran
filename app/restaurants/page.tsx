@@ -128,19 +128,19 @@ const MOCK_RESTAURANTS = [
 
 export default function RestaurantsPage() {
     return (
-        <main className="relative min-h-screen noise-overlay mesh-gradient pt-48 pb-32 px-6 flex flex-col items-center">
+        <main className="relative min-h-screen noise-overlay mesh-gradient pt-32 md:pt-48 pb-32 px-4 md:px-6 flex flex-col items-center">
             <div className="max-w-7xl w-full">
-                <div className="mb-24 text-center md:text-left">
-                    <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-6 block">Kürasyonumuz</span>
-                    <h1 className="font-display text-5xl md:text-9xl font-black tracking-tighter uppercase leading-[0.8] mb-10">
+                <div className="mb-16 md:mb-24 text-center md:text-left">
+                    <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-4 md:mb-6 block">Kürasyonumuz</span>
+                    <h1 className="font-display text-4xl md:text-9xl font-black tracking-tighter uppercase leading-[0.9] md:leading-[0.8] mb-8 md:mb-10">
                         TÜM <br /><span className="text-accent italic">MEKANLAR.</span>
                     </h1>
-                    <p className="text-muted text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+                    <p className="text-muted text-base md:text-xl font-medium max-w-2xl leading-relaxed">
                         Evolution Ajans vizyonuyla şehrin en seçkin ve ikonik noktalarını tek bir listede keşfedin.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-14">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-14">
                     {MOCK_RESTAURANTS.map((res) => (
                         <Link key={res.id} href={`/restaurant/${res.id}`} className="group relative">
                             <div className="relative aspect-[4/5] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border-2 md:border-4 border-white/10 mb-6 shadow-2xl bg-card transition-all duration-700 group-hover:border-accent group-hover:shadow-[0_0_50px_rgba(245,158,11,0.2)]">
