@@ -5,7 +5,9 @@ export function createClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    throw new Error("CRITICAL: Supabase environment variables are missing on the client!");
+    console.warn("Supabase environment variables are missing on the client.");
+    // Return a dummy client or handle it gracefully to avoid crashing during build
+    return createBrowserClient(url || "", key || "");
   }
 
   return createBrowserClient(url, key)

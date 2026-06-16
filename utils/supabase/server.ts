@@ -8,7 +8,27 @@ export async function createClient() {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error("CRITICAL: Supabase environment variables are missing on the server!");
+    console.warn("Supabase environment variables are missing on the server.");
+    return createServerClient(
+      supabaseUrl || "",
+      supabaseKey || "",
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // Server Component context
+            }
+          },
+        },
+      }
+    )
   }
 
   return createServerClient(
