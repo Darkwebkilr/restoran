@@ -36,17 +36,17 @@ export async function loginWithGoogle() {
 
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
-  try {
-    const supabase = await createClient();
-    const password = formData.get("password") as string;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: translateError(error.message), email };
-    return { error: null, email };
-  } catch (e: any) {
-    return { error: "Sistem hatası oluştu.", email };
+  const password = formData.get("password") as string;
+  
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  
+  if (error) {
+    return { error: translateError(error.message), email };
   }
+
   revalidatePath("/", "layout");
-  redirect("/");
+  return redirect("/");
 }
 
 export async function signup(prevState: any, formData: FormData) {

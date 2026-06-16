@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
 import { SiInstagram, SiFacebook } from '@icons-pack/react-simple-icons';
@@ -11,19 +11,22 @@ export default function Header() {
     const [user, setUser] = useState<any>(null);
     const [role, setRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
+    
     const supabase = createClient();
     const router = useRouter();
     const pathname = usePathname();
 
-    const checkUser = async () => {
+    const checkUser = useCallback(async () => {
         try {
-            const { data: { user: authUser } } = await supabase.auth.getUser();
-            if (authUser) {
-                setUser(authUser);
+            // getSession client tarafında çok daha hızlı ve kararlıdır
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                setUser(session.user);
                 const { data: profile } = await supabase
                     .from('profiles')
                     .select('role')
-                    .eq('id', authUser.id)
+                    .eq('id', session.user.id)
                     .maybeSingle();
                 setRole(profile?.role || 'customer');
             } else {
@@ -35,9 +38,10 @@ export default function Header() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [supabase]);
 
     useEffect(() => {
+        setMounted(true);
         checkUser();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -54,12 +58,18 @@ export default function Header() {
                     setUser(null);
                     setRole(null);
                 }
+                setLoading(false);
                 router.refresh();
             }
         });
 
         return () => subscription.unsubscribe();
-    }, [router, supabase]);
+    }, [checkUser, router, supabase]);
+
+    // Sayfa değiştiğinde loading'e sokmadan sessizce kontrol et
+    useEffect(() => {
+        if (mounted) checkUser();
+    }, [pathname, checkUser, mounted]);
 
     const handleSignOut = async () => {
         setLoading(true);
@@ -70,6 +80,9 @@ export default function Header() {
         router.push('/');
         router.refresh();
     };
+
+    // Hydration (flicker) hatasını önlemek için
+    if (!mounted) return null;
 
     const dashboardLink = role === 'admin' ? '/dashboard/admin' : 
                         role === 'restaurant' ? '/dashboard/restaurant' : 
@@ -120,7 +133,7 @@ export default function Header() {
                                 </div>
                             )
                         ) : (
-                            <div className="w-20 h-8 bg-white/5 animate-pulse rounded-lg" /> // Loading Skeleton
+                            <div className="w-20 h-8 bg-white/5 animate-pulse rounded-lg" />
                         )}
                     </div>
                 </div>

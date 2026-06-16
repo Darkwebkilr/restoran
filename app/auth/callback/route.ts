@@ -8,9 +8,24 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (!error && user) {
+      // Profil bilgisini çekerek rolüne bak
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      const role = profile?.role || 'customer'
+      
+      // Role göre yönlendir
+      const dashboardPath = role === 'admin' ? '/dashboard/admin' : 
+                          role === 'restaurant' ? '/dashboard/restaurant' : 
+                          '/dashboard/customer'
+      
+      return NextResponse.redirect(`${origin}${dashboardPath}`)
     }
   }
 
