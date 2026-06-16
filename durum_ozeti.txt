@@ -1,0 +1,29 @@
+### PROJE DURUM ÖZETİ (23 Mayıs 2026)
+
+**1. TEKNOLOJİK YAPI**
+- Framework: Next.js 15 (App Router)
+- Veritabanı & Auth: Supabase (SSR Paketi)
+- Styling: Tailwind CSS + Lüks Tasarım Dili
+
+**2. TAMAMLANAN BACKEND ÖZELLİKLERİ**
+- Rol Bazlı Giriş: Müşteri, Restoran ve Admin (Google OAuth dahil).
+- Dinamik Yönlendirme: Header üzerinden role göre Dashboard yönlendirmesi.
+- Otomatik Rezervasyon: Doluluk kontrolü yapan ve RZV-XXXX kodu üreten sistem.
+- Slug Yapısı: URL'ler ID yerine restoran ismine göre çalışıyor (/restaurant/zuma-istanbul).
+- Admin Paneli: Detaylı rezervasyon takibi ve restoran başvuru onay/red sistemi.
+- Restoran Paneli: Başvuru süreci takibi ve işletme bilgilerini düzenleme formu.
+
+**3. VERİTABANI ŞEMASI (public)**
+- profiles: id, email, role (enum), full_name.
+- restaurants: id, owner_id, name, slug, status, address, category, photos, rating, reviews, phone, features.
+- reservations: id, restaurant_id, customer_id, reservation_date, reservation_time, party_size, status, code.
+
+**4. ÖNEMLİ NOTLAR**
+- RLS Kısıtlamaları: Geliştirme kolaylığı için tüm tablolarda DISABLE edildi.
+- Admin ID: 7297a243-ed54-401e-99d3-bcdfde7521d1
+
+**5. SIRADAKİ ADIMLAR (YENİ SEZON)**
+- Fotoğraf Yükleme: Supabase Storage entegrasyonu.
+- QR Kod: Rezervasyon biletleri için qrcode.react entegrasyonu.
+- E-posta: Resend API ile giriş kodunun gönderilmesi.
+- Menü Yönetimi: Restoranların kendi menülerini ekleyebilmesi.

@@ -1,16 +1,15 @@
-"use client";
-
+import { createClient } from "@/utils/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import HomeHero from "@/components/HomeHero"; // Arama state'i için yeni bileşen gerekecek
 
 const RESTAURANT_LOGOS = [
-    { name: "ZUMA", id: "2" },
-    { name: "NUSR-ET", id: "3" },
-    { name: "MIKLA", id: "4" },
-    { name: "ULUS 29", id: "5" },
-    { name: "PAPER MOON", id: "6" },
-    { name: "VOGUE", id: "7" }
+    { name: "ZUMA", slug: "zuma-istanbul" },
+    { name: "NUSR-ET", slug: "nusr-et-steakhouse" },
+    { name: "MIKLA", slug: "mikla" },
+    { name: "ULUS 29", slug: "ulus-29" },
+    { name: "PAPER MOON", slug: "paper-moon" },
+    { name: "VOGUE", slug: "vogue-restaurant" }
 ];
 
 const CATEGORIES = [
@@ -22,210 +21,28 @@ const CATEGORIES = [
     { name: "Fransız Mutfağı", icon: "🥐", image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?q=80&w=800&auto=format&fit=crop" },
 ];
 
-const STEPS = [
-    {
-        number: "01",
-        title: "Mekanı Keşfet",
-        description: "Şehrin en seçkin restoranlarını listele, ambiyansı incele.",
-        icon: "🔍"
-    },
-    {
-        number: "02",
-        title: "Anında Rezerve Et",
-        description: "Uygun saatini seç, saniyeler içinde masanı ayır.",
-        icon: "📅"
-    },
-    {
-        number: "03",
-        title: "Kodunla Giriş Yap",
-        description: "Özel giriş kodunla kapıda beklemeden masana geç.",
-        icon: "🔑"
-    }
-];
-
-const STATS = [
-    { label: "Seçkin Restoran", value: "120+" },
-    { label: "Mutlu Misafir", value: "45K+" },
-    { label: "Şehir", value: "12" },
-    { label: "Bekleme Süresi", value: "0" }
-];
-
-const ADS = [
-    { 
-        title: "ZUMA: ÖZEL TADIM MENÜSÜ", 
-        logo: "ZUMA", 
-        subtitle: "Uzak Doğu'nun gizemli tatlarını keşfedin.", 
-        location: "İSTİNYE", 
-        address: "İstinye Park AVM, No: 461",
-        phone: "+90 (212) 345 67 89",
-        image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop", 
-        tag: "SPONSORLU" 
-    },
-    { 
-        title: "NUSR-ET VIP GEÇİŞ", 
-        logo: "NUSR-ET", 
-        subtitle: "Evolution Ajans üyelerine özel beklemeden geçiş.", 
-        location: "ETİLER", 
-        address: "Etiler, Nispetiye Cad. No:87",
-        phone: "+90 (212) 335 45 00",
-        image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop", 
-        tag: "SPONSORLU" 
-    },
-    { 
-        title: "PAPER MOON: BODRUM GECELERİ", 
-        logo: "PAPER MOON", 
-        subtitle: "Marinada unutulmaz bir akşam.", 
-        location: "BODRUM", 
-        address: "Milta Bodrum Marina",
-        phone: "+90 (252) 316 74 74",
-        image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=1200&auto=format&fit=crop", 
-        tag: "ÖNE ÇIKAN" 
-    }
-];
-
-const MOCK_RESTAURANTS = [
-    {
-        id: "2",
-        name: "Zuma Istanbul",
-        logo: "ZUMA",
-        category: "Modern Japon",
-        rating: 4.8,
-        image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=800&auto=format&fit=crop",
-        location: "İstinye Park",
-        address: "İstinye Park AVM, No: 461",
-        phone: "+90 (212) 345 67 89"
-    },
-    {
-        id: "3",
-        name: "Nusr-Et Steakhouse",
-        logo: "NUSR-ET",
-        category: "Steakhouse",
-        rating: 4.7,
-        image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop",
-        location: "Etiler",
-        address: "Etiler, Nispetiye Cad. No:87",
-        phone: "+90 (212) 335 45 00"
-    },
-    {
-        id: "4",
-        name: "Mikla",
-        logo: "MIKLA",
-        category: "Yeni Anadolu",
-        rating: 4.9,
-        image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=800&auto=format&fit=crop",
-        location: "Beyoğlu",
-        address: "The Marmara Pera, Meşrutiyet Cad. No:15",
-        phone: "+90 (212) 293 56 56"
-    },
-    {
-        id: "5",
-        name: "Ulus 29",
-        logo: "ULUS 29",
-        category: "Dünya Mutfağı",
-        rating: 4.7,
-        image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?q=80&w=800&auto=format&fit=crop",
-        location: "Ulus",
-        address: "Adnan Saygun Cad. Ulus Parkı İçi",
-        phone: "+90 (212) 358 29 29"
-    },
-    {
-        id: "6",
-        name: "Paper Moon",
-        logo: "PAPER MOON",
-        category: "İtalyan Mutfağı",
-        rating: 4.8,
-        image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=800&auto=format&fit=crop",
-        location: "Bodrum",
-        address: "Milta Bodrum Marina",
-        phone: "+90 (252) 316 74 74"
-    },
-    {
-        id: "7",
-        name: "Vogue Restaurant",
-        logo: "VOGUE",
-        category: "Dünya Mutfağı",
-        rating: 4.6,
-        image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop",
-        location: "Akaretler",
-        address: "BJK Plaza, A Blok, Spor Cad. No:92",
-        phone: "+90 (212) 227 44 04"
-    },
-];
-
-const SLIDER_IMAGES = [
-    {
-        image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1600&auto=format&fit=crop",
-        title: "ZUMA BODRUM AÇILIYOR",
-        tag: "YENİ MEKAN"
-    },
-    {
-        image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1600&auto=format&fit=crop",
-        title: "EŞSİZ LEZZET DENEYİMİ",
-        tag: "ÖNE ÇIKAN"
-    },
-    {
-        image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1600&auto=format&fit=crop",
-        title: "BODRUM'UN EN İYİ MANZARASI",
-        tag: "RESERVASYON"
-    }
-];
-
-export default function Home() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCat, setSelectedCat] = useState("Tüm Kategoriler");
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [touchStart, setTouchStart] = useState<number | null>(null);
-    const [touchEnd, setTouchEnd] = useState<number | null>(null);
-
-    const minSwipeDistance = 50;
-
-    const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(null);
-        setTouchStart(e.targetTouches[0].clientX);
-    };
-
-    const onTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-
-    const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe) {
-            nextSlide();
-        } else if (isRightSwipe) {
-            prevSlide();
-        }
-    };
-
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % SLIDER_IMAGES.length);
-    };
-
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev === 0 ? SLIDER_IMAGES.length - 1 : prev - 1));
-    };
-
-    useEffect(() => {
-        const timer = setInterval(nextSlide, 5000);
-        return () => clearInterval(timer);
-    }, []);
+export default async function Home() {
+    const supabase = await createClient();
+    
+    // Veritabanından onaylı restoranları çek
+    const { data: restaurants } = await supabase
+        .from("restaurants")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(4);
 
     return (
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
-
+            
+            {/* 1. TOP MARQUEE */}
             <div className="fixed top-20 md:top-28 z-40 w-full bg-gray-400/70 border-y border-black/10 py-2 md:py-3 overflow-hidden">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="flex items-center">
                             {RESTAURANT_LOGOS.map((item) => (
-                                <Link key={item.name} href={`/restaurant/${item.id}`} className="mx-1 md:mx-2 px-3 md:px-6 py-2 md:py-3 bg-accent border border-black/20 rounded-xl flex items-center justify-center hover:bg-black hover:border-accent transition-all group cursor-pointer">
-                                    <span className="text-[10px] md:text-[14px] font-black text-black tracking-[0.3em] uppercase group-hover:text-accent transition-colors">
-                                        {item.name}
-                                    </span>
+                                <Link key={item.slug} href={`/restaurant/${item.slug}`} className="mx-2 px-6 py-3 bg-accent rounded-xl flex items-center justify-center font-black text-black tracking-widest uppercase hover:bg-black hover:text-accent transition-all italic shadow-lg">
+                                    {item.name}
                                 </Link>
                             ))}
                         </div>
@@ -233,259 +50,32 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Full Screen Slider Hero */}
-            <section className="relative w-full h-screen overflow-hidden group touch-pan-y">
-                {SLIDER_IMAGES.map((slide, index) => (
-                    <div
-                        key={index}
-                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
-                    >
-                        <Image
-                            src={slide.image}
-                            alt={slide.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-[10s]"
-                            priority={index === 0}
-                        />
-                        <div className="absolute inset-0 bg-black/40" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-card" />
-                    </div>
-                ))}
+            {/* 2. HERO SECTION (Client Component for search state) */}
+            <HomeHero />
 
-                {/* Hero Content Overlay */}
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pt-20">
-                    <div className="max-w-6xl w-full flex flex-col items-center text-center">
-                        <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 md:mb-8 leading-[0.9] md:leading-[0.8] animate-in fade-in slide-in-from-bottom-8 duration-1000 uppercase text-balance">
-                            BODRUMUN EN İYİ <br />
-                            <span className="text-accent italic">
-                                MASALARI.
-                            </span>
-                        </h1>
-
-                        {/* Search Bar */}
-                        <div className="w-full max-w-4xl glass p-2 md:p-3 rounded-[2rem] md:rounded-[3rem] border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center gap-2 animate-in fade-in slide-in-from-bottom-12 duration-1000 mb-8">
-                            <div className="flex-1 w-full relative flex items-center">
-                                <span className="absolute left-6 text-lg">🔍</span>
-                                <input
-                                    type="text"
-                                    placeholder="Restoran veya mutfak ara..."
-                                    className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] pl-14 pr-6 py-4 md:py-5 outline-none focus:border-accent/50 transition-all font-bold text-sm placeholder:text-white/20"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-                            <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2">
-                                <select
-                                    className="w-full sm:w-auto bg-card border border-white/10 rounded-[1.5rem] md:rounded-[2rem] px-6 py-4 md:py-5 outline-none focus:border-accent/50 transition-all font-black text-[10px] tracking-widest uppercase appearance-none cursor-pointer min-w-[160px]"
-                                    value={selectedCat}
-                                    onChange={(e) => setSelectedCat(e.target.value)}
-                                >
-                                    <option>Tüm Kategoriler</option>
-                                    {CATEGORIES.map(cat => (
-                                        <option key={cat.name} value={cat.name}>{cat.name}</option>
-                                    ))}
-                                </select>
-                                <button className="w-full sm:w-auto px-10 py-4 md:py-5 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase">
-                                    BUL
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Navigation Buttons */}
-                <button
-                    onClick={prevSlide}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-accent hover:text-black"
-                >
-                    ←
-                </button>
-                <button
-                    onClick={nextSlide}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-accent hover:text-black"
-                >
-                    →
-                </button>
-
-                {/* Navigation Dots */}
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                    {SLIDER_IMAGES.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentSlide(index)}
-                            className={`w-3 h-3 rounded-full border border-white/50 transition-all ${index === currentSlide ? "bg-accent w-8" : "bg-white/20 hover:bg-white/50"}`}
-                        />
-                    ))}
-                </div>
-            </section>
-
-            {/* Scrolling Ticker (Marquee) - Moved here from bottom */}
+            {/* 3. MIDDLE TICKER (Haber Bandı) */}
             <div className="w-full bg-accent py-4 md:py-6 border-y border-black/20 z-10 shadow-2xl flex items-center">
                 <div className="animate-marquee whitespace-nowrap">
                     {[...Array(8)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-4 md:gap-8 mx-4 md:mx-8">
-                            <Link href="/restaurant/2" className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic hover:text-white transition-colors">
-                                ZUMA: PAZARTESİ GÜNLERİNE ÖZEL %10 İNDİRİM
-                            </Link>
-                            <span className="opacity-40 text-black text-xl md:text-4xl">•</span>
-                            <Link href="/restaurant/3" className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic hover:text-white transition-colors">
-                                NUSR-ET: EVO ÜYELERİNE ÖZEL %15 İNDİRİM KODU: EVO15
-                            </Link>
-                            <span className="opacity-40 text-black text-xl md:text-4xl">•</span>
-                            <Link href="/restaurant/6" className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic hover:text-white transition-colors">
-                                PAPER MOON: BU HAFTA SONU TÜM MASALAR DOLUDUR
-                            </Link>
-                            <span className="opacity-40 text-black text-xl md:text-4xl">•</span>
-                            <Link href="/restaurant/4" className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic hover:text-white transition-colors">
-                                MIKLA: YENİ SEZON TADIM MENÜSÜ YAYINLANDI
-                            </Link>
-                            <span className="opacity-40 text-black text-xl md:text-4xl">•</span>
-                            <Link href="/restaurant/5" className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic hover:text-white transition-colors">
-                                ULUS 29: CUMA GECESİ DJ PERFORMANSI
-                            </Link>
-                            <span className="opacity-40 text-black text-xl md:text-4xl">•</span>
-                        </div>
+                        <span key={i} className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic mx-8">
+                            EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ
+                        </span>
                     ))}
                 </div>
             </div>
 
-            {/* Dual Ad Banners */}
-            <section className="w-full max-w-7xl px-6 py-12 relative z-30">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                    {[1, 2].map((i) => (
-                        <Link key={i} href="/login/restaurant?mode=register" className="group relative w-full h-32 md:h-48 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-accent/40 overflow-hidden cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all hover:border-accent hover:shadow-[0_0_50px_rgba(245,158,11,0.2)] hover:-translate-y-1 bg-black">
-                            {/* Background Image Placeholder */}
-                            <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
-                                <Image 
-                                    src={`https://images.unsplash.com/photo-${i === 1 || i === 3 ? '1514362545857-3bc16c4c7d1b' : '1552566626-52f8b828add9'}?q=80&w=800&auto=format&fit=crop`}
-                                    alt="Ad Background"
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            
-                            {/* Vibrant Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-transparent to-black/60" />
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-accent/10 via-transparent to-accent/10" />
-                            
-                            <div className="relative h-full p-6 md:p-8 flex flex-col justify-between">
-                                <div className="flex justify-between items-start">
-                                    <span className="px-3 py-1 bg-accent text-black text-[7px] md:text-[8px] font-black rounded-full uppercase tracking-widest shadow-xl">REKLAM</span>
-                                    <span className="text-white text-[8px] md:text-[9px] font-black uppercase tracking-widest group-hover:translate-x-1 transition-transform">HEMEN BAŞVUR →</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-4">
-                                    {/* Logo Placeholder */}
-                                    <div className="w-10 h-10 md:w-14 md:h-14 bg-accent rounded-xl flex items-center justify-center font-display font-black text-xs md:text-sm text-black italic shadow-[0_0_20px_rgba(245,158,11,0.3)] group-hover:scale-110 transition-transform">
-                                        E
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <h4 className="font-display text-lg md:text-2xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg">BURADA REKLAMINIZ</h4>
-                                        <p className="text-accent text-[10px] md:text-xs font-black uppercase tracking-tighter italic">OLABİLİR</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
-
-            {/* Featured Restaurants (Seçkin Masalar) - Moved up for early visibility */}
-            <section id="restaurants" className="w-full max-w-7xl px-6 py-10 md:py-20 z-10">
-                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-16 gap-6">
-                    <div className="max-w-2xl text-left">
-                        <h2 className="font-display text-5xl md:text-8xl font-black mb-6 tracking-tighter leading-[0.8] uppercase">SEÇKİN <br /><span className="text-accent italic">MASALAR</span></h2>
-                        <p className="text-muted text-xs md:text-sm font-black uppercase opacity-60 tracking-widest">Şehrin en ikonik noktaları.</p>
-                    </div>
-                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {MOCK_RESTAURANTS.map((res) => (
-                        <Link key={res.id} href={`/restaurant/${res.id}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl flex flex-col">
-                            {/* Image Section */}
-                            <div className="relative aspect-[16/9] w-full overflow-hidden">
-                                <Image
-                                    src={res.image}
-                                    alt={res.name}
-                                    fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                                
-                                {/* Category Badge - Purple */}
-                                <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.category}</span>
-                                </div>
-
-                                {/* Location Badge - Red */}
-                                <div className="absolute bottom-4 right-4 bg-[#EF4444] px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.location}</span>
-                                </div>
-                            </div>
-
-                            {/* Content Section */}
-                            <div className="relative p-6 pt-10 flex-1 flex flex-col">
-                                {/* Logo Overlay (Circular) */}
-                                <div className="absolute -top-10 left-6 w-20 h-20 bg-white rounded-full border-4 border-white shadow-xl overflow-hidden flex items-center justify-center">
-                                    <div className="w-full h-full bg-accent flex items-center justify-center font-display font-black text-black italic text-sm">
-                                        {res.logo}
-                                    </div>
-                                </div>
-
-                                {/* Rating Section */}
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="flex gap-0.5">
-                                        {[...Array(5)].map((_, i) => (
-                                            <span key={i} className="text-[#FBBF24] text-sm">★</span>
-                                        ))}
-                                    </div>
-                                    <span className="text-gray-400 text-[10px] font-bold">(120 Yorum)</span>
-                                </div>
-
-                                {/* Title */}
-                                <h3 className="font-display text-2xl font-black text-gray-900 leading-tight mb-4 group-hover:text-accent transition-colors uppercase italic">
-                                    {res.name}
-                                </h3>
-
-                                {/* Address Section */}
-                                <div className="mt-auto flex items-start gap-2 pt-4 border-t border-gray-100">
-                                    <span className="text-gray-400 text-sm">📍</span>
-                                    <p className="text-gray-600 text-[11px] font-medium leading-relaxed line-clamp-2 uppercase">
-                                        {res.address}
-                                    </p>
-                                </div>
-                                
-                                {/* Phone (Added for completeness as per previous request) */}
-                                <div className="mt-2 flex items-center gap-2">
-                                    <span className="text-gray-400 text-sm">📞</span>
-                                    <span className="text-accent font-black text-xs tracking-widest">{res.phone}</span>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
-
-            {/* Featured Categories - Moved below Slider/Ad */}
-            <section id="categories" className="w-full max-w-7xl px-6 py-10 md:py-20 z-10">
-
-                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-12 gap-6">
-                    <div className="max-w-2xl text-left">
-                        <h2 className="font-display text-4xl md:text-6xl font-black mb-4 tracking-tighter uppercase leading-[0.9]">ÖNE ÇIKAN <br /><span className="text-accent italic">KATEGORİLER</span></h2>
-                    </div>
-                    <Link href="/categories" className="px-8 py-4 bg-white/10 text-white font-black rounded-2xl hover:bg-accent hover:text-black border-2 border-white/40 transition-all uppercase tracking-widest text-[10px]">Tümünü Gör</Link>
-                </div>
-
+            {/* 4. CATEGORIES */}
+            <section className="w-full max-w-7xl px-6 py-20 z-10">
+                <h2 className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.9] text-white mb-12">ÖNE ÇIKAN <br /><span className="text-accent italic">KATEGORİLER</span></h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                     {CATEGORIES.map((cat) => (
-                        <Link key={cat.name} href={`/categories`} className="group relative">
+                        <Link key={cat.name} href={`/restaurants?category=${cat.name}`} className="group relative">
                             <div className="relative aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-xl bg-card transition-all duration-500 hover:border-accent">
                                 <Image src={cat.image} alt={cat.name} fill className="object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                                     <span className="text-2xl md:text-3xl mb-2 group-hover:scale-125 transition-transform">{cat.icon}</span>
-                                    <h3 className="font-display text-xs md:text-sm font-black text-white text-center tracking-tighter group-hover:text-accent transition-colors uppercase italic">{cat.name}</h3>
+                                    <h3 className="font-display text-xs md:text-sm font-black text-white tracking-tighter group-hover:text-accent transition-colors uppercase italic">{cat.name}</h3>
                                 </div>
                             </div>
                         </Link>
@@ -493,82 +83,106 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Dual Ad Banners - Set 2 */}
-            <section className="w-full max-w-7xl px-6 py-10 z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                    {[3, 4].map((i) => (
-                        <Link key={i} href="/login/restaurant?mode=register" className="group relative w-full h-32 md:h-48 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-accent/40 overflow-hidden cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.1)] transition-all hover:border-accent hover:shadow-[0_0_50px_rgba(245,158,11,0.2)] hover:-translate-y-1 bg-black">
-                            {/* Background Image Placeholder */}
+            {/* 5. DUAL AD BANNERS */}
+            <section className="w-full max-w-7xl px-6 py-12 z-30">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {[1, 2].map((i) => (
+                        <Link key={i} href="/login/restaurant?mode=register" className="group relative h-48 rounded-[2.5rem] border-2 border-accent/40 overflow-hidden bg-black shadow-xl">
                             <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
-                                <Image 
-                                    src={`https://images.unsplash.com/photo-${i === 1 || i === 3 ? '1559339352-11d035aa65de' : '1544025162-d76694265947'}?q=80&w=800&auto=format&fit=crop`}
-                                    alt="Ad Background"
-                                    fill
-                                    className="object-cover"
-                                />
+                                <Image src={`https://images.unsplash.com/photo-${i === 1 ? '1514362545857-3bc16c4c7d1b' : '1552566626-52f8b828add9'}?q=80&w=800&auto=format&fit=crop`} alt="Ad" fill className="object-cover" />
                             </div>
-                            
-                            {/* Vibrant Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-transparent to-black/60" />
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-accent/10 via-transparent to-accent/10" />
-                            
-                            <div className="relative h-full p-6 md:p-8 flex flex-col justify-between">
-                                <div className="flex justify-between items-start">
-                                    <span className="px-3 py-1 bg-accent text-black text-[7px] md:text-[8px] font-black rounded-full uppercase tracking-widest shadow-xl">REKLAM</span>
-                                    <span className="text-white text-[8px] md:text-[9px] font-black uppercase tracking-widest group-hover:translate-x-1 transition-transform">HEMEN BAŞVUR →</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-4">
-                                    {/* Logo Placeholder */}
-                                    <div className="w-10 h-10 md:w-14 md:h-14 bg-accent rounded-xl flex items-center justify-center font-display font-black text-xs md:text-sm text-black italic shadow-[0_0_20px_rgba(245,158,11,0.3)] group-hover:scale-110 transition-transform">
-                                        E
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <h4 className="font-display text-lg md:text-2xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg">BURADA REKLAMINIZ</h4>
-                                        <p className="text-accent text-[10px] md:text-xs font-black uppercase tracking-tighter italic">OLABİLİR</p>
-                                    </div>
-                                </div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-black/60" />
+                            <div className="relative h-full p-8 flex flex-col justify-between">
+                                <span className="px-3 py-1 bg-accent text-black text-[8px] font-black rounded-full w-fit uppercase shadow-xl">REKLAM</span>
+                                <h4 className="font-display text-2xl font-black text-white italic uppercase leading-none">BURADA YERİNİZİ <br /><span className="text-accent">ALIN</span></h4>
                             </div>
                         </Link>
                     ))}
                 </div>
             </section>
 
-            {/* System Logic Section */}
-            <section id="how-it-works" className="w-full max-w-7xl px-6 py-20 md:py-32 relative z-10">
-                <div className="text-center mb-16">
-                    <h2 className="font-display text-4xl md:text-6xl font-black mb-4 tracking-tighter uppercase leading-none">SİSTEM NASIL <span className="text-accent italic">İŞLER?</span></h2>
-                    <p className="text-muted font-bold text-[9px] tracking-[0.2em] uppercase mt-4">Evolution Ajans ile karmaşıklığı tarihe gömdük.</p>
+            {/* 6. FEATURED RESTAURANTS (Sunucudan Gelen Veri) */}
+            <section className="w-full max-w-7xl px-6 py-20 z-10">
+                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
+                    <div>
+                        <h2 className="font-display text-5xl md:text-8xl font-black uppercase leading-[0.8] text-white">SEÇKİN <br /><span className="text-accent italic">MASALAR</span></h2>
+                    </div>
+                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {restaurants && restaurants.map((res) => (
+                        <Link key={res.id} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col">
+                            <div className="relative aspect-video overflow-hidden">
+                                <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <div className="absolute top-4 left-4 bg-accent px-4 py-1.5 rounded-lg shadow-lg">
+                                    <span className="text-[10px] font-black text-black uppercase tracking-widest">{res.category || 'Lüks'}</span>
+                                </div>
+                            </div>
+                            <div className="p-8 flex-1">
+                                <h3 className="font-display text-2xl font-black text-gray-900 uppercase italic mb-3 group-hover:text-accent transition-colors leading-none tracking-tighter">{res.name}</h3>
+                                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">📍 {res.address}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {STEPS.map((step, idx) => (
-                        <div key={idx} className="group relative p-8 md:p-10 glass rounded-[2.5rem] border-2 border-accent bg-accent/[0.05] shadow-[0_0_40px_rgba(245,158,11,0.15)]">
-                            <div className="text-5xl mb-6 block">{step.icon}</div>
-                            <div className="font-display text-6xl font-black text-accent/[0.1] absolute top-8 right-8 italic leading-none">{step.number}</div>
-                            <h3 className="font-display text-2xl font-black mb-4 tracking-tighter uppercase text-white">{step.title}</h3>
-                            <p className="text-white font-bold leading-relaxed text-sm opacity-90">{step.description}</p>
+            {/* 7. HOW IT WORKS */}
+            <section className="w-full max-w-7xl px-6 py-32 z-10">
+                <div className="bg-black/40 backdrop-blur-3xl rounded-[4rem] border border-white/10 p-12 md:p-24 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-[120px] -z-10" />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                        <div>
+                            <h2 className="font-display text-5xl md:text-7xl font-black text-white uppercase leading-none mb-8">SİSTEM NASIL <br /><span className="text-accent italic">İŞLER?</span></h2>
+                            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs max-w-md leading-relaxed">Şehrin en seçkin masaları sadece bir tık uzağınızda. Ayrıcalıklı rezervasyon deneyimi ile tanışın.</p>
                         </div>
-                    ))}
+                        <div className="space-y-12">
+                            {[
+                                { step: "01", title: "KEŞFET", desc: "Şehrin en lüks ve popüler restoranlarını kategorilerine göre incele." },
+                                { step: "02", title: "MASANI SEÇ", desc: "Arzu ettiğin tarih ve saat için uygun masayı anında görüntüle." },
+                                { step: "03", title: "KEYFİNİ ÇIKAR", desc: "Rezervasyonun onaylandığında tek yapman gereken o anın tadını çıkarmak." }
+                            ].map((item) => (
+                                <div key={item.step} className="flex gap-8 group">
+                                    <span className="font-display text-5xl font-black text-accent/20 group-hover:text-accent transition-colors duration-500">{item.step}</span>
+                                    <div>
+                                        <h4 className="text-white font-black text-xl uppercase italic mb-2 tracking-tighter">{item.title}</h4>
+                                        <p className="text-gray-500 text-xs font-bold uppercase tracking-wide leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* Final CTA Section */}
-            <section className="w-full max-w-7xl px-6 py-20 md:py-32 z-10">
-                <div className="w-full glass rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-20 flex flex-col items-center text-center border border-white/10 relative overflow-hidden">
-                    <div className="absolute -top-40 -right-40 w-96 h-96 bg-accent opacity-10 blur-[100px]" />
-                    <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent opacity-5 blur-[100px]" />
-
-                    <h2 className="relative z-10 font-display text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none mb-8 italic">
-                        MASANDA <br /> YERİN <span className="text-accent underline decoration-4 underline-offset-8">HAZIR.</span>
-                    </h2>
-                    <div className="flex flex-col sm:flex-row gap-4 relative z-10 w-full sm:w-auto">
-                        <Link href="/login/member" className="w-full sm:w-auto px-10 py-5 bg-white text-black font-black rounded-[1.5rem] text-xs tracking-[0.2em] uppercase hover:bg-black hover:text-accent border-2 border-white transition-all shadow-2xl">
-                            ÜYE OLARAK KATIL
-                        </Link>
-                        <Link href="/login/restaurant" className="w-full sm:w-auto px-10 py-5 glass text-white font-black rounded-[1.5rem] text-xs tracking-[0.2em] uppercase border border-white/10 hover:bg-black hover:border-accent transition-all shadow-2xl">
-                            RESTORAN GİRİŞİ
-                        </Link>
+            {/* 8. RESTAURANT ONBOARDING */}
+            <section className="w-full px-6 py-32 z-10">
+                <div className="max-w-7xl mx-auto">
+                    <div className="relative group overflow-hidden rounded-[3rem] bg-gradient-to-br from-white/10 to-transparent p-px">
+                        <div className="relative bg-[#0A0A0A] rounded-[2.9rem] px-8 py-20 md:py-32 flex flex-col items-center text-center overflow-hidden">
+                            {/* Dekoratif Arka Plan Elemanları - Çok Hafif */}
+                            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50" />
+                            
+                            <div className="relative z-10 max-w-4xl">
+                                <span className="inline-block px-4 py-1.5 bg-accent/10 text-accent text-[10px] font-black rounded-full uppercase tracking-[0.3em] mb-8 border border-accent/20">
+                                    Ayrıcalıklı Dünya
+                                </span>
+                                <h2 className="font-display text-5xl md:text-8xl font-black text-white uppercase leading-[0.85] mb-10 tracking-tighter">
+                                    MASANDA YERİN <br />HAZIR, <span className="text-accent italic text-4xl md:text-7xl">Hemen Başla</span>
+                                </h2>
+                                <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] md:text-xs mb-16 max-w-xl mx-auto leading-relaxed">
+                                    Sadece saniyeler içinde profilini oluştur, şehrin en seçkin <br className="hidden md:block" /> restoranları arasındaki yerini ayırt etmeye başla.
+                                </p>
+                                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                                    <Link href="/login/member?mode=register" className="w-full sm:w-auto px-12 py-6 bg-accent text-black font-black rounded-2xl hover:scale-105 transition-all duration-300 uppercase tracking-widest text-xs shadow-xl">
+                                        Hemen Kayıt Ol
+                                    </Link>
+                                    <Link href="/login/member" className="w-full sm:w-auto px-12 py-6 bg-white/5 border border-white/10 text-white font-black rounded-2xl hover:bg-white/10 transition-all duration-300 uppercase tracking-widest text-xs">
+                                        Giriş Yap
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
