@@ -8,12 +8,13 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Aşağıdaki ile başlayanlar hariç tüm request yollarını yakala:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
+     * Sadece bu yollarda çalıştır:
+     * - dashboard (tüm alt yollar)
+     * - login (tüm alt yollar)
+     * - auth/callback
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/dashboard/:path*',
+    '/login/:path*',
+    '/auth/:path*',
   ],
 }
