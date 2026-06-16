@@ -41,6 +41,7 @@ export async function login(prevState: any, formData: FormData) {
     const password = formData.get("password") as string;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error: translateError(error.message), email };
+    return { error: null, email };
   } catch (e: any) {
     return { error: "Sistem hatası oluştu.", email };
   }
@@ -73,6 +74,7 @@ export async function signup(prevState: any, formData: FormData) {
         address: "Belirtilmedi",
       });
     }
+    return { error: null, email, fullName, restaurantName };
   } catch (e: any) {
     return { error: `Kayıt sırasında bir hata oluştu: ${e.message}`, email, fullName, restaurantName };
   }

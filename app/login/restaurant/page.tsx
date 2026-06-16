@@ -46,7 +46,7 @@ function RestaurantLoginContent() {
                   type="text" 
                   name="restaurantName"
                   required
-                  defaultValue={state?.restaurantName || ""}
+                  defaultValue={(signupState as any)?.restaurantName || ""}
                   placeholder="L'Atelier de L'Entrecôte"
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
                 />
@@ -57,7 +57,7 @@ function RestaurantLoginContent() {
                   type="text" 
                   name="fullName"
                   required
-                  defaultValue={state?.fullName || ""}
+                  defaultValue={(signupState as any)?.fullName || ""}
                   placeholder="Ahmet Yılmaz"
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
                 />

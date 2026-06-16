@@ -34,7 +34,7 @@ export default function LoginPage() {
                   type="text" 
                   name="fullName"
                   required
-                  defaultValue={state?.fullName || ""}
+                  defaultValue={(signupState as any)?.fullName || ""}
                   placeholder="Can Dostum"
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-accent transition-colors font-medium text-white placeholder:text-white/20"
                 />
@@ -47,7 +47,7 @@ export default function LoginPage() {
                 type="email" 
                 name="email"
                 required
-                defaultValue={state?.email || ""}
+                defaultValue={(state as any)?.email || ""}
                 placeholder="dostum@restoran.com"
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-accent transition-colors font-medium text-white placeholder:text-white/20"
               />
