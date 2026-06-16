@@ -40,19 +40,26 @@ export default function Header() {
     useEffect(() => {
         checkUser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
-                await checkUser();
+                if (session?.user) {
+                    setUser(session.user);
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', session.user.id)
+                        .maybeSingle();
+                    setRole(profile?.role || 'customer');
+                } else {
+                    setUser(null);
+                    setRole(null);
+                }
                 router.refresh();
             }
         });
 
         return () => subscription.unsubscribe();
-    }, [router]);
-
-    useEffect(() => {
-        checkUser();
-    }, [pathname]);
+    }, [router, supabase]);
 
     const handleSignOut = async () => {
         setLoading(true);
