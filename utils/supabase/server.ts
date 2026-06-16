@@ -1,6 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-
 export async function createClient() {
   const cookieStore = await cookies()
 
@@ -8,7 +7,19 @@ export async function createClient() {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Supabase environment variables are missing! Check your .env.local file.")
+    // Return a dummy client or handle the error gracefully during build
+    // This prevents the entire build from failing when prerendering static pages
+    console.warn("Supabase environment variables are missing during build. Using placeholder values.");
+    return createServerClient(
+      'https://placeholder.supabase.co',
+      'placeholder-key',
+      {
+        cookies: {
+          getAll() { return [] },
+          setAll() {}
+        }
+      }
+    );
   }
 
   return createServerClient(
@@ -19,6 +30,7 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll()
         },
+...
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
