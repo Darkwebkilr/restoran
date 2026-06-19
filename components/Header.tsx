@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
 import { SiInstagram, SiFacebook } from '@icons-pack/react-simple-icons';
+import { signout } from "@/app/actions/auth";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,7 +14,8 @@ export default function Header() {
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
     
-    const supabase = createClient();
+    // Supabase client referansının her renderda yeniden oluşturulmasını engellemek için useState kullanıyoruz
+    const [supabase] = useState(() => createClient());
     const router = useRouter();
     const pathname = usePathname();
 
@@ -21,14 +23,18 @@ export default function Header() {
         try {
             // getSession client tarafında çok daha hızlı ve kararlıdır
             const { data: { session } } = await supabase.auth.getSession();
+            console.log("[AuthDebug] checkUser - session:", session);
             if (session?.user) {
                 setUser(session.user);
-                const { data: profile } = await supabase
+                const { data: profile, error } = await supabase
                     .from('profiles')
                     .select('role')
                     .eq('id', session.user.id)
                     .maybeSingle();
-                setRole(profile?.role || 'customer');
+                console.log("[AuthDebug] checkUser - profiles DB query result:", profile, "Error:", error);
+                const resolvedRole = profile?.role || session.user.user_metadata?.role || 'customer';
+                console.log("[AuthDebug] checkUser - resolvedRole:", resolvedRole);
+                setRole(resolvedRole);
             } else {
                 setUser(null);
                 setRole(null);
@@ -45,21 +51,30 @@ export default function Header() {
         checkUser();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log("[AuthDebug] onAuthStateChange - event:", event, "session:", session);
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
-                if (session?.user) {
-                    setUser(session.user);
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', session.user.id)
-                        .maybeSingle();
-                    setRole(profile?.role || 'customer');
-                } else {
-                    setUser(null);
-                    setRole(null);
+                try {
+                    if (session?.user) {
+                        setUser(session.user);
+                        const { data: profile, error } = await supabase
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', session.user.id)
+                            .maybeSingle();
+                        console.log("[AuthDebug] onAuthStateChange - profiles DB query result:", profile, "Error:", error);
+                        const resolvedRole = profile?.role || session.user.user_metadata?.role || 'customer';
+                        console.log("[AuthDebug] onAuthStateChange - resolvedRole:", resolvedRole);
+                        setRole(resolvedRole);
+                    } else {
+                        setUser(null);
+                        setRole(null);
+                    }
+                } catch (err) {
+                    console.error("Auth state change hatası:", err);
+                } finally {
+                    setLoading(false);
+                    router.refresh();
                 }
-                setLoading(false);
-                router.refresh();
             }
         });
 
@@ -73,12 +88,23 @@ export default function Header() {
 
     const handleSignOut = async () => {
         setLoading(true);
-        await supabase.auth.signOut();
-        setUser(null);
-        setRole(null);
-        setLoading(false);
-        router.push('/');
-        router.refresh();
+        try {
+            // Sunucu tarafındaki çerezleri ve oturumu temizlemek için Server Action çağırıyoruz
+            await signout();
+        } catch (err) {
+            console.error("Çıkış hatası:", err);
+            // Sunucu tarafında hata oluşursa istemci tarafında da temizlik yapıp ana sayfaya yönlendiriyoruz
+            try {
+                await supabase.auth.signOut();
+            } catch (clientErr) {
+                console.error("İstemci tarafında çıkış hatası:", clientErr);
+            }
+            setUser(null);
+            setRole(null);
+            setLoading(false);
+            router.push('/');
+            router.refresh();
+        }
     };
 
     // Hydration (flicker) hatasını önlemek için

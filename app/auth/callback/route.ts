@@ -18,7 +18,7 @@ export async function GET(request: Request) {
         .eq('id', user.id)
         .maybeSingle()
 
-      const role = profile?.role || 'customer'
+      const role = profile?.role || user.user_metadata?.role || 'customer'
       
       // Role göre yönlendir
       const dashboardPath = role === 'admin' ? '/dashboard/admin' : 

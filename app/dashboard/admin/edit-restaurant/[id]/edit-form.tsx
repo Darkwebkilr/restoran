@@ -1,16 +1,22 @@
 "use client";
 
 import { useState, useActionState } from "react";
-import { updateRestaurantProfile } from "@/app/actions/restaurant";
+import { updateRestaurantByAdmin } from "@/app/actions/restaurant";
 import { createClient } from "@/utils/supabase/client";
 import { compressImage } from "@/utils/image";
 
 const CATEGORIES = ["İtalyan", "Japon", "Fransız", "Steakhouse", "Uzak Doğu", "Deniz Ürünleri", "Dünya Mutfağı"];
 const FEATURES = ["Vale Park", "Dış Mekan", "Wi-Fi", "Alkol Servisi", "Teras", "Canlı Müzik", "VIP Oda"];
+const STATUSES = [
+  { value: "pending", label: "BEKLEMEDE (PENDING)", color: "text-yellow-500 bg-yellow-500/10 border-yellow-500/20" },
+  { value: "approved", label: "ONAYLI (APPROVED)", color: "text-green-500 bg-green-500/10 border-green-500/20" },
+  { value: "rejected", label: "REDDEDİLDİ (REJECTED)", color: "text-red-500 bg-red-500/10 border-red-500/20" }
+];
 
-export default function RestaurantSettingsForm({ restaurant }: { restaurant: any }) {
-    const [state, action, isPending] = useActionState(updateRestaurantProfile, null);
+export default function AdminRestaurantEditForm({ restaurant }: { restaurant: any }) {
+    const [state, action, isPending] = useActionState(updateRestaurantByAdmin, null);
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>(restaurant.features || []);
+    const [status, setStatus] = useState<string>(restaurant.status || "pending");
     const [photos, setPhotos] = useState<string[]>(restaurant.photos || []);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [supabase] = useState(() => createClient());
@@ -29,11 +35,14 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
 
         setUploadingImage(true);
         try {
+            // Görseli istemci tarafında sıkıştır (1200px genişlik limiti, 0.8 kalite)
             const compressedBlob = await compressImage(file, 1200, 0.8);
             
-            const fileExt = "jpg";
+            // Benzersiz dosya yolu oluştur (Restoran sahibi id'si alt klasör olacak şekilde)
+            const fileExt = "jpg"; // Sıkıştırdıktan sonra JPEG formatına dönüyor
             const fileName = `${restaurant.id}/${Date.now()}.${fileExt}`;
 
+            // Supabase Storage 'restaurant-photos' bucket'ına yükle
             const { data, error: uploadError } = await supabase.storage
                 .from('restaurant-photos')
                 .upload(fileName, compressedBlob, {
@@ -49,6 +58,7 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                 );
             }
 
+            // Görselin genel erişim linkini (Public URL) al
             const { data: { publicUrl } } = supabase.storage
                 .from('restaurant-photos')
                 .getPublicUrl(fileName);
@@ -67,54 +77,92 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
     };
 
     return (
-        <form action={action} className="space-y-12">
+        <form action={action} className="space-y-10">
+            <input type="hidden" name="restaurantId" value={restaurant.id} />
             <input type="hidden" name="photosJson" value={JSON.stringify(photos)} />
 
-            {/* Status Banner */}
-            {restaurant.status !== 'approved' && (
-                <div className="glass p-8 rounded-[2.5rem] border-2 border-accent/20 bg-accent/5 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
-                    <div>
-                        <h4 className="font-display text-xl font-black text-accent uppercase italic mb-1">Başvuru Durumu: Beklemede</h4>
-                        <p className="text-white/60 text-xs font-bold uppercase tracking-widest">İşletme bilgileriniz güncel olduğunda onay için kontrol edilecektir.</p>
+            <div className="glass p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-8">
+                
+                {/* Durum Yönetimi */}
+                <div className="space-y-3 pb-6 border-b border-white/5">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Durumu</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {STATUSES.map((item) => (
+                            <label
+                                key={item.value}
+                                className={`flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all cursor-pointer ${
+                                    status === item.value
+                                        ? `${item.color} font-black border-2 scale-[1.02] shadow-lg`
+                                        : "bg-white/5 border-white/10 hover:border-white/20 text-white/50"
+                                }`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="status"
+                                    value={item.value}
+                                    checked={status === item.value}
+                                    onChange={() => setStatus(item.value)}
+                                    className="hidden"
+                                />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+                            </label>
+                        ))}
                     </div>
-                    <button 
-                        type="submit"
-                        disabled={isPending}
-                        className="px-10 py-4 bg-accent text-black font-black rounded-2xl text-[10px] tracking-[0.2em] uppercase hover:scale-105 transition-transform shadow-[0_0_30px_rgba(245,158,11,0.3)]"
-                    >
-                        {isPending ? "GÖNDERİLİYOR..." : "ONAY İÇİN BAŞVUR"}
-                    </button>
                 </div>
-            )}
 
-            <div className="glass p-8 md:p-12 rounded-[3rem] border border-white/10 shadow-2xl space-y-8">
                 {/* Temel Bilgiler */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Adı</label>
-                        <input name="name" defaultValue={restaurant.name} required className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white" />
+                        <input
+                            name="name"
+                            defaultValue={restaurant.name}
+                            required
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                        />
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Mutfak Türü</label>
-                        <select name="category" defaultValue={restaurant.category} className="w-full bg-card border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest">
+                        <select
+                            name="category"
+                            defaultValue={restaurant.category}
+                            className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest"
+                        >
                             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Hakkında / Hikayeniz</label>
-                    <textarea name="description" defaultValue={restaurant.description} rows={4} required className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-accent transition-all font-medium text-sm text-white leading-relaxed" placeholder="Müşterilerinize işletmenizi en iyi şekilde anlatın..." />
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Açıklaması</label>
+                    <textarea
+                        name="description"
+                        defaultValue={restaurant.description}
+                        rows={4}
+                        required
+                        className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-accent transition-all font-medium text-sm text-white leading-relaxed"
+                        placeholder="İşletme detaylarını girin..."
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Lokasyon / Adres</label>
-                        <input name="address" defaultValue={restaurant.address} required className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white" />
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Adres / Konum</label>
+                        <input
+                            name="address"
+                            defaultValue={restaurant.address}
+                            required
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                        />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İletişim Numarası</label>
-                        <input name="phone" defaultValue={restaurant.phone} required className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white" />
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Telefon Numarası</label>
+                        <input
+                            name="phone"
+                            defaultValue={restaurant.phone}
+                            required
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                        />
                     </div>
                 </div>
 
@@ -159,14 +207,21 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                     <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Sunulan Olanaklar</label>
                     <div className="flex flex-wrap gap-3">
                         {FEATURES.map(f => (
-                            <label key={f} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all cursor-pointer ${selectedFeatures.includes(f) ? "bg-white text-black border-white" : "bg-white/5 border-white/10 hover:border-white/20 text-white/40"}`}>
-                                <input 
-                                    type="checkbox" 
-                                    name="features" 
-                                    value={f} 
-                                    checked={selectedFeatures.includes(f)} 
+                            <label
+                                key={f}
+                                className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all cursor-pointer ${
+                                    selectedFeatures.includes(f)
+                                        ? "bg-white text-black border-white font-black"
+                                        : "bg-white/5 border-white/10 hover:border-white/20 text-white/40"
+                                }`}
+                            >
+                                <input
+                                    type="checkbox"
+                                    name="features"
+                                    value={f}
+                                    checked={selectedFeatures.includes(f)}
                                     onChange={() => toggleFeature(f)}
-                                    className="hidden" 
+                                    className="hidden"
                                 />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{f}</span>
                             </label>
@@ -176,20 +231,24 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
             </div>
 
             {state?.success && (
-                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-2xl text-center text-green-500 text-[10px] font-black uppercase italic tracking-widest animate-in slide-in-from-top-4">PROFİLİNİZ BAŞARIYLA GÜNCELLENDİ</div>
+                <div className="p-5 bg-green-500/10 border border-green-500/20 rounded-2xl text-center text-green-500 text-[10px] font-black uppercase italic tracking-widest animate-in slide-in-from-top-4">
+                    İşletme Bilgileri Başarıyla Güncellendi
+                </div>
             )}
 
             {state?.error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-red-500 text-[10px] font-black uppercase italic tracking-widest">{state.error}</div>
+                <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-red-500 text-[10px] font-black uppercase italic tracking-widest">
+                    {state.error}
+                </div>
             )}
 
             <div className="flex justify-end pt-4">
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={isPending}
-                    className="px-20 py-6 bg-accent text-black font-black rounded-[1.5rem] text-[11px] tracking-[0.3em] uppercase hover:scale-105 transition-all shadow-[0_0_50px_rgba(245,158,11,0.2)] disabled:opacity-50"
+                    className="px-16 py-5 bg-accent text-black font-black rounded-2xl text-[10px] tracking-[0.3em] uppercase hover:scale-105 transition-all shadow-[0_0_40px_rgba(245,158,11,0.2)] disabled:opacity-50 italic"
                 >
-                    {isPending ? "KAYDEDİLİYOR..." : "BİLGİLERİ KAYDET"}
+                    {isPending ? "KAYDEDİLİYOR..." : "DEĞİŞİKLİKLERİ KAYDET"}
                 </button>
             </div>
         </form>
