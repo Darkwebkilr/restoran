@@ -13,7 +13,7 @@ export default function Header() {
     const [role, setRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
-    
+
     // Supabase client referansının her renderda yeniden oluşturulmasını engellemek için useState kullanıyoruz
     const [supabase] = useState(() => createClient());
     const router = useRouter();
@@ -110,9 +110,9 @@ export default function Header() {
     // Hydration (flicker) hatasını önlemek için
     if (!mounted) return null;
 
-    const dashboardLink = role === 'admin' ? '/dashboard/admin' : 
-                        role === 'restaurant' ? '/dashboard/restaurant' : 
-                        '/dashboard/customer';
+    const dashboardLink = role === 'admin' ? '/dashboard/admin' :
+        role === 'restaurant' ? '/dashboard/restaurant' :
+            '/dashboard/customer';
 
     return (
         <>
@@ -141,7 +141,7 @@ export default function Header() {
                             <Link href="/categories" className="text-[11px] font-black tracking-[0.2em] text-white/60 hover:text-accent transition-colors uppercase whitespace-nowrap">Kategoriler</Link>
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                         {!loading ? (
                             user ? (

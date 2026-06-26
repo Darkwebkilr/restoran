@@ -1,0 +1,39 @@
+name: Uzak Sunucu Otomatik Canlıya Alma (Deploy)
+
+on:
+  push:
+    branches:
+      - main # main branch'ine push yapıldığında tetiklenir
+
+jobs:
+  deploy:
+    name: Deploy to Germany VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH ile Sunucuya Bağlan ve Güncelle
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            # 1. Proje dizinine git
+            cd ${{ secrets.WORK_DIR }}
+
+            # 2. Yerel değişiklikleri temizle ve git pull yerine hard reset kullan
+            # Bu sayede sunucu üzerindeki olası çakışmalar (merge conflicts) deploy'u engellemez
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 3. GitHub Secrets üzerindeki değişkenlerle .env.production dosyasını yeniden oluştur
+            echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" > .env.production
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}" >> .env.production
+
+            # 4. Docker container'larını durdur, imajı yeniden derle ve arka planda çalıştır
+            docker compose down
+            docker compose up -d --build
+
+            # 5. Eski/kullanılmayan docker imajlarını temizle (sunucuda disk dolmasını önlemek için)
+            docker image prune -f
