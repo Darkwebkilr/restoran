@@ -89,8 +89,8 @@ export default async function RestaurantDashboard() {
             <div className="glass p-10 rounded-[2.5rem] border border-white/10 col-span-2">
                 <p className="text-[10px] font-black text-accent uppercase tracking-widest mb-2 italic">Hızlı Erişim</p>
                 <div className="flex gap-4 mt-4">
-                    <div className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40 italic italic">QR Kod Oluştur</div>
-                    <div className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40 italic">Menü Düzenle</div>
+                    <div className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-300 italic italic">QR Kod Oluştur</div>
+                    <div className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-300 italic">Menü Düzenle</div>
                 </div>
             </div>
         </div>
@@ -111,7 +111,7 @@ export default async function RestaurantDashboard() {
               <tbody className="divide-y divide-white/5">
                 {reservations?.length === 0 ? (
                     <tr>
-                        <td colSpan={3} className="p-20 text-center text-white/20 font-black uppercase text-xs italic tracking-widest">Henüz gelen bir rezervasyon yok.</td>
+                        <td colSpan={3} className="p-20 text-center text-zinc-300 font-black uppercase text-xs italic tracking-widest">Henüz gelen bir rezervasyon yok.</td>
                     </tr>
                 ) : (
                     reservations?.map((res: any) => (
@@ -119,7 +119,7 @@ export default async function RestaurantDashboard() {
                             <td className="p-8">
                                 <div className="flex flex-col">
                                     <span className="text-white font-black text-base uppercase italic">{res.profiles?.full_name || 'İsimsiz Misafir'}</span>
-                                    <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{res.profiles?.email}</span>
+                                    <span className="text-[10px] text-zinc-300 font-medium uppercase tracking-wider">{res.profiles?.email}</span>
                                 </div>
                             </td>
                             <td className="p-8 text-sm font-bold text-white uppercase italic">{res.reservation_date} • {res.reservation_time.substring(0, 5)}</td>

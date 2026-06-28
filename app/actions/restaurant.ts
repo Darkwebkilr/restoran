@@ -18,12 +18,14 @@ export async function updateRestaurantProfile(prevState: any, formData: FormData
   const category = formData.get("category") as string;
   const features = formData.getAll("features") as string[];
   const photosJson = formData.get("photosJson") as string;
+  const videosJson = formData.get("videosJson") as string;
 
   if (!name || !address) {
       return { error: "İşletme adı ve adres alanları zorunludur." };
   }
 
   const photos = JSON.parse(photosJson || "[]") as string[];
+  const videos = JSON.parse(videosJson || "[]") as string[];
 
   try {
     const { error } = await supabase
@@ -36,6 +38,7 @@ export async function updateRestaurantProfile(prevState: any, formData: FormData
         category,
         features,
         photos,
+        videos,
         slug: name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
       })
       .eq("owner_id", user.id);

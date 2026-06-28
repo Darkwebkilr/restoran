@@ -54,7 +54,12 @@ export async function signup(prevState: any, formData: FormData) {
   const fullName = formData.get("fullName") as string;
   const restaurantName = formData.get("restaurantName") as string;
   const role = (formData.get("role") as string) || "customer";
+  const phone = formData.get("phone") as string;
+  const address = formData.get("address") as string;
+  const category = formData.get("category") as string;
+  const description = formData.get("description") as string;
 
+  let redirectUrl = "";
   try {
     const supabase = await createClient();
     const password = formData.get("password") as string;
@@ -71,20 +76,39 @@ export async function signup(prevState: any, formData: FormData) {
         owner_id: data.user.id,
         name: restaurantName || "Yeni Restoran",
         status: "pending",
-        address: "Belirtilmedi",
+        category: category || "Dünya Mutfağı",
+        description: description || "",
+        address: address || "Belirtilmedi",
+        phone: phone || "Belirtilmedi",
+        slug: (restaurantName || "Yeni Restoran").toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
       });
     }
-    return { error: null, email, fullName, restaurantName };
+
+    if (data.session) {
+      // E-posta onayı kapalıysa (direkt giriş yaptıysa) yönlendir
+      redirectUrl = role === "restaurant" ? "/dashboard/restaurant" : "/";
+    } else {
+      // E-posta onayı gerekiyorsa bilgi mesajı dön
+      return { 
+        success: true, 
+        message: "Başvurunuz alındı. E-posta adresinize gönderilen doğrulama bağlantısına tıklayarak hesabınızı aktif edin.", 
+        email, 
+        fullName, 
+        restaurantName 
+      };
+    }
   } catch (e: any) {
     return { error: `Kayıt sırasında bir hata oluştu: ${e.message}`, email, fullName, restaurantName };
   }
-  revalidatePath("/", "layout");
-  redirect("/");
+
+  if (redirectUrl) {
+    revalidatePath("/", "layout");
+    redirect(redirectUrl);
+  }
 }
 
 export async function signout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
-  redirect("/");
 }

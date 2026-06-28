@@ -16,9 +16,10 @@ const CATEGORIES = [
     { name: "Deniz Ürünleri", icon: "🐟", image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=800&auto=format&fit=crop" },
     { name: "Uzak Doğu", icon: "🥢", image: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=800&auto=format&fit=crop" },
     { name: "İtalyan Mutfağı", icon: "🍝", image: "https://images.unsplash.com/photo-1546548970-71785318a17b?q=80&w=800&auto=format&fit=crop" },
-    { name: "Geleneksel", icon: "🥘", image: "https://images.unsplash.com/photo-1547928576-a4a33237cbc3?q=80&w=800&auto=format&fit=crop" },
     { name: "Steakhouse", icon: "🥩", image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop" },
     { name: "Fransız Mutfağı", icon: "🥐", image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?q=80&w=800&auto=format&fit=crop" },
+    { name: "Geleneksel Türk", icon: "🥘", image: "https://images.unsplash.com/photo-1547928576-a4a33237cbc3?q=80&w=800&auto=format&fit=crop" },
+    { name: "Dünya Mutfağı", icon: "🌐", image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop" },
 ];
 
 export default async function Home() {
@@ -146,7 +147,7 @@ export default async function Home() {
                                     <span className="font-display text-5xl font-black text-accent/20 group-hover:text-accent transition-colors duration-500">{item.step}</span>
                                     <div>
                                         <h4 className="text-white font-black text-xl uppercase italic mb-2 tracking-tighter">{item.title}</h4>
-                                        <p className="text-gray-500 text-xs font-bold uppercase tracking-wide leading-relaxed">{item.desc}</p>
+                                        <p className="text-zinc-300 text-xs font-bold uppercase tracking-wide leading-relaxed">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}

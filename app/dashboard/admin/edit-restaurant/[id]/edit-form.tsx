@@ -5,7 +5,7 @@ import { updateRestaurantByAdmin } from "@/app/actions/restaurant";
 import { createClient } from "@/utils/supabase/client";
 import { compressImage } from "@/utils/image";
 
-const CATEGORIES = ["İtalyan", "Japon", "Fransız", "Steakhouse", "Uzak Doğu", "Deniz Ürünleri", "Dünya Mutfağı"];
+const CATEGORIES = ["Deniz Ürünleri", "Uzak Doğu", "İtalyan Mutfağı", "Steakhouse", "Fransız Mutfağı", "Geleneksel Türk", "Dünya Mutfağı"];
 const FEATURES = ["Vale Park", "Dış Mekan", "Wi-Fi", "Alkol Servisi", "Teras", "Canlı Müzik", "VIP Oda"];
 const STATUSES = [
   { value: "pending", label: "BEKLEMEDE (PENDING)", color: "text-yellow-500 bg-yellow-500/10 border-yellow-500/20" },

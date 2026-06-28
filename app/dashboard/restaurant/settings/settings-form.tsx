@@ -5,7 +5,7 @@ import { updateRestaurantProfile } from "@/app/actions/restaurant";
 import { createClient } from "@/utils/supabase/client";
 import { compressImage } from "@/utils/image";
 
-const CATEGORIES = ["İtalyan", "Japon", "Fransız", "Steakhouse", "Uzak Doğu", "Deniz Ürünleri", "Dünya Mutfağı"];
+const CATEGORIES = ["Deniz Ürünleri", "Uzak Doğu", "İtalyan Mutfağı", "Steakhouse", "Fransız Mutfağı", "Geleneksel Türk", "Dünya Mutfağı"];
 const FEATURES = ["Vale Park", "Dış Mekan", "Wi-Fi", "Alkol Servisi", "Teras", "Canlı Müzik", "VIP Oda"];
 
 export default function RestaurantSettingsForm({ restaurant }: { restaurant: any }) {
@@ -13,6 +13,8 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>(restaurant.features || []);
     const [photos, setPhotos] = useState<string[]>(restaurant.photos || []);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [videos, setVideos] = useState<string[]>(restaurant.videos || []);
+    const [uploadingVideo, setUploadingVideo] = useState(false);
     const [supabase] = useState(() => createClient());
 
     const toggleFeature = (feature: string) => {
@@ -66,9 +68,57 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
         setPhotos(photos.filter(p => p !== photoUrl));
     };
 
+    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const MAX_SIZE = 30 * 1024 * 1024; // 30MB
+        if (file.size > MAX_SIZE) {
+            alert("Video boyutu en fazla 30MB olmalıdır.");
+            return;
+        }
+
+        setUploadingVideo(true);
+        try {
+            const fileExt = file.name.split('.').pop() || 'mp4';
+            const fileName = `${restaurant.id}/${Date.now()}.${fileExt}`;
+
+            const { data, error: uploadError } = await supabase.storage
+                .from('restaurant-photos')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: file.type || 'video/mp4'
+                });
+
+            if (uploadError) {
+                throw new Error(uploadError.message.includes("not found") 
+                    ? "restaurant-photos isimli Storage Bucket bulunamadı. Lütfen Supabase panelinizden bu isimde PUBLIC bir bucket oluşturun."
+                    : uploadError.message
+                );
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('restaurant-photos')
+                .getPublicUrl(fileName);
+
+            setVideos(prev => [...prev, publicUrl]);
+        } catch (err: any) {
+            console.error("Video yükleme hatası:", err);
+            alert("Video yüklenirken bir hata oluştu: " + err.message);
+        } finally {
+            setUploadingVideo(false);
+        }
+    };
+
+    const removeVideo = (videoUrl: string) => {
+        setVideos(videos.filter(v => v !== videoUrl));
+    };
+
     return (
         <form action={action} className="space-y-12">
             <input type="hidden" name="photosJson" value={JSON.stringify(photos)} />
+            <input type="hidden" name="videosJson" value={JSON.stringify(videos)} />
 
             {/* Status Banner */}
             {restaurant.status !== 'approved' && (
@@ -154,12 +204,48 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                     </div>
                 </div>
 
+                {/* Videolar Galeri Yönetimi */}
+                <div className="space-y-4 pt-6 border-t border-white/5">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Tanıtım Videoları</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {videos.map((url, index) => (
+                            <div key={index} className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-white/5">
+                                <video src={url} controls className="w-full h-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => removeVideo(url)}
+                                    className="absolute top-2 right-2 w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors shadow-lg text-xs font-bold z-10"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                        {uploadingVideo ? (
+                            <div className="aspect-video bg-white/5 border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center animate-pulse">
+                                <span className="text-xl mb-2">⏳</span>
+                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">YÜKLENİYOR...</span>
+                            </div>
+                        ) : (
+                            <label className="aspect-video bg-white/5 border border-dashed border-white/10 hover:border-accent/40 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-white/[0.08] group">
+                                <input 
+                                    type="file" 
+                                    accept="video/*" 
+                                    onChange={handleVideoUpload} 
+                                    className="hidden" 
+                                />
+                                <span className="text-2xl mb-1 text-zinc-400 group-hover:text-accent group-hover:scale-110 transition-all">+</span>
+                                <span className="text-[9px] font-black text-zinc-400 group-hover:text-accent uppercase tracking-widest">Video Yükle</span>
+                            </label>
+                        )}
+                    </div>
+                </div>
+
                 {/* Özellikler */}
                 <div className="space-y-6 pt-4 border-t border-white/5">
                     <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Sunulan Olanaklar</label>
                     <div className="flex flex-wrap gap-3">
                         {FEATURES.map(f => (
-                            <label key={f} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all cursor-pointer ${selectedFeatures.includes(f) ? "bg-white text-black border-white" : "bg-white/5 border-white/10 hover:border-white/20 text-white/40"}`}>
+                            <label key={f} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all cursor-pointer ${selectedFeatures.includes(f) ? "bg-white text-black border-white" : "bg-white/5 border-white/10 hover:border-white/20 text-zinc-300"}`}>
                                 <input 
                                     type="checkbox" 
                                     name="features" 

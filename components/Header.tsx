@@ -91,6 +91,12 @@ export default function Header() {
         try {
             // Sunucu tarafındaki çerezleri ve oturumu temizlemek için Server Action çağırıyoruz
             await signout();
+            // Server Action başarılı olduysa istemci durumunu güncelle ve yönlendir
+            setUser(null);
+            setRole(null);
+            setLoading(false);
+            router.push('/');
+            router.refresh();
         } catch (err) {
             console.error("Çıkış hatası:", err);
             // Sunucu tarafında hata oluşursa istemci tarafında da temizlik yapıp ana sayfaya yönlendiriyoruz

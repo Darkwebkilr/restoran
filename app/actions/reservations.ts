@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { sendReservationEmail } from "@/utils/email";
 
 function generateReservationCode() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -63,6 +64,38 @@ export async function makeReservation(prevState: any, formData: FormData) {
       .single();
 
     if (resError) throw resError;
+
+    // E-posta göndermek için gerekli restoran ve müşteri bilgilerini sorgula
+    try {
+      // Restoran adını al
+      const { data: restaurant } = await supabase
+        .from("restaurants")
+        .select("name")
+        .eq("id", restaurantId)
+        .single();
+      const restaurantName = restaurant?.name || "Seçilen Restoran";
+
+      // Müşteri adını profil tablosundan al
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+      const customerName = profile?.full_name || user.email?.split("@")[0] || "Müşteri";
+
+      // Rezervasyon başarılı mesajını hemen dönmek için e-postayı arka planda bekletmeden gönderiyoruz
+      sendReservationEmail({
+        to: user.email!,
+        customerName,
+        restaurantName,
+        date,
+        time,
+        partySize,
+        code: reservation.code
+      }).catch(err => console.error("E-posta gönderme hatası:", err));
+    } catch (emailError) {
+      console.error("E-posta gönderim aşamasında hata:", emailError);
+    }
 
     revalidatePath(`/restaurant/${restaurantId}`);
     return { success: true, reservation };

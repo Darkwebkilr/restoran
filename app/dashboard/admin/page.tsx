@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import DeleteRestaurantButton from "@/components/DeleteRestaurantButton";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -42,6 +43,39 @@ export default async function AdminDashboard() {
     const supabase = await createClient();
     await supabase.from("restaurants").update({ status }).eq("id", id);
     revalidatePath("/dashboard/admin");
+  }
+
+  async function deleteRestaurant(id: string) {
+    "use server";
+    const supabase = await createClient();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Yetkisiz erişim." };
+    
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+      
+    if (profile?.role !== "admin") return { error: "Bu işlem için admin yetkisi gerekiyor." };
+
+    // İlişkili rezervasyonları temizle (Foreign key hatası almamak için)
+    await supabase.from("reservations").delete().eq("restaurant_id", id);
+    
+    // İlişkili reklamları temizle (varsa)
+    try {
+      await supabase.from("ads").delete().eq("restaurant_id", id);
+    } catch (e) {
+      // ads tablosu yoksa veya silme yetkisi RLS'e takılırsa sessizce geç
+    }
+
+    // Restoranı sil
+    const { error } = await supabase.from("restaurants").delete().eq("id", id);
+    if (error) return { error: error.message };
+
+    revalidatePath("/dashboard/admin");
+    return { success: true };
   }
 
   return (
@@ -89,7 +123,7 @@ export default async function AdminDashboard() {
                         <tbody className="divide-y divide-white/5">
                             {allReservations?.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="p-12 text-center text-zinc-500 font-bold uppercase text-xs italic tracking-wider">Henüz kayıtlı bir rezervasyon bulunmuyor.</td>
+                                    <td colSpan={4} className="p-12 text-center text-zinc-300 font-bold uppercase text-xs italic tracking-wider">Henüz kayıtlı bir rezervasyon bulunmuyor.</td>
                                 </tr>
                             ) : (
                                 allReservations?.map((res: any) => (
@@ -134,7 +168,7 @@ export default async function AdminDashboard() {
                         <tbody className="divide-y divide-white/5">
                             {!allRestaurants || allRestaurants.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="p-12 text-center text-zinc-500 font-bold uppercase text-xs italic tracking-wider">Kayıtlı restoran bulunmamaktadır.</td>
+                                    <td colSpan={5} className="p-12 text-center text-zinc-300 font-bold uppercase text-xs italic tracking-wider">Kayıtlı restoran bulunmamaktadır.</td>
                                 </tr>
                             ) : (
                                 allRestaurants.map((rest: any) => (
@@ -142,7 +176,6 @@ export default async function AdminDashboard() {
                                         <td className="p-6">
                                             <div className="flex flex-col">
                                                 <span className="text-white font-black text-sm uppercase">{rest.name}</span>
-                                                <span className="text-[10px] text-zinc-500 font-medium lowercase">slug: {rest.slug}</span>
                                             </div>
                                         </td>
                                         <td className="p-6">
@@ -160,16 +193,21 @@ export default async function AdminDashboard() {
                                         <td className="p-6">
                                             <div className="flex flex-col text-[10px] text-zinc-300 font-medium">
                                                 <span>📞 {rest.phone || 'Telefon yok'}</span>
-                                                <span className="text-zinc-500 mt-1 max-w-[200px] truncate">📍 {rest.address}</span>
+                                                <span className="text-zinc-300 mt-1 max-w-[200px] truncate">📍 {rest.address}</span>
                                             </div>
                                         </td>
-                                        <td className="p-6 text-right">
+                                        <td className="p-6 text-right flex items-center justify-end gap-3">
                                             <Link
                                                 href={`/dashboard/admin/edit-restaurant/${rest.id}`}
                                                 className="inline-block px-5 py-2.5 bg-white/5 border border-white/10 hover:border-accent hover:bg-accent hover:text-black text-white text-[9px] font-black rounded-xl tracking-widest uppercase transition-all shadow-md italic"
                                             >
                                                 DÜZENLE
                                             </Link>
+                                            <DeleteRestaurantButton 
+                                                id={rest.id} 
+                                                name={rest.name} 
+                                                onDelete={deleteRestaurant} 
+                                            />
                                         </td>
                                     </tr>
                                 ))
@@ -236,7 +274,7 @@ export default async function AdminDashboard() {
                                 <form action={async () => { "use server"; await updateStatus(rest.id, 'rejected'); }}>
                                     <button className="w-full py-6 bg-white/5 border border-white/10 text-white font-black rounded-3xl text-[11px] tracking-[0.2em] uppercase hover:bg-red-500 hover:text-black transition-all">REDDET</button>
                                 </form>
-                                <p className="text-[9px] text-zinc-500 text-center font-bold uppercase mt-4">ID: {rest.slug}</p>
+                                <p className="text-[9px] text-zinc-300 text-center font-bold uppercase mt-4">ID: {rest.slug}</p>
                             </div>
                         </div>
                     ))

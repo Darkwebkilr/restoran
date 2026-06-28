@@ -73,6 +73,10 @@ export default function LoginPage() {
               <p className="text-red-500 text-sm font-medium text-center">{state.error}</p>
             )}
 
+            {state?.success && (
+              <p className="text-green-500 text-sm font-medium text-center">{state.message}</p>
+            )}
+
             <button disabled={isLoginPending || isSignupPending} className="w-full py-5 bg-accent text-black font-black rounded-2xl text-lg hover:scale-[1.02] transition-transform active:scale-95 shadow-[0_0_30px_rgba(245,158,11,0.2)] mt-4 disabled:opacity-50">
               {isLoginPending || isSignupPending ? "İŞLENİYOR..." : (isLogin ? "GİRİŞ YAP" : "HESAP OLUŞTUR")}
             </button>

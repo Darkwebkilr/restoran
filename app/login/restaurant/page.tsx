@@ -62,6 +62,56 @@ function RestaurantLoginContent() {
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">MUTFAK TÜRÜ</label>
+                <select 
+                  name="category"
+                  required
+                  defaultValue={(signupState as any)?.category || "Dünya Mutfağı"}
+                  className="w-full bg-card border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest"
+                >
+                  <option value="Deniz Ürünleri">Deniz Ürünleri</option>
+                  <option value="Uzak Doğu">Uzak Doğu</option>
+                  <option value="İtalyan Mutfağı">İtalyan Mutfağı</option>
+                  <option value="Steakhouse">Steakhouse</option>
+                  <option value="Fransız Mutfağı">Fransız Mutfağı</option>
+                  <option value="Geleneksel Türk">Geleneksel Türk</option>
+                  <option value="Dünya Mutfağı">Dünya Mutfağı</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">İLETİŞİM NUMARASI</label>
+                <input 
+                  type="text" 
+                  name="phone"
+                  required
+                  defaultValue={(signupState as any)?.phone || ""}
+                  placeholder="+90 (555) 555 55 55"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">LOKASYON / ADRES</label>
+                <input 
+                  type="text" 
+                  name="address"
+                  required
+                  defaultValue={(signupState as any)?.address || ""}
+                  placeholder="Bebek, Cevdet Paşa Cd. No:12, Beşiktaş/İstanbul"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">HAKKINDA / HİKAYENİZ</label>
+                <textarea 
+                  name="description"
+                  required
+                  defaultValue={(signupState as any)?.description || ""}
+                  placeholder="Misafirlerinize işletmenizi kısaca anlatın..."
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20 resize-none leading-relaxed"
+                />
+              </div>
             </>
           )}
           
@@ -101,6 +151,12 @@ function RestaurantLoginContent() {
             </div>
           )}
 
+          {state?.success && (
+            <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+              <p className="text-green-500 text-[10px] font-black uppercase text-center">{state.message}</p>
+            </div>
+          )}
+
           <button disabled={isLoginPending || isSignupPending} className="w-full py-5 bg-white text-black font-black rounded-2xl text-sm tracking-[0.2em] hover:scale-[1.02] transition-transform active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.1)] mt-4 uppercase disabled:opacity-50">
             {isLoginPending || isSignupPending ? "İŞLENİYOR..." : (isLogin ? "İŞLETME GİRİŞİ YAP" : "BAŞVURU OLUŞTUR")}
           </button>
@@ -108,7 +164,7 @@ function RestaurantLoginContent() {
       </div>
 
       <div className="mt-8 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-        <p className="text-[10px] text-muted font-bold uppercase tracking-widest leading-relaxed text-center text-white/40">
+        <p className="text-[10px] text-zinc-300 font-bold uppercase tracking-widest leading-relaxed text-center">
           {isLogin 
             ? "Giriş yapmakta sorun mu yaşıyorsunuz? Lütfen teknik destek ekibimizle iletişime geçin." 
             : "Başvurunuz incelendikten sonra ekibimiz sizinle en kısa sürede iletişime geçecektir."}

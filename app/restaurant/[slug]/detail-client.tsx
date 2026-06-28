@@ -77,10 +77,16 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
       {/* Video Modal */}
       {isVideoOpen && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4" onClick={() => setIsVideoOpen(false)}>
-           <div className="relative w-full max-w-4xl aspect-video rounded-[3rem] overflow-hidden border border-white/10 bg-black flex flex-col items-center justify-center">
-                <span className="text-6xl mb-6">🎥</span>
-                <span className="text-[12px] font-black tracking-[0.4em] uppercase text-white/50 animate-pulse italic">RESTORAN VİDEOSU YÜKLENİYOR</span>
-                <button className="absolute top-10 right-10 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white">✕</button>
+           <div className="relative w-full max-w-4xl aspect-video rounded-[3rem] overflow-hidden border border-white/10 bg-black flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                 {restaurant?.videos && restaurant.videos.length > 0 ? (
+                     <video src={restaurant.videos[0]} controls autoPlay className="w-full h-full object-contain" />
+                 ) : (
+                     <div className="text-center">
+                         <span className="text-6xl mb-6 block">🎥</span>
+                         <span className="text-[12px] font-black tracking-[0.4em] uppercase text-white/50 italic">BU MEKANIN VİDEOSU BULUNMUYOR</span>
+                     </div>
+                 )}
+                 <button onClick={() => setIsVideoOpen(false)} className="absolute top-10 right-10 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white">✕</button>
             </div>
         </div>
       )}
@@ -127,11 +133,11 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                 </div>
             </div>
 
-            <p className="text-xl md:text-2xl leading-relaxed text-white/60 font-medium mb-12 italic text-balance">{restaurant?.description || "Bu seçkin mekanın hikayesi yakında burada olacak."}</p>
+            <p className="text-xl md:text-2xl leading-relaxed text-zinc-300 font-medium mb-12 italic text-balance">{restaurant?.description || "Bu seçkin mekanın hikayesi yakında burada olacak."}</p>
 
             <div className="flex flex-wrap gap-3 mb-20">
                 {(restaurant?.features || ['Vale Park', 'Dış Mekan', 'VIP Salon', 'Alkol Servisi']).map((f: string) => (
-                    <span key={f} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-black tracking-widest uppercase text-white/40 hover:text-accent hover:border-accent transition-colors cursor-default">{f}</span>
+                    <span key={f} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-black tracking-widest uppercase text-zinc-300 hover:text-accent hover:border-accent transition-colors cursor-default">{f}</span>
                 ))}
             </div>
 
@@ -166,7 +172,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                     <input type="hidden" name="time" value={selectedTime} />
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] ml-2">MİSAFİR SAYISI</label>
+                        <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2">MİSAFİR SAYISI</label>
                         <select name="partySize" required className="w-full bg-black border border-white/10 rounded-[1.5rem] px-6 py-5 outline-none focus:border-accent font-black text-sm text-white appearance-none cursor-pointer uppercase tracking-widest">
                             <option value="2">2 KİŞİ</option>
                             <option value="3">3 KİŞİ</option>
@@ -176,10 +182,10 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] ml-2">TARİH SEÇİMİ</label>
+                        <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2">TARİH SEÇİMİ</label>
                         <div className="grid grid-cols-4 gap-2">
                             {availableDates.map(d => (
-                                <button type="button" key={d.full} onClick={() => setSelectedDate(d.full)} className={`flex flex-col items-center justify-center py-4 rounded-[1.2rem] border transition-all ${selectedDate === d.full ? "bg-white text-black border-white scale-105 shadow-xl" : "bg-white/5 border-white/10 hover:border-white/30 text-white/60"}`}>
+                                <button type="button" key={d.full} onClick={() => setSelectedDate(d.full)} className={`flex flex-col items-center justify-center py-4 rounded-[1.2rem] border transition-all ${selectedDate === d.full ? "bg-white text-black border-white scale-105 shadow-xl" : "bg-white/5 border-white/10 hover:border-white/30 text-zinc-300"}`}>
                                     <span className="text-[8px] font-black uppercase opacity-60 mb-1">{d.weekday}</span>
                                     <span className="text-base font-black">{d.day}</span>
                                     <span className="text-[8px] font-black uppercase opacity-60 mt-1">{d.month}</span>
@@ -189,12 +195,12 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] ml-2">SAAT SEÇİMİ</label>
+                        <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2">SAAT SEÇİMİ</label>
                         <div className="grid grid-cols-3 gap-2">
                             {times.map(t => {
                                 const isBooked = bookedTimes.includes(t);
                                 return (
-                                    <button type="button" key={t} disabled={isBooked} onClick={() => setSelectedTime(t)} className={`py-4 text-[11px] font-black rounded-[1.2rem] border transition-all uppercase tracking-widest ${selectedTime === t ? "bg-accent text-black border-accent shadow-[0_0_30px_rgba(245,158,11,0.3)] scale-105" : isBooked ? "bg-white/5 text-white/10 border-white/5 cursor-not-allowed line-through" : "bg-white/5 border-white/10 hover:border-white/30 text-white/80"}`}>
+                                    <button type="button" key={t} disabled={isBooked} onClick={() => setSelectedTime(t)} className={`py-4 text-[11px] font-black rounded-[1.2rem] border transition-all uppercase tracking-widest ${selectedTime === t ? "bg-accent text-black border-accent shadow-[0_0_30px_rgba(245,158,11,0.3)] scale-105" : isBooked ? "bg-white/5 text-white/10 border-white/5 cursor-not-allowed line-through" : "bg-white/5 border-white/10 hover:border-white/30 text-zinc-300"}`}>
                                         {isBooked ? "DOLU" : t}
                                     </button>
                                 );

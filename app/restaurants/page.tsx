@@ -9,6 +9,8 @@ const CATEGORIES = [
     { name: "İtalyan Mutfağı", icon: "🍝" },
     { name: "Steakhouse", icon: "🥩" },
     { name: "Fransız Mutfağı", icon: "🥐" },
+    { name: "Geleneksel Türk", icon: "🥘" },
+    { name: "Dünya Mutfağı", icon: "🌐" },
 ];
 
 export default async function RestaurantsPage({
@@ -76,7 +78,7 @@ export default async function RestaurantsPage({
                             className={`flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
                                 (category === cat.name || (!category && cat.name === "Hepsi"))
                                 ? "bg-white text-black border-white scale-105 shadow-xl" 
-                                : "bg-white/5 border-white/10 hover:border-white/30 text-white/40"
+                                : "bg-white/5 border-white/10 hover:border-white/30 text-zinc-300"
                             }`}
                         >
                             <span>{cat.icon}</span>
@@ -89,7 +91,7 @@ export default async function RestaurantsPage({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
                     {!restaurants || restaurants.length === 0 ? (
                         <div className="col-span-full py-32 text-center glass rounded-[3rem] border border-white/10">
-                            <p className="text-white/20 font-black uppercase tracking-[0.5em] text-sm italic">Aradığınız kriterlerde bir mekan bulunamadı.</p>
+                            <p className="text-zinc-300 font-black uppercase tracking-[0.5em] text-sm italic">Aradığınız kriterlerde bir mekan bulunamadı.</p>
                         </div>
                     ) : (
                         restaurants.map((res) => (
