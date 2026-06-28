@@ -145,15 +145,15 @@ function RestaurantLoginContent() {
 
           <input type="hidden" name="role" value="restaurant" />
 
-          {state?.error && (
+          {(state as any)?.error && (
             <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-              <p className="text-red-500 text-[10px] font-black uppercase text-center">{state.error}</p>
+              <p className="text-red-500 text-[10px] font-black uppercase text-center">{(state as any).error}</p>
             </div>
           )}
 
-          {state?.success && (
+          {(state as any)?.success && (
             <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-              <p className="text-green-500 text-[10px] font-black uppercase text-center">{state.message}</p>
+              <p className="text-green-500 text-[10px] font-black uppercase text-center">{(state as any).message}</p>
             </div>
           )}
 
