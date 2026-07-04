@@ -37,13 +37,13 @@ export default function Footer() {
                             </a>
                             <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
-                                    <SiX color="default" size={20} />
+                                    <SiX color="#FFFFFF" size={20} />
                                 </span> 
                                 Twitter
                             </a>
                             <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
-                                    <SiTiktok color="default" size={20} />
+                                    <SiTiktok color="#FFFFFF" size={20} />
                                 </span> 
                                 TikTok
                             </a>

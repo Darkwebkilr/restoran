@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useActionState, useEffect } from "react";
+import { getAddressLabel, getEmbedUrl, getAddressDistrict } from "@/utils/maps";
 import { makeReservation } from "@/app/actions/reservations";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -65,7 +67,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
   return (
     <main className="min-h-screen noise-overlay mesh-gradient pb-20 pt-24 text-white">
       {/* Lightbox Modal */}
-      {selectedIndex !== null && restaurant?.photos && (
+      {selectedIndex !== null && restaurant?.photos && restaurant.photos[selectedIndex] && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4" onClick={() => setSelectedIndex(null)}>
           <div className="relative w-full h-full max-w-6xl">
             <Image src={restaurant.photos[selectedIndex]} alt="Galeri" fill className="object-contain" />
@@ -91,6 +93,16 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
         </div>
       )}
 
+      {/* Geri Dön Butonu */}
+      <div className="max-w-7xl mx-auto px-6 pt-8 mb-6">
+        <Link
+          href="/restaurants"
+          className="px-6 py-3.5 glass text-white/80 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic inline-block"
+        >
+          ← Geri Dön
+        </Link>
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Sol İçerik: Restoran Bilgileri */}
         <div className="lg:col-span-2">
@@ -109,6 +121,15 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
           </div>
 
           <div className="mb-12">
+            <Link
+                href="/restaurants"
+                className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6"
+            >
+                ← KEŞFET'E GERİ DÖN
+            </Link>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="px-4 py-1.5 bg-accent text-black font-black rounded-lg text-[9px] tracking-widest uppercase">{restaurant?.category || 'Dünya Mutfağı'}</span>
+            </div>
             <h1 className="font-display text-5xl md:text-8xl font-black mb-8 tracking-tighter uppercase italic leading-none">{restaurant?.name}</h1>
             
             <div className="flex gap-4 mb-12">
@@ -116,12 +137,21 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
               <button onClick={() => setIsVideoOpen(true)} className="px-10 py-5 glass text-white font-black rounded-2xl text-[10px] tracking-widest border border-white/20 hover:border-accent transition-all uppercase italic">VİDEO</button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
                 <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
                     <span className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl">📍</span>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-accent font-black tracking-widest uppercase italic mb-1">Konum</span>
-                        <span className="text-sm font-bold uppercase text-white/90">{restaurant?.address}</span>
+                        <span className="text-sm font-bold uppercase text-white/90">
+                            {getAddressDistrict(restaurant?.address, restaurant?.district)}
+                        </span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
+                    <span className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl">🍽️</span>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-accent font-black tracking-widest uppercase italic mb-1">Mutfak Türü</span>
+                        <span className="text-sm font-bold uppercase text-white/90">{restaurant?.category || 'Dünya Mutfağı'}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
@@ -144,12 +174,24 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
             {/* Google Haritalar */}
             <div className="mb-20">
                 <h2 className="font-display text-3xl md:text-5xl font-black mb-8 tracking-tighter uppercase italic">MEKAN <span className="text-accent">KONUMU.</span></h2>
-                <div className="w-full aspect-[21/9] rounded-[3.5rem] overflow-hidden border border-white/10 relative bg-white/5 shadow-2xl group">
+                <div className="w-full aspect-[21/9] rounded-[3.5rem] overflow-hidden border border-white/10 relative bg-white/5 shadow-2xl group mb-6">
                     <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d192698.6141973684!2d28.871754!3d41.0053702!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1cc1e01f4ca1547!2zSXPPhGFuYnVs!5e0!3m2!1str!2str!4v1713450000000!5m2!1str!2str" 
+                        src={getEmbedUrl(restaurant.address, restaurant.name, restaurant.district)} 
                         width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) contrast(1.2) brightness(0.8)' }} allowFullScreen={true} loading="lazy" className="opacity-80 group-hover:opacity-100 group-hover:filter-none transition-all duration-700"
                     ></iframe>
                 </div>
+                {restaurant?.address?.startsWith("http") && (
+                    <div className="flex justify-end">
+                        <a 
+                            href={restaurant.address} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="px-10 py-5 bg-accent text-black font-black rounded-2xl text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase italic shadow-xl flex items-center gap-2"
+                        >
+                            📍 KONUMA GİT →
+                        </a>
+                    </div>
+                )}
             </div>
           </div>
         </div>

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState, useActionState } from "react";
 import { login, signup, loginWithGoogle } from "@/app/actions/auth";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function MemberLoginPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [loginState, loginAction, isLoginPending] = useActionState(login, null);
   const [signupState, signupAction, isSignupPending] = useActionState(signup, null);
 
@@ -62,13 +64,22 @@ export default function MemberLoginPage() {
                   <button type="button" className="text-[10px] font-black text-accent hover:underline uppercase">Şifremi Unuttum</button>
                 )}
               </div>
-              <input 
-                type="password" 
-                name="password"
-                required
-                placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-accent transition-colors font-bold text-sm text-white placeholder:text-white/20"
-              />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  name="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl pl-5 pr-12 py-4 outline-none focus:border-accent transition-colors font-bold text-sm text-white placeholder:text-white/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             <input type="hidden" name="role" value="customer" />

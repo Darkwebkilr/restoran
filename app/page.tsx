@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
 import HomeHero from "@/components/HomeHero"; // Arama state'i için yeni bileşen gerekecek
+import { getAddressLabel, getAddressDistrict, getCategoryIcon } from "@/utils/maps";
 
 const RESTAURANT_LOGOS = [
     { name: "ZUMA", slug: "zuma-istanbul" },
@@ -25,13 +26,99 @@ const CATEGORIES = [
 export default async function Home() {
     const supabase = await createClient();
     
-    // Veritabanından onaylı restoranları çek
-    const { data: restaurants } = await supabase
-        .from("restaurants")
-        .select("*")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(4);
+    // Veritabanından onaylı restoranları çek (is_featured DESC, created_at DESC)
+    let restaurants: any[] = [];
+    try {
+        const { data } = await supabase
+            .from("restaurants")
+            .select("*")
+            .eq("status", "approved")
+            .order("is_featured", { ascending: false })
+            .order("created_at", { ascending: false })
+            .limit(50);
+        restaurants = data || [];
+    } catch (e: any) {
+        console.warn("is_featured kolonuna göre sıralama başarısız oldu, normal sıralamaya dönülüyor:", e.message);
+        const { data } = await supabase
+            .from("restaurants")
+            .select("*")
+            .eq("status", "approved")
+            .order("created_at", { ascending: false })
+            .limit(50);
+        restaurants = data || [];
+    }
+
+    // Reklamları çek (Tablo yoksa çökmesini engellemek için try-catch)
+    let adsList: any[] = [];
+    try {
+        const { data } = await supabase
+            .from("ads")
+            .select(`
+                *,
+                restaurants (
+                    name,
+                    slug
+                )
+            `)
+            .order("position");
+        adsList = data || [];
+    } catch (e) {
+        console.warn("ads tablosu bulunamadı, varsayılan reklamlarla devam ediliyor.");
+    }
+
+    // Pozisyon 1 ve 2 için reklam verilerini hazırla (varsayılanlarla birleştir)
+    const ad1 = adsList.find(a => a.position === 1) || {
+        title: "BURADA YERİNİZİ",
+        subtitle: "ALIN",
+        image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop",
+        restaurants: null
+    };
+
+    const ad2 = adsList.find(a => a.position === 2) || {
+        title: "BURADA YERİNİZİ",
+        subtitle: "ALIN",
+        image_url: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop",
+        restaurants: null
+    };
+
+    const finalAds = [ad1, ad2];
+
+    const ad3 = adsList.find(a => a.position === 3) || {
+        title: "BURADA YERİNİZİ",
+        subtitle: "ALIN",
+        image_url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop",
+        restaurants: null
+    };
+
+    const ad4 = adsList.find(a => a.position === 4) || {
+        title: "BURADA YERİNİZİ",
+        subtitle: "ALIN",
+        image_url: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800&auto=format&fit=crop",
+        restaurants: null
+    };
+
+    const secondFinalAds = [ad3, ad4];
+
+    // Başlık ayarlarını çekelim (Tablo yoksa çökmesin diye try-catch yapıyoruz)
+    let settingsList: any[] = [];
+    try {
+        const { data } = await supabase
+            .from("settings")
+            .select("*");
+        settingsList = data || [];
+    } catch (e) {
+        console.warn("settings tablosu bulunamadı, varsayılan başlıklarla devam ediliyor.");
+    }
+
+    const getSetting = (key: string, defaultValue: string) => {
+        return settingsList.find(s => s.key === key)?.value || defaultValue;
+    };
+
+    const heroTitle = getSetting("hero_title", "BODRUMUN EN İYİ MASALARI.");
+    const categoriesTitle = getSetting("categories_title", "ÖNE ÇIKAN <br /><span class=\"text-accent italic\">KATEGORİLER</span>");
+    const featuredTitle = getSetting("featured_title", "SEÇKİN <br /><span class=\"text-accent italic\">MASALAR</span>");
+    const howItWorksTitle = getSetting("how_it_works_title", "SİSTEM NASIL <br /><span class=\"text-accent italic\">İŞLER?</span>");
+    const marqueeText = getSetting("marquee_text", "EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ");
 
     return (
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
@@ -52,22 +139,30 @@ export default async function Home() {
             </div>
 
             {/* 2. HERO SECTION (Client Component for search state) */}
-            <HomeHero />
+            <HomeHero title={heroTitle} />
 
             {/* 3. MIDDLE TICKER (Haber Bandı) */}
-            <div className="w-full bg-accent py-4 md:py-6 border-y border-black/20 z-10 shadow-2xl flex items-center">
-                <div className="animate-marquee whitespace-nowrap">
+            <div className="w-full bg-accent py-4 md:py-6 border-y border-black/20 z-10 shadow-2xl flex items-center overflow-hidden">
+                <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(8)].map((_, i) => (
-                        <span key={i} className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic mx-8">
-                            EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ
-                        </span>
+                        <div key={i} className="flex items-center">
+                            {marqueeText.split(",").map((item: string, idx: number) => (
+                                <span key={idx} className="text-black font-display font-black text-xl md:text-4xl tracking-tighter uppercase italic flex items-center">
+                                    <span className="mx-8">{item.trim()}</span>
+                                    <span className="opacity-30 font-sans text-sm md:text-2xl">•</span>
+                                </span>
+                            ))}
+                        </div>
                     ))}
                 </div>
             </div>
 
             {/* 4. CATEGORIES */}
             <section className="w-full max-w-7xl px-6 py-20 z-10">
-                <h2 className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.9] text-white mb-12">ÖNE ÇIKAN <br /><span className="text-accent italic">KATEGORİLER</span></h2>
+                <h2 
+                    className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.9] text-white mb-12 animate-in fade-in duration-500"
+                    dangerouslySetInnerHTML={{ __html: categoriesTitle }}
+                />
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                     {CATEGORIES.map((cat) => (
                         <Link key={cat.name} href={`/restaurants?category=${cat.name}`} className="group relative">
@@ -87,44 +182,109 @@ export default async function Home() {
             {/* 5. DUAL AD BANNERS */}
             <section className="w-full max-w-7xl px-6 py-12 z-30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {[1, 2].map((i) => (
-                        <Link key={i} href="/login/restaurant?mode=register" className="group relative h-48 rounded-[2.5rem] border-2 border-accent/40 overflow-hidden bg-black shadow-xl">
-                            <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
-                                <Image src={`https://images.unsplash.com/photo-${i === 1 ? '1514362545857-3bc16c4c7d1b' : '1552566626-52f8b828add9'}?q=80&w=800&auto=format&fit=crop`} alt="Ad" fill className="object-cover" />
+                    {finalAds.map((ad, idx) => {
+                        const href = ad.restaurants?.slug 
+                            ? `/restaurant/${ad.restaurants.slug}`
+                            : "/login/restaurant?mode=register";
+                        
+                        return (
+                            <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-2 border-accent/40 overflow-hidden bg-black shadow-xl">
+                                <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
+                                    <Image 
+                                        src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop')} 
+                                        alt="Ad" 
+                                        fill 
+                                        className="object-cover" 
+                                    />
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-black/60" />
+                                <div className="relative h-full p-8 flex flex-col justify-between">
+                                    <span className="px-3 py-1 bg-accent text-black text-[8px] font-black rounded-full w-fit uppercase shadow-xl">REKLAM</span>
+                                    <h4 className="font-display text-2xl font-black text-white italic uppercase leading-none">
+                                        {ad.title} <br />
+                                        <span className="text-accent">{ad.subtitle}</span>
+                                    </h4>
+                                </div>
+                            </Link>
+                        );
+                    })}
+                </div>
+            </section>
+
+            {/* 6. FEATURED RESTAURANTS (Sunucudan Gelen Veri) */}
+            <section className="w-full max-w-[92rem] px-4 py-20 z-10">
+                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
+                    <div>
+                        <h2 
+                            className="font-display text-5xl md:text-8xl font-black uppercase leading-[0.8] text-white animate-in fade-in duration-500"
+                            dangerouslySetInnerHTML={{ __html: featuredTitle }}
+                        />
+                    </div>
+                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {restaurants && restaurants.map((res) => (
+                        <Link key={res.id} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-100">
+                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+                                <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                                {/* Kategori Badge (Sol Üst) - Mor arka plan */}
+                                <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
+                                </div>
+                                {/* İlçe/Bölge Badge (Sağ Alt) - Kırmızı arka plan */}
+                                <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
+                                </div>
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-black/60" />
-                            <div className="relative h-full p-8 flex flex-col justify-between">
-                                <span className="px-3 py-1 bg-accent text-black text-[8px] font-black rounded-full w-fit uppercase shadow-xl">REKLAM</span>
-                                <h4 className="font-display text-2xl font-black text-white italic uppercase leading-none">BURADA YERİNİZİ <br /><span className="text-accent">ALIN</span></h4>
+                            <div className="pt-8 px-6 pb-6 flex-1 flex flex-col justify-between relative">
+                                {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
+                                <div className="absolute -top-7 left-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20">
+                                    <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                </div>
+                                <div className="space-y-3 mt-2">
+                                    <h3 className="font-display text-xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors">{res.name}</h3>
+                                </div>
+                                <div className="pt-4 border-t border-gray-100 mt-4 flex items-center justify-center gap-2 text-gray-900 w-full text-center">
+                                    <span className="text-base">📞</span>
+                                    <span className="text-sm font-black uppercase tracking-wider leading-tight">
+                                        {res.phone || "Telefon Belirtilmedi"}
+                                    </span>
+                                </div>
                             </div>
                         </Link>
                     ))}
                 </div>
             </section>
 
-            {/* 6. FEATURED RESTAURANTS (Sunucudan Gelen Veri) */}
-            <section className="w-full max-w-7xl px-6 py-20 z-10">
-                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
-                    <div>
-                        <h2 className="font-display text-5xl md:text-8xl font-black uppercase leading-[0.8] text-white">SEÇKİN <br /><span className="text-accent italic">MASALAR</span></h2>
-                    </div>
-                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {restaurants && restaurants.map((res) => (
-                        <Link key={res.id} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col">
-                            <div className="relative aspect-video overflow-hidden">
-                                <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                                <div className="absolute top-4 left-4 bg-accent px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-black uppercase tracking-widest">{res.category || 'Lüks'}</span>
+            {/* 6.5. SECOND DUAL AD BANNERS */}
+            <section className="w-full max-w-7xl px-6 pt-24 pb-12 z-30">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {secondFinalAds.map((ad, idx) => {
+                        const href = ad.restaurants?.slug 
+                            ? `/restaurant/${ad.restaurants.slug}`
+                            : "/login/restaurant?mode=register";
+                        
+                        return (
+                            <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-2 border-accent/40 overflow-hidden bg-black shadow-xl">
+                                <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
+                                    <Image 
+                                        src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800&auto=format&fit=crop')} 
+                                        alt="Ad" 
+                                        fill 
+                                        className="object-cover" 
+                                    />
                                 </div>
-                            </div>
-                            <div className="p-8 flex-1">
-                                <h3 className="font-display text-2xl font-black text-gray-900 uppercase italic mb-3 group-hover:text-accent transition-colors leading-none tracking-tighter">{res.name}</h3>
-                                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">📍 {res.address}</p>
-                            </div>
-                        </Link>
-                    ))}
+                                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-black/60" />
+                                <div className="relative h-full p-8 flex flex-col justify-between">
+                                    <span className="px-3 py-1 bg-accent text-black text-[8px] font-black rounded-full w-fit uppercase shadow-xl">REKLAM</span>
+                                    <h4 className="font-display text-2xl font-black text-white italic uppercase leading-none">
+                                        {ad.title} <br />
+                                        <span className="text-accent">{ad.subtitle}</span>
+                                    </h4>
+                                </div>
+                            </Link>
+                        );
+                    })}
                 </div>
             </section>
 
@@ -134,7 +294,10 @@ export default async function Home() {
                     <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-[120px] -z-10" />
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div>
-                            <h2 className="font-display text-5xl md:text-7xl font-black text-white uppercase leading-none mb-8">SİSTEM NASIL <br /><span className="text-accent italic">İŞLER?</span></h2>
+                            <h2 
+                                className="font-display text-5xl md:text-7xl font-black text-white uppercase leading-none mb-8 animate-in fade-in duration-500"
+                                dangerouslySetInnerHTML={{ __html: howItWorksTitle }}
+                            />
                             <p className="text-gray-400 font-bold uppercase tracking-widest text-xs max-w-md leading-relaxed">Şehrin en seçkin masaları sadece bir tık uzağınızda. Ayrıcalıklı rezervasyon deneyimi ile tanışın.</p>
                         </div>
                         <div className="space-y-12">

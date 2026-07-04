@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState, useEffect, Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import { login, signup } from "@/app/actions/auth";
+import { Eye, EyeOff } from "lucide-react";
 
 function RestaurantLoginContent() {
   const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loginState, loginAction, isLoginPending] = useActionState(login, null);
   const [signupState, signupAction, isSignupPending] = useActionState(signup, null);
@@ -91,13 +93,13 @@ function RestaurantLoginContent() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">LOKASYON / ADRES</label>
+                <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-1">HARİTA KONUM LİNKİ (GOOGLE MAPS, YANDEX VB.)</label>
                 <input 
-                  type="text" 
+                  type="url" 
                   name="address"
                   required
                   defaultValue={(signupState as any)?.address || ""}
-                  placeholder="Bebek, Cevdet Paşa Cd. No:12, Beşiktaş/İstanbul"
+                  placeholder="https://maps.google.com/..."
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
                 />
               </div>
@@ -134,13 +136,22 @@ function RestaurantLoginContent() {
                 <button type="button" className="text-[10px] font-black text-white hover:underline uppercase">Şifremi Unuttum</button>
               )}
             </div>
-            <input 
-              type="password" 
-              name="password"
-              required
-              placeholder="••••••••"
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                name="password"
+                required
+                placeholder="••••••••"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-5 pr-12 py-4 outline-none focus:border-white transition-colors font-bold text-sm text-white placeholder:text-white/20"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <input type="hidden" name="role" value="restaurant" />

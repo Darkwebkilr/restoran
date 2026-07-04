@@ -35,6 +35,12 @@ export default async function CustomerDashboard() {
   return (
     <main className="min-h-screen noise-overlay mesh-gradient pt-32 pb-20 px-6 text-white">
       <div className="max-w-4xl mx-auto">
+        <Link
+            href="/"
+            className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-8"
+        >
+            ← ANASAYFAYA GERİ DÖN
+        </Link>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
           <div>
             <h1 className="font-display text-5xl md:text-7xl font-black uppercase italic tracking-tighter">

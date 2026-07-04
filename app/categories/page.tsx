@@ -18,6 +18,12 @@ export default function CategoriesPage() {
         <main className="relative min-h-screen noise-overlay mesh-gradient pt-32 md:pt-48 pb-32 px-4 md:px-6 flex flex-col items-center">
             <div className="max-w-7xl w-full">
                 <div className="mb-16 md:mb-24 text-center md:text-left">
+                    <Link
+                        href="/"
+                        className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6"
+                    >
+                        ← ANASAYFAYA GERİ DÖN
+                    </Link>
                     <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-4 md:mb-6 block">Gastronomi</span>
                     <h1 className="font-display text-4xl md:text-9xl font-black tracking-tighter uppercase leading-[0.9] md:leading-[0.8] mb-8 md:mb-10">
                         MUTFAK <br /><span className="text-accent italic">KÜLTÜRLERİ.</span>

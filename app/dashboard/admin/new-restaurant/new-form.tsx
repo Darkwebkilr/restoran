@@ -1,27 +1,27 @@
 "use client";
 
 import { useState, useActionState } from "react";
-import { updateRestaurantByAdmin } from "@/app/actions/restaurant";
+import { createRestaurantByAdmin } from "@/app/actions/restaurant";
 import { createClient } from "@/utils/supabase/client";
 import { compressImage } from "@/utils/image";
+import { Eye, EyeOff } from "lucide-react";
 
 const CATEGORIES = ["Deniz Ürünleri", "Uzak Doğu", "İtalyan Mutfağı", "Steakhouse", "Fransız Mutfağı", "Geleneksel Türk", "Dünya Mutfağı"];
 const FEATURES = ["Vale Park", "Dış Mekan", "Wi-Fi", "Alkol Servisi", "Teras", "Canlı Müzik", "VIP Oda"];
 const STATUSES = [
+  { value: "approved", label: "ONAYLI (APPROVED) - Hemen Yayınla", color: "text-green-500 bg-green-500/10 border-green-500/20" },
   { value: "pending", label: "BEKLEMEDE (PENDING)", color: "text-yellow-500 bg-yellow-500/10 border-yellow-500/20" },
-  { value: "approved", label: "ONAYLI (APPROVED)", color: "text-green-500 bg-green-500/10 border-green-500/20" },
   { value: "rejected", label: "REDDEDİLDİ (REJECTED)", color: "text-red-500 bg-red-500/10 border-red-500/20" }
 ];
 
-export default function AdminRestaurantEditForm({ restaurant }: { restaurant: any }) {
-    const [state, action, isPending] = useActionState(updateRestaurantByAdmin, null);
-    const [selectedFeatures, setSelectedFeatures] = useState<string[]>(restaurant.features || []);
-    const [status, setStatus] = useState<string>(restaurant.status || "pending");
-    const [photos, setPhotos] = useState<string[]>(restaurant.photos || []);
+export default function AdminRestaurantNewForm() {
+    const [state, action, isPending] = useActionState(createRestaurantByAdmin, null);
+    const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+    const [showPassword, setShowPassword] = useState(false);
+    const [photos, setPhotos] = useState<string[]>([]);
     const [uploadingImage, setUploadingImage] = useState(false);
-    const [videos, setVideos] = useState<string[]>(restaurant.videos || []);
+    const [videos, setVideos] = useState<string[]>([]);
     const [uploadingVideo, setUploadingVideo] = useState(false);
-    const [isFeatured, setIsFeatured] = useState<boolean>(restaurant.is_featured || false);
     const [supabase] = useState(() => createClient());
 
     const toggleFeature = (feature: string) => {
@@ -41,9 +41,9 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
             // Görseli istemci tarafında sıkıştır (1200px genişlik limiti, 0.8 kalite)
             const compressedBlob = await compressImage(file, 1200, 0.8);
             
-            // Benzersiz dosya yolu oluştur (Restoran sahibi id'si alt klasör olacak şekilde)
-            const fileExt = "jpg"; // Sıkıştırdıktan sonra JPEG formatına dönüyor
-            const fileName = `${restaurant.id}/${Date.now()}.${fileExt}`;
+            // Benzersiz dosya yolu oluştur (Geçici/Rastgele klasör ismi olacak şekilde)
+            const fileExt = "jpg";
+            const fileName = `manual_admin/${Date.now()}.${fileExt}`;
 
             // Supabase Storage 'restaurant-photos' bucket'ına yükle
             const { data, error: uploadError } = await supabase.storage
@@ -93,7 +93,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
         setUploadingVideo(true);
         try {
             const fileExt = file.name.split('.').pop() || 'mp4';
-            const fileName = `${restaurant.id}/${Date.now()}.${fileExt}`;
+            const fileName = `manual_admin/${Date.now()}.${fileExt}`;
 
             const { data, error: uploadError } = await supabase.storage
                 .from('restaurant-photos')
@@ -129,58 +129,52 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
 
     return (
         <form action={action} className="space-y-10">
-            <input type="hidden" name="restaurantId" value={restaurant.id} />
             <input type="hidden" name="photosJson" value={JSON.stringify(photos)} />
             <input type="hidden" name="videosJson" value={JSON.stringify(videos)} />
-            <input type="hidden" name="isFeatured" value={isFeatured ? "true" : "false"} />
 
             <div className="glass p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-8">
                 
-                {/* Durum Yönetimi */}
-                <div className="space-y-3 pb-6 border-b border-white/5">
-                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Durumu</label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {STATUSES.map((item) => (
-                            <label
-                                key={item.value}
-                                className={`flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all cursor-pointer ${
-                                    status === item.value
-                                        ? `${item.color} font-black border-2 scale-[1.02] shadow-lg`
-                                        : "bg-white/5 border-white/10 hover:border-white/20 text-white/50"
-                                }`}
+                {/* Giriş Bilgileri (Hesap Oluşturma) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-6 border-b border-white/5">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme E-postası</label>
+                        <input
+                            type="email"
+                            name="email"
+                            required
+                            placeholder="isletme@restoran.com"
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20"
+                        />
+                        <p className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider ml-1 mt-1">
+                          Restoran sahibinin panele giriş yapacağı e-posta adresi.
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Şifresi</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                required
+                                placeholder="••••••••"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-6 pr-12 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
                             >
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    value={item.value}
-                                    checked={status === item.value}
-                                    onChange={() => setStatus(item.value)}
-                                    className="hidden"
-                                />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
-                            </label>
-                        ))}
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
+                        <p className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider ml-1 mt-1">
+                          En az 6 karakter olmalıdır.
+                        </p>
                     </div>
                 </div>
 
-                {/* Öne Çıkarma Yönetimi */}
-                <div className="space-y-3 pb-6 border-b border-white/5">
-                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Öne Çıkarma Durumu</label>
-                    <div>
-                        <button
-                            type="button"
-                            onClick={() => setIsFeatured(!isFeatured)}
-                            className={`flex items-center gap-4 px-6 py-4 rounded-2xl border transition-all cursor-pointer w-full md:w-fit text-left ${
-                                isFeatured 
-                                    ? "bg-white text-black border-white font-black scale-[1.01] shadow-lg" 
-                                    : "bg-white/5 border-white/10 hover:border-white/20 text-white/50"
-                            }`}
-                        >
-                            <span className="text-sm">{isFeatured ? "⭐" : "☆"}</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Bu Restoranı Seçkin Masalarda Öne Çıkar</span>
-                        </button>
-                    </div>
-                </div>
+                <input type="hidden" name="status" value="approved" />
 
                 {/* Temel Bilgiler */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -188,8 +182,8 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Adı</label>
                         <input
                             name="name"
-                            defaultValue={restaurant.name}
                             required
+                            placeholder="Örn. Zuma İstanbul"
                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
                         />
                     </div>
@@ -197,7 +191,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Mutfak Türü</label>
                         <select
                             name="category"
-                            defaultValue={restaurant.category}
+                            defaultValue="Dünya Mutfağı"
                             className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest"
                         >
                             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -209,11 +203,10 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                     <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Açıklaması</label>
                     <textarea
                         name="description"
-                        defaultValue={restaurant.description}
                         rows={4}
                         required
                         className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-accent transition-all font-medium text-sm text-white leading-relaxed"
-                        placeholder="İşletme detaylarını girin..."
+                        placeholder="İşletmenin konseptini, hikayesini ve sunduğu hizmetleri yazın..."
                     />
                 </div>
 
@@ -221,9 +214,8 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Harita Konum Linki</label>
                         <input
-                            name="address"
                             type="url"
-                            defaultValue={restaurant.address}
+                            name="address"
                             required
                             placeholder="https://maps.app.goo.gl/..."
                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20"
@@ -236,7 +228,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Bölge (İlçe)</label>
                         <select
                             name="district"
-                            defaultValue={restaurant.district || ""}
+                            defaultValue=""
                             className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest"
                         >
                             <option value="">Bölge Seçilmedi</option>
@@ -248,9 +240,9 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Telefon Numarası</label>
                         <input
+                            type="tel"
                             name="phone"
-                            defaultValue={restaurant.phone}
-                            required
+                            placeholder="+90 532 000 00 00"
                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
                         />
                     </div>
@@ -358,7 +350,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
 
             {state?.success && (
                 <div className="p-5 bg-green-500/10 border border-green-500/20 rounded-2xl text-center text-green-500 text-[10px] font-black uppercase italic tracking-widest animate-in slide-in-from-top-4">
-                    İşletme Bilgileri Başarıyla Güncellendi
+                    İşletme ve Sahibi Başarıyla Oluşturuldu
                 </div>
             )}
 
@@ -368,13 +360,24 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                 </div>
             )}
 
-            <div className="flex justify-end pt-4">
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4">
                 <button
                     type="submit"
+                    name="actionType"
+                    value="create_featured"
                     disabled={isPending}
-                    className="px-16 py-5 bg-accent text-black font-black rounded-2xl text-[10px] tracking-[0.3em] uppercase hover:scale-105 transition-all shadow-[0_0_40px_rgba(245,158,11,0.2)] disabled:opacity-50 italic"
+                    className="w-full sm:w-auto px-10 py-5 bg-white text-black font-black rounded-2xl text-[10px] tracking-widest uppercase hover:scale-105 transition-all disabled:opacity-50 italic border-2 border-white"
                 >
-                    {isPending ? "KAYDEDİLİYOR..." : "DEĞİŞİKLİKLERİ KAYDET"}
+                    {isPending ? "İŞLENİYOR..." : "⭐ ÖNE ÇIKARILANLARA EKLE VE KAYDET"}
+                </button>
+                <button
+                    type="submit"
+                    name="actionType"
+                    value="create"
+                    disabled={isPending}
+                    className="w-full sm:w-auto px-12 py-5 bg-accent text-black font-black rounded-2xl text-[10px] tracking-widest uppercase hover:scale-105 transition-all shadow-[0_0_40px_rgba(245,158,11,0.2)] disabled:opacity-50 italic border-2 border-accent"
+                >
+                    {isPending ? "KAYDEDİLİYOR..." : "İŞLETMEYİ OLUŞTUR"}
                 </button>
             </div>
         </form>

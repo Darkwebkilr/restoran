@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import RestaurantSettingsForm from "./settings-form";
 
 export default async function RestaurantSettings() {
@@ -22,6 +23,12 @@ export default async function RestaurantSettings() {
   return (
     <main className="min-h-screen noise-overlay mesh-gradient pt-32 pb-20 px-6 text-white">
       <div className="max-w-4xl mx-auto">
+        <Link
+            href="/dashboard/restaurant"
+            className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-8"
+        >
+            ← PANELE GERİ DÖN
+        </Link>
         <div className="mb-12">
             <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-4 block">Yönetim</span>
             <h1 className="font-display text-5xl md:text-7xl font-black uppercase italic tracking-tighter">

@@ -157,10 +157,33 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                     <textarea name="description" defaultValue={restaurant.description} rows={4} required className="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-accent transition-all font-medium text-sm text-white leading-relaxed" placeholder="Müşterilerinize işletmenizi en iyi şekilde anlatın..." />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Lokasyon / Adres</label>
-                        <input name="address" defaultValue={restaurant.address} required className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white" />
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Harita Konum Linki</label>
+                        <input 
+                            name="address" 
+                            type="url"
+                            defaultValue={restaurant.address} 
+                            required 
+                            placeholder="https://maps.app.goo.gl/..."
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                        />
+                        <p className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider ml-1 mt-1">
+                          Haritalar paylaşım linki.
+                        </p>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Bölge (İlçe)</label>
+                        <select
+                            name="district"
+                            defaultValue={restaurant.district || ""}
+                            className="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest"
+                        >
+                            <option value="">Bölge Seçilmedi</option>
+                            {["Bodrum Merkez", "Yalıkavak", "Göltürkbükü", "Gümüşlük", "Turgutreis", "Bitez", "Ortakent", "Gündoğan", "Torba"].map(d => (
+                                <option key={d} value={d}>{d}</option>
+                            ))}
+                        </select>
                     </div>
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İletişim Numarası</label>

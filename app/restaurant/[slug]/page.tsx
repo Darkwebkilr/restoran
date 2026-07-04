@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import RestaurantDetailClient from "./detail-client";
+import { resolveMapsUrl } from "@/app/actions/restaurant";
 
 export default async function RestaurantDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -15,6 +16,11 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
 
   if (error || !restaurant) {
     redirect("/restaurants");
+  }
+
+  // Kısa harita linklerini çöz
+  if (restaurant.address && restaurant.address.startsWith("http")) {
+    restaurant.address = await resolveMapsUrl(restaurant.address);
   }
 
   // 2. Kullanıcı rolünü sunucuda çek

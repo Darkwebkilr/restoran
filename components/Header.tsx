@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
-import { SiInstagram, SiFacebook } from '@icons-pack/react-simple-icons';
+import { SiInstagram, SiFacebook, SiX, SiTiktok, SiTelegram } from '@icons-pack/react-simple-icons';
 import { signout } from "@/app/actions/auth";
 
 export default function Header() {
@@ -26,22 +26,34 @@ export default function Header() {
             console.log("[AuthDebug] checkUser - session:", session);
             if (session?.user) {
                 setUser(session.user);
-                const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
-                console.log("[AuthDebug] checkUser - profiles DB query result:", profile, "Error:", error);
-                const resolvedRole = profile?.role || session.user.user_metadata?.role || 'customer';
-                console.log("[AuthDebug] checkUser - resolvedRole:", resolvedRole);
-                setRole(resolvedRole);
+                
+                // 1. Metadata rolü varsa anında arayüze yansıt ve yüklemeyi kapat
+                const initialRole = session.user.user_metadata?.role || 'customer';
+                setRole(initialRole);
+                setLoading(false);
+
+                // 2. Arka planda veritabanından güncel rolü sorgula
+                (async () => {
+                    try {
+                        const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', session.user.id)
+                            .maybeSingle();
+                        if (profile?.role) {
+                            setRole(profile.role);
+                        }
+                    } catch (bgErr) {
+                        console.error("[AuthDebug] Arka plan rol check hatası:", bgErr);
+                    }
+                })();
             } else {
                 setUser(null);
                 setRole(null);
+                setLoading(false);
             }
         } catch (err) {
             console.error("Auth check hatası:", err);
-        } finally {
             setLoading(false);
         }
     }, [supabase]);
@@ -52,29 +64,38 @@ export default function Header() {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log("[AuthDebug] onAuthStateChange - event:", event, "session:", session);
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
-                try {
-                    if (session?.user) {
-                        setUser(session.user);
-                        const { data: profile, error } = await supabase
+            
+            // Tüm event tipleri için (INITIAL_SESSION dahil) UI durumunu anında güncelle
+            if (session?.user) {
+                setUser(session.user);
+                const initialRole = session.user.user_metadata?.role || 'customer';
+                setRole(initialRole);
+                setLoading(false);
+
+                // Arka planda veritabanından en güncel rolü kontrol et
+                (async () => {
+                    try {
+                        const { data: profile } = await supabase
                             .from('profiles')
                             .select('role')
                             .eq('id', session.user.id)
                             .maybeSingle();
-                        console.log("[AuthDebug] onAuthStateChange - profiles DB query result:", profile, "Error:", error);
-                        const resolvedRole = profile?.role || session.user.user_metadata?.role || 'customer';
-                        console.log("[AuthDebug] onAuthStateChange - resolvedRole:", resolvedRole);
-                        setRole(resolvedRole);
-                    } else {
-                        setUser(null);
-                        setRole(null);
+                        if (profile?.role) {
+                            setRole(profile.role);
+                        }
+                    } catch (bgErr) {
+                        console.error("[AuthDebug] onAuthStateChange arka plan hatası:", bgErr);
                     }
-                } catch (err) {
-                    console.error("Auth state change hatası:", err);
-                } finally {
-                    setLoading(false);
-                    router.refresh();
-                }
+                })();
+            } else {
+                setUser(null);
+                setRole(null);
+                setLoading(false);
+            }
+
+            // Sayfa durumunu yenilemek için sadece kritik durumlarda refresh tetikle
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+                router.refresh();
             }
         });
 
@@ -138,8 +159,11 @@ export default function Header() {
                 <div className="hidden md:flex items-center gap-8 lg:gap-14 flex-1 justify-end">
                     <div className="flex flex-col items-end gap-3">
                         <div className="flex flex-row gap-6 items-center">
-                            <SiFacebook color="default" className="cursor-pointer hover:text-accent transition-all" size={20} />
-                            <SiInstagram color="default" className="cursor-pointer hover:text-accent transition-all" size={20} />
+                            <SiFacebook color="default" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
+                            <SiInstagram color="default" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
+                            <SiX color="#FFFFFF" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
+                            <SiTiktok color="#FFFFFF" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
+                            <SiTelegram color="default" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
                         </div>
                         <div className="flex items-center gap-8">
                             <Link href="/#how-it-works" className="text-[11px] font-black tracking-[0.2em] text-white/60 hover:text-accent transition-colors uppercase whitespace-nowrap">Nasıl Çalışır?</Link>
@@ -189,7 +213,14 @@ export default function Header() {
                         user ? (
                             <>
                                 <Link onClick={() => setIsMenuOpen(false)} href={dashboardLink} className="font-display text-4xl font-black text-white uppercase italic mb-2 tracking-tighter">Panelim.</Link>
-                                <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="w-full max-w-xs py-5 bg-red-500/10 text-red-500 font-black rounded-2xl text-[10px] tracking-[0.3em] uppercase border border-red-500/20">ÇIKIŞ YAP</button>
+                                <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="w-full max-w-xs py-5 bg-red-500/10 text-red-500 font-black rounded-2xl text-[10px] tracking-[0.3em] uppercase border border-red-500/20 mb-4">ÇIKIŞ YAP</button>
+                                <div className="flex gap-6 justify-center mt-4">
+                                    <SiFacebook className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiInstagram className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiX className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiTiktok className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiTelegram className="text-white/40 hover:text-white transition-colors" size={24} />
+                                </div>
                             </>
                         ) : (
                             <div className="flex flex-col w-full max-w-xs gap-4 mt-4">
@@ -198,6 +229,9 @@ export default function Header() {
                                 <div className="flex gap-6 justify-center mt-8">
                                     <SiFacebook className="text-white/40 hover:text-white transition-colors" size={24} />
                                     <SiInstagram className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiX className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiTiktok className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <SiTelegram className="text-white/40 hover:text-white transition-colors" size={24} />
                                 </div>
                             </div>
                         )

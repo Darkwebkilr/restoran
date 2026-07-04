@@ -18,7 +18,13 @@ export default async function RestaurantDashboard() {
   // 1. DURUM: BAŞVURU HİÇ YOK
   if (!restaurant) {
     return (
-      <main className="min-h-screen noise-overlay mesh-gradient pt-32 px-6 flex items-center justify-center text-white">
+      <main className="min-h-screen noise-overlay mesh-gradient pt-32 px-6 flex flex-col items-center justify-center text-white">
+        <Link
+            href="/"
+            className="px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6 self-center animate-in fade-in duration-500"
+        >
+            ← ANASAYFAYA GERİ DÖN
+        </Link>
         <div className="glass p-12 md:p-20 rounded-[3rem] border border-white/10 text-center max-w-2xl animate-in zoom-in-95 duration-700 shadow-2xl">
           <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-8">
             <span className="text-4xl">🏢</span>
@@ -36,6 +42,12 @@ export default async function RestaurantDashboard() {
     return (
       <main className="min-h-screen noise-overlay mesh-gradient pt-32 pb-20 px-6 text-white">
         <div className="max-w-4xl mx-auto">
+            <Link
+                href="/"
+                className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-8"
+            >
+                ← ANASAYFAYA GERİ DÖN
+            </Link>
             <div className="mb-12">
                 <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-4 block">Kontrol Paneli</span>
                 <h1 className="font-display text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white">{restaurant.name}.</h1>
@@ -70,6 +82,12 @@ export default async function RestaurantDashboard() {
   return (
     <main className="min-h-screen noise-overlay mesh-gradient pt-32 pb-20 px-6 text-white">
       <div className="max-w-6xl mx-auto">
+        <Link
+            href="/"
+            className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-8"
+        >
+            ← ANASAYFAYA GERİ DÖN
+        </Link>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
           <div>
             <div className="flex items-center gap-4 mb-4">

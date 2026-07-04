@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
+import { getAddressLabel, getAddressDistrict, getCategoryIcon } from "@/utils/maps";
 
 const CATEGORIES = [
     { name: "Hepsi", icon: "🍽️" },
@@ -16,38 +17,86 @@ const CATEGORIES = [
 export default async function RestaurantsPage({
     searchParams
 }: {
-    searchParams: Promise<{ query?: string, category?: string }>
+    searchParams: Promise<{ query?: string, category?: string, district?: string }>
 }) {
-    const { query, category } = await searchParams;
+    const { query, category, district } = await searchParams;
     const supabase = await createClient();
 
-    let dbQuery = supabase
-        .from("restaurants")
-        .select("*")
-        .eq("status", "approved");
+    let restaurants: any[] = [];
+    try {
+        let dbQuery = supabase
+            .from("restaurants")
+            .select("*")
+            .eq("status", "approved");
 
-    if (query) {
-        dbQuery = dbQuery.ilike("name", `%${query}%`);
+        if (query) {
+            dbQuery = dbQuery.ilike("name", `%${query}%`);
+        }
+
+        if (category && category !== "Hepsi") {
+            if (category === "İtalyan Mutfağı") {
+                dbQuery = dbQuery.in("category", ["İtalyan Mutfağı", "İtalyan"]);
+            } else if (category === "Fransız Mutfağı") {
+                dbQuery = dbQuery.in("category", ["Fransız Mutfağı", "Fransız"]);
+            } else {
+                dbQuery = dbQuery.eq("category", category);
+            }
+        }
+
+        if (district) {
+            dbQuery = dbQuery.or(`address.ilike.%${district}%,district.eq.${district}`);
+        }
+
+        const { data, error } = await dbQuery.order("created_at", { ascending: false });
+        if (error) throw error;
+        restaurants = data || [];
+    } catch (e: any) {
+        console.warn("District sorgusu başarısız oldu, sadece adres aramasıyla tekrar deneniyor:", e.message);
+        let fallbackQuery = supabase
+            .from("restaurants")
+            .select("*")
+            .eq("status", "approved");
+
+        if (query) {
+            fallbackQuery = fallbackQuery.ilike("name", `%${query}%`);
+        }
+
+        if (category && category !== "Hepsi") {
+            if (category === "İtalyan Mutfağı") {
+                fallbackQuery = fallbackQuery.in("category", ["İtalyan Mutfağı", "İtalyan"]);
+            } else if (category === "Fransız Mutfağı") {
+                fallbackQuery = fallbackQuery.in("category", ["Fransız Mutfağı", "Fransız"]);
+            } else {
+                fallbackQuery = fallbackQuery.eq("category", category);
+            }
+        }
+
+        if (district) {
+            fallbackQuery = fallbackQuery.ilike("address", `%${district}%`);
+        }
+
+        const { data } = await fallbackQuery.order("created_at", { ascending: false });
+        restaurants = data || [];
     }
-
-    if (category && category !== "Hepsi") {
-        dbQuery = dbQuery.eq("category", category);
-    }
-
-    const { data: restaurants } = await dbQuery.order("created_at", { ascending: false });
 
     return (
         <main className="relative min-h-screen noise-overlay mesh-gradient pt-32 md:pt-48 pb-32 px-4 md:px-6 flex flex-col items-center text-white">
             <div className="max-w-7xl w-full">
                 {/* Header Section */}
                 <div className="mb-20 text-center md:text-left">
+                    <Link
+                        href="/"
+                        className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6"
+                    >
+                        ← ANASAYFAYA GERİ DÖN
+                    </Link>
                     <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-4 block italic">Kürasyonumuz</span>
                     <h1 className="font-display text-5xl md:text-9xl font-black tracking-tighter uppercase leading-[0.8] mb-12">
                         KEŞFETMEYE <br /><span className="text-accent italic">BAŞLA.</span>
                     </h1>
 
-                    <div className="w-full max-w-4xl glass p-2 md:p-3 rounded-[2rem] md:rounded-[3rem] border border-white/20 shadow-2xl flex flex-col md:flex-row items-center gap-2 mx-auto md:mx-0">
-                        <form action="/restaurants" className="flex-1 w-full relative flex items-center">
+                    <form action="/restaurants" className="w-full max-w-4xl glass p-2 md:p-3 rounded-[2rem] md:rounded-[3rem] border border-white/20 shadow-2xl flex flex-col md:flex-row items-center gap-2 mx-auto md:mx-0">
+                        <div className="flex-[2] w-full relative flex items-center">
                             <span className="absolute left-6 text-lg">🔍</span>
                             <input
                                 type="text"
@@ -56,17 +105,30 @@ export default async function RestaurantsPage({
                                 placeholder="Mekan adı ara..."
                                 className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] pl-14 pr-6 py-4 md:py-6 outline-none focus:border-accent transition-all font-bold text-sm placeholder:text-white/20 text-white"
                             />
-                            <button type="submit" className="hidden">Ara</button>
-                        </form>
-                        <div className="w-full md:w-auto">
+                        </div>
+                        <div className="flex-1 w-full relative">
+                            <select
+                                name="district"
+                                defaultValue={district || ""}
+                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] px-6 py-4 md:py-6 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest text-left"
+                            >
+                                <option value="" className="bg-neutral-950 text-white font-bold">Tüm Bölgeler</option>
+                                {["Bodrum Merkez", "Yalıkavak", "Göltürkbükü", "Gümüşlük", "Turgutreis", "Bitez", "Ortakent", "Gündoğan", "Torba"].map(d => (
+                                    <option key={d} value={d} className="bg-neutral-950 text-white font-bold">{d}</option>
+                                ))}
+                            </select>
+                            <span className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-[10px]">▼</span>
+                        </div>
+                        <div className="flex items-center gap-2 w-full md:w-auto">
+                            <button type="submit" className="flex-1 md:flex-initial px-8 py-4 md:py-6 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase whitespace-nowrap">FİLTRELE</button>
                             <Link 
                                 href="/restaurants"
-                                className="w-full md:w-auto px-10 py-4 md:py-6 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase text-center block"
+                                className="flex-1 md:flex-initial px-6 py-4 md:py-6 bg-white/5 border border-white/10 text-white font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-white/10 transition-all uppercase text-center whitespace-nowrap flex items-center justify-center"
                             >
-                                TÜMÜNÜ GÖR
+                                TEMİZLE
                             </Link>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 {/* Categories */}
@@ -95,23 +157,31 @@ export default async function RestaurantsPage({
                         </div>
                     ) : (
                         restaurants.map((res) => (
-                            <Link key={res.id} href={`/restaurant/${res.slug}`} className="group relative">
-                                <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border-2 border-white/10 mb-6 shadow-2xl transition-all duration-700 group-hover:border-accent group-hover:scale-[1.02] bg-black">
-                                    <Image
-                                        src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"}
-                                        alt={res.name}
-                                        fill
-                                        className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 group-hover:opacity-100"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                                    <div className="absolute bottom-10 left-10 right-10">
-                                        <h3 className="font-display text-4xl md:text-5xl font-black text-white leading-none uppercase group-hover:text-accent transition-colors italic tracking-tighter">{res.name}</h3>
-                                        <p className="text-accent text-[9px] font-black uppercase tracking-[0.3em] mt-6 flex items-center gap-2">
-                                            <span>📍</span> {res.address}
-                                        </p>
+                            <Link key={res.id} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-100">
+                                <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+                                    <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    {/* Kategori Badge (Sol Üst) - Mor arka plan */}
+                                    <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
+                                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
                                     </div>
-                                    <div className="absolute top-10 right-10 glass w-16 h-16 rounded-full flex items-center justify-center font-display font-black text-white border border-white/20 shadow-2xl group-hover:border-accent group-hover:text-accent transition-all italic">
-                                        {res.rating || '4.9'}
+                                    {/* İlçe/Bölge Badge (Sağ Alt) - Kırmızı arka plan */}
+                                    <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
+                                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
+                                    </div>
+                                </div>
+                                <div className="pt-8 px-6 pb-6 flex-1 flex flex-col justify-between relative">
+                                    {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
+                                    <div className="absolute -top-7 left-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20">
+                                        <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                    </div>
+                                    <div className="space-y-3 mt-2">
+                                        <h3 className="font-display text-xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors">{res.name}</h3>
+                                    </div>
+                                    <div className="pt-4 border-t border-gray-100 mt-4 flex items-center justify-center gap-2 text-gray-900 w-full text-center">
+                                        <span className="text-base">📞</span>
+                                        <span className="text-sm font-black uppercase tracking-wider leading-tight">
+                                            {res.phone || "Telefon Belirtilmedi"}
+                                        </span>
                                     </div>
                                 </div>
                             </Link>

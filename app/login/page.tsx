@@ -1,11 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { login, signup, loginWithGoogle } from "@/app/actions/auth";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        const role = session.user.user_metadata?.role || "customer";
+        if (role === "admin") {
+          router.replace("/dashboard/admin");
+        } else if (role === "restaurant") {
+          router.replace("/dashboard/restaurant");
+        } else {
+          router.replace("/dashboard/customer");
+        }
+      }
+    });
+  }, [router]);
 
   const [loginState, loginAction, isLoginPending] = useActionState(login, null);
   const [signupState, signupAction, isSignupPending] = useActionState(signup, null);
@@ -16,6 +37,12 @@ export default function LoginPage() {
     <main className="min-h-screen noise-overlay mesh-gradient flex items-center justify-center p-6 pt-24">
       <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div className="flex flex-col items-center mb-12">
+          <Link
+              href="/"
+              className="px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-8 inline-flex items-center gap-1.5 self-start"
+          >
+              ← ANASAYFA
+          </Link>
           <Link href="/" className="flex items-center gap-3 mb-6 group">
             <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center font-display font-black text-2xl text-black italic group-hover:rotate-12 transition-transform">D</div>
             <span className="font-display text-3xl font-black tracking-tighter">D-RESTORAN</span>
@@ -60,13 +87,22 @@ export default function LoginPage() {
                   <button type="button" className="text-xs font-bold text-accent hover:underline">Şifremi Unuttum</button>
                 )}
               </div>
-              <input 
-                type="password" 
-                name="password"
-                required
-                placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-accent transition-colors font-medium text-white placeholder:text-white/20"
-              />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  name="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl pl-5 pr-12 py-4 outline-none focus:border-accent transition-colors font-medium text-white placeholder:text-white/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             {(state as any)?.error && (

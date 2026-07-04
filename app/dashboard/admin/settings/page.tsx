@@ -1,0 +1,75 @@
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import AdminSettingsForm from "./settings-form";
+
+export default async function AdminSettingsPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login/member");
+
+  // Admin kontrolü
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "admin") redirect("/");
+
+  // Başlıkları çekelim (Tablo yoksa çökmesin diye try-catch yapıyoruz)
+  let settingsList: any[] = [];
+  try {
+    const { data } = await supabase
+      .from("settings")
+      .select("*");
+    settingsList = data || [];
+  } catch (e) {
+    console.warn("settings tablosu bulunamadı, varsayılan başlıklarla devam ediliyor.");
+  }
+
+  // Değerleri eşleyelim
+  const getSetting = (key: string, defaultValue: string) => {
+    return settingsList.find(s => s.key === key)?.value || defaultValue;
+  };
+
+  const currentSettings = {
+    hero_title: getSetting("hero_title", "BODRUMUN EN İYİ MASALARI."),
+    categories_title: getSetting("categories_title", "ÖNE ÇIKAN KATEGORİLER"),
+    featured_title: getSetting("featured_title", "SEÇKİN MASALAR"),
+    how_it_works_title: getSetting("how_it_works_title", "SİSTEM NASIL İŞLER?"),
+    marquee_text: getSetting("marquee_text", "EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ")
+  };
+
+  return (
+    <main className="min-h-screen noise-overlay mesh-gradient pt-32 pb-20 px-6 text-white font-sans">
+      <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-500">
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+          <div>
+            <span className="text-accent font-black text-[10px] tracking-[0.5em] uppercase mb-3 block">Sistem Yönetimi</span>
+            <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter">
+              Arayüz <span className="text-accent">Başlıkları.</span>
+            </h1>
+            <p className="text-zinc-400 mt-2 font-medium uppercase tracking-widest text-[9px] italic">
+              Ana sayfadaki tüm statik başlıkları ve marquee metnini veritabanından dinamik olarak güncelleyin.
+            </p>
+          </div>
+          <Link
+            href="/dashboard/admin"
+            className="px-6 py-3.5 glass text-white/80 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic"
+          >
+            ← Yönetim Paneli
+          </Link>
+        </div>
+
+
+        {/* Edit Form */}
+        <AdminSettingsForm initialSettings={currentSettings} />
+
+      </div>
+    </main>
+  );
+}
