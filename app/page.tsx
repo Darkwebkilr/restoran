@@ -4,6 +4,8 @@ import Link from "next/link";
 import HomeHero from "@/components/HomeHero"; // Arama state'i için yeni bileşen gerekecek
 import { getAddressLabel, getAddressDistrict, getCategoryIcon } from "@/utils/maps";
 
+export const dynamic = "force-dynamic";
+
 const RESTAURANT_LOGOS = [
     { name: "ZUMA", slug: "zuma-istanbul" },
     { name: "NUSR-ET", slug: "nusr-et-steakhouse" },
@@ -47,6 +49,22 @@ export default async function Home() {
             .limit(50);
         restaurants = data || [];
     }
+
+    // Marquee restoran logolarını çek (Tablo yoksa veya kolon yoksa çökmesini önlemek için try-catch)
+    let marqueeLogos: any[] = [];
+    try {
+        const { data } = await supabase
+            .from("restaurants")
+            .select("name, slug, show_in_marquee")
+            .eq("status", "approved")
+            .eq("show_in_marquee", true);
+        
+        marqueeLogos = data || [];
+    } catch (e) {
+        console.warn("restaurants tablosunda show_in_marquee kolonu bulunamadı, varsayılanlar kullanılacak.");
+    }
+
+    const finalMarqueeItems = marqueeLogos.length > 0 ? marqueeLogos : RESTAURANT_LOGOS;
 
     // Reklamları çek (Tablo yoksa çökmesini engellemek için try-catch)
     let adsList: any[] = [];
@@ -120,16 +138,48 @@ export default async function Home() {
     const howItWorksTitle = getSetting("how_it_works_title", "SİSTEM NASIL <br /><span class=\"text-accent italic\">İŞLER?</span>");
     const marqueeText = getSetting("marquee_text", "EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ");
 
+    // Seçkin masalar içine reklam restoranları enjekte etme mantığı
+    let finalRestaurants: any[] = [];
+    try {
+        const regularList = restaurants.filter(r => !r.is_featured_ad);
+        const adList = restaurants.filter(r => r.is_featured_ad);
+        const frequencyStr = getSetting("featured_ad_frequency", "3");
+        const frequency = parseInt(frequencyStr, 10);
+
+        if (regularList.length > 0 && adList.length > 0 && frequency > 0) {
+            let adIndex = 0;
+            for (let i = 0; i < regularList.length; i++) {
+                finalRestaurants.push(regularList[i]);
+                // Her N restoranda bir reklam ekle
+                if ((i + 1) % frequency === 0) {
+                    const adItem = adList[adIndex % adList.length];
+                    finalRestaurants.push({ ...adItem });
+                    adIndex++;
+                }
+            }
+            // Eğer normal liste sıklık miktarından kısa olduğu için hiç reklam enjekte edilmediyse, reklamları sona ekle
+            if (adIndex === 0 && adList.length > 0) {
+                finalRestaurants.push(...adList.map(ad => ({ ...ad })));
+            }
+        } else {
+            // Eğer normal liste boşsa, sıklık 0 ise veya hiç reklam mekan seçilmediyse normal listeyi göster
+            finalRestaurants = restaurants;
+        }
+    } catch(e) {
+        console.warn("Reklam restoran enjeksiyonu başarısız oldu, normal liste gösteriliyor:", e);
+        finalRestaurants = restaurants;
+    }
+
     return (
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
             
             {/* 1. TOP MARQUEE */}
-            <div className="fixed top-20 md:top-28 z-40 w-full bg-gray-400/70 border-y border-black/10 py-2 md:py-3 overflow-hidden">
+            <div className="fixed top-16 md:top-22 z-50 w-full bg-gray-400/70 border-y border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
-                    {[...Array(4)].map((_, i) => (
+                    {[...Array(6)].map((_, i) => (
                         <div key={i} className="flex items-center">
-                            {RESTAURANT_LOGOS.map((item) => (
-                                <Link key={item.slug} href={`/restaurant/${item.slug}`} className="mx-2 px-6 py-3 bg-accent rounded-xl flex items-center justify-center font-black text-black tracking-widest uppercase hover:bg-black hover:text-accent transition-all italic shadow-lg">
+                            {finalMarqueeItems.map((item) => (
+                                <Link key={item.slug} href={`/restaurant/${item.slug}`} className="mx-2 px-6 py-3 bg-accent rounded-xl flex items-center justify-center font-black text-black tracking-widest uppercase hover:bg-black hover:text-accent transition-all italic shadow-lg text-xs md:text-sm shrink-0">
                                     {item.name}
                                 </Link>
                             ))}
@@ -163,7 +213,7 @@ export default async function Home() {
                     className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.9] text-white mb-12 animate-in fade-in duration-500"
                     dangerouslySetInnerHTML={{ __html: categoriesTitle }}
                 />
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                     {CATEGORIES.map((cat) => (
                         <Link key={cat.name} href={`/restaurants?category=${cat.name}`} className="group relative">
                             <div className="relative aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-xl bg-card transition-all duration-500 hover:border-accent">
@@ -180,7 +230,7 @@ export default async function Home() {
             </section>
 
             {/* 5. DUAL AD BANNERS */}
-            <section className="w-full max-w-7xl px-6 py-12 z-30">
+            <section className="w-full max-w-[92rem] px-4 py-12 z-30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {finalAds.map((ad, idx) => {
                         const href = ad.restaurants?.slug 
@@ -223,9 +273,9 @@ export default async function Home() {
                     <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {restaurants && restaurants.map((res) => (
-                        <Link key={res.id} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-100">
-                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+                    {finalRestaurants && finalRestaurants.map((res, idx) => (
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border ${res.is_featured_ad ? 'border-accent ring-2 ring-accent/20' : 'border-gray-100'}`}>
+                            <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                 {/* Kategori Badge (Sol Üst) - Mor arka plan */}
                                 <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
@@ -235,20 +285,26 @@ export default async function Home() {
                                 <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
                                     <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
                                 </div>
+                                {/* Reklam/Sponsorlu Badge (Sağ Üst) - Altın sarısı */}
+                                {res.is_featured_ad && (
+                                    <div className="absolute top-4 right-4 bg-accent px-3 py-1.5 rounded-lg shadow-lg z-20 animate-pulse">
+                                        <span className="text-[9px] font-black text-black uppercase tracking-widest">★ SPONSORLU</span>
+                                    </div>
+                                )}
                             </div>
-                            <div className="pt-8 px-6 pb-6 flex-1 flex flex-col justify-between relative">
+                            <div className="pt-4 px-4 pb-3 flex-1 flex flex-col justify-between relative">
                                 {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                <div className="absolute -top-7 left-6 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20">
-                                    <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                <div className="absolute -top-4 left-4 w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20">
+                                    <span className="text-[10px] font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
                                 </div>
-                                <div className="space-y-3 mt-2">
-                                    <h3 className="font-display text-xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors">{res.name}</h3>
-                                </div>
-                                <div className="pt-4 border-t border-gray-100 mt-4 flex items-center justify-center gap-2 text-gray-900 w-full text-center">
-                                    <span className="text-base">📞</span>
-                                    <span className="text-sm font-black uppercase tracking-wider leading-tight">
-                                        {res.phone || "Telefon Belirtilmedi"}
-                                    </span>
+                                <div className="mt-2 flex flex-col gap-1.5">
+                                    <h3 className="font-display text-sm font-black text-gray-900 uppercase leading-tight tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                    <div className="flex items-center gap-1 text-gray-500">
+                                        <span className="text-[10px]">📞</span>
+                                        <span className="text-[9px] font-black uppercase tracking-wider leading-none">
+                                            {res.phone || "Telefon Belirtilmedi"}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </Link>
@@ -257,7 +313,7 @@ export default async function Home() {
             </section>
 
             {/* 6.5. SECOND DUAL AD BANNERS */}
-            <section className="w-full max-w-7xl px-6 pt-24 pb-12 z-30">
+            <section className="w-full max-w-[92rem] px-4 pt-24 pb-12 z-30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {secondFinalAds.map((ad, idx) => {
                         const href = ad.restaurants?.slug 

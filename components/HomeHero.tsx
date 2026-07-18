@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import DistrictSelect from "@/components/DistrictSelect";
 
 const SLIDER_IMAGES = [
     { image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1600&auto=format&fit=crop", title: "ZUMA BODRUM AÇILIYOR" },
@@ -44,8 +45,8 @@ export default function HomeHero({ title }: { title: string }) {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
                 </div>
             ))}
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6">
-                <div className="max-w-6xl w-full flex flex-col items-center text-center">
+            <div className="absolute inset-0 z-40 flex flex-col items-center justify-center px-6 pointer-events-none">
+                <div className="max-w-6xl w-full flex flex-col items-center text-center pointer-events-auto">
                     <h1 
                         className="font-display text-5xl md:text-9xl font-black tracking-tighter mb-12 uppercase leading-[0.8] text-white"
                         dangerouslySetInnerHTML={{ __html: title }}
@@ -62,17 +63,11 @@ export default function HomeHero({ title }: { title: string }) {
                             />
                         </div>
                         <div className="flex-1 w-full relative">
-                            <select
-                                value={district}
-                                onChange={(e) => setDistrict(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] px-6 py-5 md:py-6 outline-none focus:border-accent transition-all font-bold text-sm text-white appearance-none cursor-pointer uppercase tracking-widest text-left"
-                            >
-                                <option value="" className="bg-neutral-950 text-white font-bold">Tüm Bölgeler</option>
-                                {DISTRICTS.map(d => (
-                                    <option key={d} value={d} className="bg-neutral-950 text-white font-bold">{d}</option>
-                                ))}
-                            </select>
-                            <span className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-[10px]">▼</span>
+                            <DistrictSelect 
+                                name="district" 
+                                defaultValue={district} 
+                                onChange={(val) => setDistrict(val)} 
+                            />
                         </div>
                         <button type="submit" className="w-full md:w-auto px-12 py-5 md:py-6 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase">BUL</button>
                     </form>

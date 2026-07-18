@@ -2,15 +2,54 @@
 
 import Link from "next/link";
 import { SiInstagram, SiX, SiFacebook, SiTiktok, SiTelegram } from "@icons-pack/react-simple-icons";
+import { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function Footer() {
+    const [siteLogo, setSiteLogo] = useState("");
+    const [socials, setSocials] = useState({
+        facebook: "#",
+        instagram: "#",
+        x: "#",
+        tiktok: "#",
+        telegram: "#"
+    });
+    const [supabase] = useState(() => createClient());
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const { data } = await supabase.from("settings").select("*");
+                if (data) {
+                    const getVal = (key: string, fallback: string) => data.find(s => s.key === key)?.value || fallback;
+                    setSiteLogo(getVal("site_logo_url", ""));
+                    setSocials({
+                        facebook: getVal("social_facebook", "#"),
+                        instagram: getVal("social_instagram", "#"),
+                        x: getVal("social_x", "#"),
+                        tiktok: getVal("social_tiktok", "#"),
+                        telegram: getVal("social_telegram", "#")
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching settings in footer:", err);
+            }
+        };
+        fetchSettings();
+    }, [supabase]);
     return (
         <footer className="w-full border-t border-white/5 py-16 md:py-32 px-6 glass relative mt-auto">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-start gap-16 md:gap-24 text-center md:text-left">
                 <div className="max-w-md flex flex-col items-center md:items-start">
                     <div className="flex items-center gap-4 mb-8 md:mb-10">
-                        <div className="w-12 h-12 md:w-14 md:h-14 bg-accent rounded-2xl flex items-center justify-center font-display font-black text-2xl md:text-3xl text-black italic">E</div>
-                        <span className="font-display text-3xl md:text-4xl font-black tracking-tighter uppercase leading-none text-left">Evolution <br /><span className="text-accent text-[10px] md:text-sm tracking-[0.5em]">Ajans</span></span>
+                        {siteLogo ? (
+                            <img src={siteLogo} alt="Evolution Ajans" className="h-12 md:h-14 w-auto object-contain" />
+                        ) : (
+                            <>
+                                <div className="w-12 h-12 md:w-14 md:h-14 bg-accent rounded-xl flex items-center justify-center font-display font-black text-2xl md:text-3xl text-black italic">E</div>
+                                <span className="font-display text-3xl md:text-4xl font-black tracking-tighter uppercase leading-none text-left">Evolution <br /><span className="text-accent text-[10px] md:text-sm tracking-[0.5em]">Ajans</span></span>
+                            </>
+                        )}
                     </div>
                     <p className="text-muted font-medium text-base md:text-lg leading-relaxed text-balance opacity-80 max-w-sm md:max-w-none">
                         Gastronomi dünyasında dijital dönüşümün öncüsü, Evolution Ajans. Sınırları zorlayan, cesur ve akıllı deneyimler için buradayız.
@@ -29,31 +68,31 @@ export default function Footer() {
                     <div className="flex flex-col gap-6 md:gap-8 items-center md:items-start sm:col-span-2 lg:col-span-1">
                         <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Sosyal Medya</span>
                         <div className="flex flex-row md:flex-col gap-6 md:gap-4 flex-wrap justify-center md:justify-start">
-                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                            <a href={socials.instagram} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
                                     <SiInstagram color="default" size={20} />
                                 </span> 
                                 Instagram
                             </a>
-                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                            <a href={socials.x} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
                                     <SiX color="#FFFFFF" size={20} />
                                 </span> 
                                 Twitter
                             </a>
-                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                            <a href={socials.tiktok} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
                                     <SiTiktok color="#FFFFFF" size={20} />
                                 </span> 
                                 TikTok
                             </a>
-                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                            <a href={socials.telegram} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
                                     <SiTelegram color="default" size={20} />
                                 </span> 
                                 Telegram
                             </a>
-                            <a href="#" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
+                            <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent text-sm font-black uppercase tracking-widest transition-all flex items-center gap-4 group">
                                 <span className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-accent/10 transition-all">
                                     <SiFacebook color="default" size={20} />
                                 </span> 

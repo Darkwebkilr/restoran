@@ -15,7 +15,42 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
     const [uploadingImage, setUploadingImage] = useState(false);
     const [videos, setVideos] = useState<string[]>(restaurant.videos || []);
     const [uploadingVideo, setUploadingVideo] = useState(false);
+    const [logoUrl, setLogoUrl] = useState(restaurant.logo_url || "");
+    const [uploadingLogo, setUploadingLogo] = useState(false);
     const [supabase] = useState(() => createClient());
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingLogo(true);
+        try {
+            const compressedBlob = await compressImage(file, 600, 0.8);
+            const fileExt = "jpg";
+            const fileName = `${restaurant.id}/logos/${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('restaurant-photos')
+                .upload(fileName, compressedBlob, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: 'image/jpeg'
+                });
+
+            if (uploadError) throw new Error(uploadError.message);
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('restaurant-photos')
+                .getPublicUrl(fileName);
+
+            setLogoUrl(publicUrl);
+        } catch (err: any) {
+            console.error("Logo yükleme hatası:", err);
+            alert("Logo yüklenirken bir hata oluştu: " + err.message);
+        } finally {
+            setUploadingLogo(false);
+        }
+    };
 
     const toggleFeature = (feature: string) => {
         if (selectedFeatures.includes(feature)) {
@@ -23,6 +58,13 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
         } else {
             setSelectedFeatures([...selectedFeatures, feature]);
         }
+    };
+
+    const handleAddCustomFeature = (value: string) => {
+        const trimmed = value.trim();
+        if (!trimmed) return;
+        if (selectedFeatures.includes(trimmed)) return;
+        setSelectedFeatures([...selectedFeatures, trimmed]);
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,6 +233,46 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                     </div>
                 </div>
 
+                {/* Logo Ayarları */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">İşletme Logosu (Kayan Bant İçin)</label>
+                    <input type="hidden" name="logoUrl" value={logoUrl} />
+                    <div className="flex items-center gap-6">
+                        {logoUrl ? (
+                            <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center p-2">
+                                <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
+                                <button
+                                    type="button"
+                                    onClick={() => setLogoUrl("")}
+                                    className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors shadow-lg text-[10px] font-bold cursor-pointer"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ) : (
+                            uploadingLogo ? (
+                                <div className="w-24 h-24 bg-white/5 border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center animate-pulse">
+                                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">YÜKLENİYOR...</span>
+                                </div>
+                            ) : (
+                                <label className="w-24 h-24 bg-white/5 border border-dashed border-white/10 hover:border-accent/40 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-white/[0.08] group">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={handleLogoUpload} 
+                                        className="hidden" 
+                                    />
+                                    <span className="text-xl mb-1 text-zinc-400 group-hover:text-accent group-hover:scale-110 transition-all">+</span>
+                                    <span className="text-[8px] font-black text-zinc-400 group-hover:text-accent uppercase tracking-widest text-center px-1">Logo Yükle</span>
+                                </label>
+                            )
+                        )}
+                        <div className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider flex-1">
+                            Sayfanın en üstündeki kayan logo bandında gösterilmek üzere işletmenizin logosunu (PNG/SVG önerilir) buraya yükleyin.
+                        </div>
+                    </div>
+                </div>
+
                 {/* Fotoğraflar Galeri Yönetimi */}
                 <div className="space-y-4 pt-6 border-t border-white/5">
                     <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">İşletme Fotoğrafları</label>
@@ -266,9 +348,11 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                 {/* Özellikler */}
                 <div className="space-y-6 pt-4 border-t border-white/5">
                     <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Sunulan Olanaklar</label>
+                    
+                    {/* Mevcut Olanak Listesi */}
                     <div className="flex flex-wrap gap-3">
                         {FEATURES.map(f => (
-                            <label key={f} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all cursor-pointer ${selectedFeatures.includes(f) ? "bg-white text-black border-white" : "bg-white/5 border-white/10 hover:border-white/20 text-zinc-300"}`}>
+                            <label key={f} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all cursor-pointer ${selectedFeatures.includes(f) ? "bg-white text-black border-white font-black" : "bg-white/5 border-white/10 hover:border-white/20 text-zinc-300"}`}>
                                 <input 
                                     type="checkbox" 
                                     name="features" 
@@ -280,6 +364,59 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                                 <span className="text-[10px] font-black uppercase tracking-widest">{f}</span>
                             </label>
                         ))}
+
+                        {/* Özel Olanaklar (Dışarıdan klavyeyle eklenenler) */}
+                        {selectedFeatures.filter(f => !FEATURES.includes(f)).map(f => (
+                            <div
+                                key={f}
+                                className="flex items-center gap-2 px-6 py-3 rounded-2xl border bg-white text-black border-white font-black"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="features"
+                                    value={f}
+                                />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{f}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => toggleFeature(f)}
+                                    className="text-red-600 hover:text-red-800 transition-colors ml-1 font-bold text-xs cursor-pointer"
+                                    title="Sil"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Klavyeden Olanak Ekleme Alanı */}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-2">
+                        <input
+                            type="text"
+                            id="custom-feature-input"
+                            placeholder="Özel olanak yazın... (Örn. Şömine, Çocuk Parkı)"
+                            className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-xs text-white placeholder:text-white/20 w-full sm:w-80"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleAddCustomFeature((e.target as HTMLInputElement).value);
+                                    (e.target as HTMLInputElement).value = "";
+                                }
+                            }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const input = document.getElementById("custom-feature-input") as HTMLInputElement;
+                                if (input) {
+                                    handleAddCustomFeature(input.value);
+                                    input.value = "";
+                                }
+                            }}
+                            className="px-8 py-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent text-zinc-300 font-black rounded-2xl text-[10px] tracking-widest uppercase transition-all cursor-pointer"
+                        >
+                            + EKLE
+                        </button>
                     </div>
                 </div>
             </div>

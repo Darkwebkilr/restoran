@@ -29,6 +29,19 @@ export default async function AdminSettingsPage() {
     console.warn("settings tablosu bulunamadı, varsayılan başlıklarla devam ediliyor.");
   }
 
+  // Kayan bantta yönetmek için tüm onaylı restoranları çekelim
+  let allRestaurants: any[] = [];
+  try {
+    const { data } = await supabase
+      .from("restaurants")
+      .select("id, name, show_in_marquee")
+      .eq("status", "approved")
+      .order("name");
+    allRestaurants = data || [];
+  } catch (e) {
+    console.warn("restaurants tablosu veya show_in_marquee kolonu bulunamadı.");
+  }
+
   // Değerleri eşleyelim
   const getSetting = (key: string, defaultValue: string) => {
     return settingsList.find(s => s.key === key)?.value || defaultValue;
@@ -39,7 +52,14 @@ export default async function AdminSettingsPage() {
     categories_title: getSetting("categories_title", "ÖNE ÇIKAN KATEGORİLER"),
     featured_title: getSetting("featured_title", "SEÇKİN MASALAR"),
     how_it_works_title: getSetting("how_it_works_title", "SİSTEM NASIL İŞLER?"),
-    marquee_text: getSetting("marquee_text", "EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ")
+    marquee_text: getSetting("marquee_text", "EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ"),
+    site_logo_url: getSetting("site_logo_url", ""),
+    social_facebook: getSetting("social_facebook", ""),
+    social_instagram: getSetting("social_instagram", ""),
+    social_x: getSetting("social_x", ""),
+    social_tiktok: getSetting("social_tiktok", ""),
+    social_telegram: getSetting("social_telegram", ""),
+    whatsapp_number: getSetting("whatsapp_number", "")
   };
 
   return (
@@ -67,7 +87,7 @@ export default async function AdminSettingsPage() {
 
 
         {/* Edit Form */}
-        <AdminSettingsForm initialSettings={currentSettings} />
+        <AdminSettingsForm initialSettings={currentSettings} allRestaurants={allRestaurants} />
 
       </div>
     </main>

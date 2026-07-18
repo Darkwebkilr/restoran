@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import DeleteRestaurantButton from "@/components/DeleteRestaurantButton";
+import ApproveRestaurantButton from "@/components/ApproveRestaurantButton";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -53,12 +54,7 @@ export default async function AdminDashboard() {
 
   const { count: userCount } = await supabase.from("profiles").select("*", { count: 'exact', head: true });
 
-  async function updateStatus(id: string, status: 'approved' | 'rejected') {
-    "use server";
-    const supabase = await createClient();
-    await supabase.from("restaurants").update({ status }).eq("id", id);
-    revalidatePath("/dashboard/admin");
-  }
+
 
   async function deleteRestaurant(id: string) {
     "use server";
@@ -136,6 +132,18 @@ export default async function AdminDashboard() {
                 className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
             >
                 📢 REKLAMLARI YÖNET
+            </Link>
+            <Link
+                href="/dashboard/admin/marquee"
+                className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
+            >
+                ⭐ KAYAN MEKANLARI YÖNET
+            </Link>
+            <Link
+                href="/dashboard/admin/featured-ads"
+                className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
+            >
+                🎯 SPONSORLU MEKANLARI YÖNET
             </Link>
             <Link
                 href="/dashboard/admin/settings"
@@ -333,12 +341,18 @@ export default async function AdminDashboard() {
                             {/* İşlem Butonları */}
                             <div className="lg:w-80 flex flex-col justify-center gap-4 border-t lg:border-t-0 lg:border-l border-white/5 pt-8 lg:pt-0 lg:pl-12">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-4 text-center">İşletme Onayı</p>
-                                <form action={async () => { "use server"; await updateStatus(rest.id, 'approved'); }}>
-                                    <button className="w-full py-6 bg-green-500 text-black font-black rounded-3xl text-[11px] tracking-[0.2em] uppercase hover:scale-105 transition-all shadow-[0_0_40px_rgba(34,197,94,0.3)]">BAŞVURUYU ONAYLA</button>
-                                </form>
-                                <form action={async () => { "use server"; await updateStatus(rest.id, 'rejected'); }}>
-                                    <button className="w-full py-6 bg-white/5 border border-white/10 text-white font-black rounded-3xl text-[11px] tracking-[0.2em] uppercase hover:bg-red-500 hover:text-black transition-all">REDDET</button>
-                                </form>
+                                <ApproveRestaurantButton 
+                                    id={rest.id}
+                                    status="approved"
+                                    label="BAŞVURUYU ONAYLA"
+                                    className="w-full py-6 bg-green-500 text-black font-black rounded-3xl text-[11px] tracking-[0.2em] uppercase hover:scale-105 transition-all shadow-[0_0_40px_rgba(34,197,94,0.3)] text-center flex items-center justify-center"
+                                />
+                                <ApproveRestaurantButton 
+                                    id={rest.id}
+                                    status="rejected"
+                                    label="REDDET"
+                                    className="w-full py-6 bg-white/5 border border-white/10 text-white font-black rounded-3xl text-[11px] tracking-[0.2em] uppercase hover:bg-red-500 hover:text-black transition-all text-center flex items-center justify-center"
+                                />
                                 <p className="text-[9px] text-zinc-300 text-center font-bold uppercase mt-4">ID: {rest.slug}</p>
                             </div>
                         </div>

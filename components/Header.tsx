@@ -13,6 +13,15 @@ export default function Header() {
     const [role, setRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
+    const [siteLogo, setSiteLogo] = useState("");
+    const [socials, setSocials] = useState({
+        facebook: "#",
+        instagram: "#",
+        x: "#",
+        tiktok: "#",
+        telegram: "#"
+    });
+    const [whatsappNumber, setWhatsappNumber] = useState("");
 
     // Supabase client referansının her renderda yeniden oluşturulmasını engellemek için useState kullanıyoruz
     const [supabase] = useState(() => createClient());
@@ -61,6 +70,27 @@ export default function Header() {
     useEffect(() => {
         setMounted(true);
         checkUser();
+
+        const fetchSettings = async () => {
+            try {
+                const { data } = await supabase.from("settings").select("*");
+                if (data) {
+                    const getVal = (key: string, fallback: string) => data.find(s => s.key === key)?.value || fallback;
+                    setSiteLogo(getVal("site_logo_url", ""));
+                    setWhatsappNumber(getVal("whatsapp_number", ""));
+                    setSocials({
+                        facebook: getVal("social_facebook", "#"),
+                        instagram: getVal("social_instagram", "#"),
+                        x: getVal("social_x", "#"),
+                        tiktok: getVal("social_tiktok", "#"),
+                        telegram: getVal("social_telegram", "#")
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching settings in header mount:", err);
+            }
+        };
+        fetchSettings();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log("[AuthDebug] onAuthStateChange - event:", event, "session:", session);
@@ -147,11 +177,17 @@ export default function Header() {
                 {/* Logo */}
                 <div className="flex-1 flex justify-start lg:justify-center">
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 group relative z-[110]">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-accent rounded-xl flex items-center justify-center font-display font-black text-lg md:text-xl text-black italic group-hover:scale-110 transition-transform">E</div>
-                        <div className="flex flex-col">
-                            <span className="font-display text-base md:text-lg font-black tracking-tighter uppercase text-white leading-none">Evolution</span>
-                            <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-accent uppercase leading-none mt-1">Ajans</span>
-                        </div>
+                        {siteLogo ? (
+                            <img src={siteLogo} alt="Evolution Ajans" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+                        ) : (
+                            <>
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-accent rounded-xl flex items-center justify-center font-display font-black text-lg md:text-xl text-black italic group-hover:scale-110 transition-transform">E</div>
+                                <div className="flex flex-col">
+                                    <span className="font-display text-base md:text-lg font-black tracking-tighter uppercase text-white leading-none">Evolution</span>
+                                    <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-accent uppercase leading-none mt-1">Ajans</span>
+                                </div>
+                            </>
+                        )}
                     </Link>
                 </div>
 
@@ -159,11 +195,11 @@ export default function Header() {
                 <div className="hidden md:flex items-center gap-8 lg:gap-14 flex-1 justify-end">
                     <div className="flex flex-col items-end gap-3">
                         <div className="flex flex-row gap-6 items-center">
-                            <SiFacebook color="default" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
-                            <SiInstagram color="default" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
-                            <SiX color="#FFFFFF" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
-                            <SiTiktok color="#FFFFFF" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
-                            <SiTelegram color="default" className="cursor-pointer hover:opacity-85 transition-all" size={20} />
+                            <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-all"><SiFacebook color="default" size={20} /></a>
+                            <a href={socials.instagram} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-all"><SiInstagram color="default" size={20} /></a>
+                            <a href={socials.x} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-all"><SiX color="#FFFFFF" size={20} /></a>
+                            <a href={socials.tiktok} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-all"><SiTiktok color="#FFFFFF" size={20} /></a>
+                            <a href={socials.telegram} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-all"><SiTelegram color="default" size={20} /></a>
                         </div>
                         <div className="flex items-center gap-8">
                             <Link href="/#how-it-works" className="text-[11px] font-black tracking-[0.2em] text-white/60 hover:text-accent transition-colors uppercase whitespace-nowrap">Nasıl Çalışır?</Link>
@@ -215,11 +251,11 @@ export default function Header() {
                                 <Link onClick={() => setIsMenuOpen(false)} href={dashboardLink} className="font-display text-4xl font-black text-white uppercase italic mb-2 tracking-tighter">Panelim.</Link>
                                 <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="w-full max-w-xs py-5 bg-red-500/10 text-red-500 font-black rounded-2xl text-[10px] tracking-[0.3em] uppercase border border-red-500/20 mb-4">ÇIKIŞ YAP</button>
                                 <div className="flex gap-6 justify-center mt-4">
-                                    <SiFacebook className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiInstagram className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiX className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiTiktok className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiTelegram className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <a href={socials.facebook} target="_blank" rel="noopener noreferrer"><SiFacebook className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.instagram} target="_blank" rel="noopener noreferrer"><SiInstagram className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.x} target="_blank" rel="noopener noreferrer"><SiX className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.tiktok} target="_blank" rel="noopener noreferrer"><SiTiktok className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.telegram} target="_blank" rel="noopener noreferrer"><SiTelegram className="text-white/40 hover:text-white transition-colors" size={24} /></a>
                                 </div>
                             </>
                         ) : (
@@ -227,17 +263,18 @@ export default function Header() {
                                 <Link onClick={() => setIsMenuOpen(false)} href="/login/member" className="w-full py-5 glass text-white font-black rounded-2xl text-[11px] tracking-[0.2em] uppercase border border-white/10">ÜYE GİRİŞİ</Link>
                                 <Link onClick={() => setIsMenuOpen(false)} href="/login/restaurant" className="w-full py-5 bg-accent text-black font-black rounded-2xl text-[11px] tracking-[0.2em] uppercase shadow-lg">RESTORAN GİRİŞİ</Link>
                                 <div className="flex gap-6 justify-center mt-8">
-                                    <SiFacebook className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiInstagram className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiX className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiTiktok className="text-white/40 hover:text-white transition-colors" size={24} />
-                                    <SiTelegram className="text-white/40 hover:text-white transition-colors" size={24} />
+                                    <a href={socials.facebook} target="_blank" rel="noopener noreferrer"><SiFacebook className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.instagram} target="_blank" rel="noopener noreferrer"><SiInstagram className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.x} target="_blank" rel="noopener noreferrer"><SiX className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.tiktok} target="_blank" rel="noopener noreferrer"><SiTiktok className="text-white/40 hover:text-white transition-colors" size={24} /></a>
+                                    <a href={socials.telegram} target="_blank" rel="noopener noreferrer"><SiTelegram className="text-white/40 hover:text-white transition-colors" size={24} /></a>
                                 </div>
                             </div>
                         )
                     )}
                 </div>
             </div>
+
         </>
     );
 }

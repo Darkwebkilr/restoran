@@ -69,7 +69,16 @@ export async function signup(prevState: any, formData: FormData) {
       options: { data: { full_name: fullName, role: role } },
     });
 
-    if (error) return { error: translateError(error.message), email, fullName, restaurantName };
+    if (error) return { 
+      error: translateError(error.message), 
+      email, 
+      fullName, 
+      restaurantName,
+      phone,
+      address,
+      category,
+      description
+    };
 
     if (role === "restaurant" && data.user) {
       await supabase.from("restaurants").insert({
@@ -98,7 +107,16 @@ export async function signup(prevState: any, formData: FormData) {
       };
     }
   } catch (e: any) {
-    return { error: `Kayıt sırasında bir hata oluştu: ${e.message}`, email, fullName, restaurantName };
+    return { 
+      error: `Kayıt sırasında bir hata oluştu: ${e.message}`, 
+      email, 
+      fullName, 
+      restaurantName,
+      phone,
+      address,
+      category,
+      description
+    };
   }
 
   if (redirectUrl) {

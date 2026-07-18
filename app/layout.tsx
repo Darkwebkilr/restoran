@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SiWhatsapp } from "@icons-pack/react-simple-icons";
+import { createClient } from "@/utils/supabase/server";
 
 const bricolage = Bricolage_Grotesque({
     variable: "--font-display",
@@ -20,11 +21,26 @@ export const metadata: Metadata = {
     description: "En seçkin restoranlarda yerini ayırt, kapıda sıra bekleme.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    let whatsappNumber = "";
+    try {
+        const supabase = await createClient();
+        const { data } = await supabase
+            .from("settings")
+            .select("value")
+            .eq("key", "whatsapp_number")
+            .maybeSingle();
+        if (data) {
+            whatsappNumber = data.value || "";
+        }
+    } catch (e) {
+        console.warn("Failed to fetch WhatsApp number in RootLayout:", e);
+    }
+
     return (
         <html
             lang="tr"
@@ -32,10 +48,22 @@ export default function RootLayout({
         >
             <body className="min-h-full  flex flex-col font-sans bg-background text-foreground selection:bg-accent selection:text-black">
                 <Header />
-                <div className="z-50 cursor-pointer fixed bottom-12 right-6 text-white items-center text-lg bg-green-600/50 rounded-2xl p-2 gap-3 flex">
-                    <span>Whatsapp Destek</span>
-                    <SiWhatsapp className="" color="default" size={48}></SiWhatsapp>
-                </div>
+                {whatsappNumber ? (
+                    <a
+                        href={`https://wa.me/${whatsappNumber}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="z-50 cursor-pointer fixed bottom-12 right-6 text-white items-center text-lg bg-green-600/50 hover:bg-green-600/70 hover:scale-105 transition-all duration-300 rounded-2xl p-2 gap-3 flex decoration-none"
+                    >
+                        <span>Whatsapp Destek</span>
+                        <SiWhatsapp className="" color="default" size={48}></SiWhatsapp>
+                    </a>
+                ) : (
+                    <div className="z-50 cursor-pointer fixed bottom-12 right-6 text-white items-center text-lg bg-green-600/50 rounded-2xl p-2 gap-3 flex">
+                        <span>Whatsapp Destek</span>
+                        <SiWhatsapp className="" color="default" size={48}></SiWhatsapp>
+                    </div>
+                )}
                 {children}
                 <Footer />
             </body>

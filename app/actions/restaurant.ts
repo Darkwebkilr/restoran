@@ -366,3 +366,52 @@ export async function createRestaurantByAdmin(prevState: any, formData: FormData
     return { error: `Ekleme sırasında hata oluştu: ${e.message}` };
   }
 }
+
+export async function toggleMarquee(id: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ show_in_marquee: !currentStatus })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin/marquee");
+    revalidatePath("/dashboard/admin/settings");
+    return { success: true };
+}
+
+export async function toggleFeaturedAd(id: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ is_featured_ad: !currentStatus })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin/featured-ads");
+    return { success: true };
+}
+
+export async function updateRestaurantStatus(id: string, status: 'approved' | 'rejected') {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ status })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin");
+    return { success: true };
+}
