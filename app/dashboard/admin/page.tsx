@@ -128,22 +128,10 @@ export default async function AdminDashboard() {
                 ➕ YENİ RESTORAN EKLE
             </Link>
             <Link
-                href="/dashboard/admin/ads"
-                className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
+                href="/dashboard/admin/sponsorships"
+                className="px-8 py-4.5 bg-yellow-500 text-black font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all shadow-[0_0_30px_rgba(234,179,8,0.2)] uppercase italic flex items-center gap-2"
             >
-                📢 REKLAMLARI YÖNET
-            </Link>
-            <Link
-                href="/dashboard/admin/marquee"
-                className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
-            >
-                ⭐ KAYAN MEKANLARI YÖNET
-            </Link>
-            <Link
-                href="/dashboard/admin/featured-ads"
-                className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
-            >
-                🎯 SPONSORLU MEKANLARI YÖNET
+                📢 REKLAM & SPONSOR YÖNETİMİ
             </Link>
             <Link
                 href="/dashboard/admin/settings"

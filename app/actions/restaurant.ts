@@ -81,11 +81,19 @@ export async function updateRestaurantProfile(prevState: any, formData: FormData
       return { error: "İşletme adı ve adres alanları zorunludur." };
   }
 
+  const social_instagram = formData.get("social_instagram") as string || "";
+  const social_x = formData.get("social_x") as string || "";
+  const social_tiktok = formData.get("social_tiktok") as string || "";
+  const social_facebook = formData.get("social_facebook") as string || "";
+  const social_telegram = formData.get("social_telegram") as string || "";
+
   const photos = JSON.parse(photosJson || "[]") as string[];
   const videos = JSON.parse(videosJson || "[]") as string[];
+  const has_delivery = formData.get("has_delivery") === "true";
+  const is_ad_only = formData.get("isAdOnly") === "true";
 
   try {
-    const payload = {
+    const payload: any = {
       name,
       description,
       address: resolvedAddress,
@@ -95,22 +103,54 @@ export async function updateRestaurantProfile(prevState: any, formData: FormData
       photos,
       videos,
       district: district === "null" || !district ? null : district,
+      social_instagram,
+      social_x,
+      social_tiktok,
+      social_facebook,
+      social_telegram,
+      has_delivery,
+      is_ad_only,
       slug: name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
     };
 
-    const { error } = await supabase
+    let { error } = await supabase
       .from("restaurants")
       .update(payload)
       .eq("owner_id", user.id);
 
     if (error) {
-      if (error.message.includes('column "district"') || error.message.includes('does not exist')) {
-        delete (payload as any).district;
+      // Sütun bulunamadı hatası gelirse eksik sütunları silip tekrar dene (robust fallback)
+      if (error.message.includes('column') && (error.message.includes('does not exist') || error.message.includes('not found'))) {
+        if (error.message.includes("social_instagram")) delete payload.social_instagram;
+        if (error.message.includes("social_x")) delete payload.social_x;
+        if (error.message.includes("social_tiktok")) delete payload.social_tiktok;
+        if (error.message.includes("social_facebook")) delete payload.social_facebook;
+        if (error.message.includes("social_telegram")) delete payload.social_telegram;
+        if (error.message.includes("district")) delete payload.district;
+        if (error.message.includes("has_delivery")) delete payload.has_delivery;
+        if (error.message.includes("is_ad_only")) delete payload.is_ad_only;
+
         const { error: retryError } = await supabase
           .from("restaurants")
           .update(payload)
           .eq("owner_id", user.id);
-        if (retryError) throw retryError;
+        
+        if (retryError) {
+          // Hala başka bir sütun hatası varsa, hepsini silmeyi deneyip bir kez daha atlayalım
+          delete payload.social_instagram;
+          delete payload.social_x;
+          delete payload.social_tiktok;
+          delete payload.social_facebook;
+          delete payload.social_telegram;
+          delete payload.district;
+          delete payload.has_delivery;
+          delete payload.is_ad_only;
+          const { error: finalRetry } = await supabase
+            .from("restaurants")
+            .update(payload)
+            .eq("owner_id", user.id);
+          if (finalRetry) throw finalRetry;
+        }
       } else {
         throw error;
       }
@@ -176,8 +216,15 @@ export async function updateRestaurantByAdmin(prevState: any, formData: FormData
     await enforceFeaturedLimit(supabase);
   }
 
+  const social_instagram = formData.get("social_instagram") as string || "";
+  const social_x = formData.get("social_x") as string || "";
+  const social_tiktok = formData.get("social_tiktok") as string || "";
+  const social_facebook = formData.get("social_facebook") as string || "";
+  const social_telegram = formData.get("social_telegram") as string || "";
+  const has_delivery = formData.get("has_delivery") === "true";
+
   try {
-    const payload = {
+    const payload: any = {
       name,
       description,
       address: resolvedAddress,
@@ -189,25 +236,51 @@ export async function updateRestaurantByAdmin(prevState: any, formData: FormData
       status: status || undefined,
       district: district === "null" || !district ? null : district,
       is_featured: isFeatured,
+      social_instagram,
+      social_x,
+      social_tiktok,
+      social_facebook,
+      social_telegram,
+      has_delivery,
       slug: name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
     };
 
-    const { error } = await supabase
+    let { error } = await supabase
       .from("restaurants")
       .update(payload)
       .eq("id", restaurantId);
 
     if (error) {
-      if (error.message.includes('column "is_featured"') || error.message.includes('column "district"') || error.message.includes('does not exist')) {
-        delete (payload as any).is_featured;
-        if (error.message.includes('column "district"')) {
-          delete (payload as any).district;
-        }
+      if (error.message.includes('column') && (error.message.includes('does not exist') || error.message.includes('not found'))) {
+        if (error.message.includes("is_featured")) delete payload.is_featured;
+        if (error.message.includes("district")) delete payload.district;
+        if (error.message.includes("social_instagram")) delete payload.social_instagram;
+        if (error.message.includes("social_x")) delete payload.social_x;
+        if (error.message.includes("social_tiktok")) delete payload.social_tiktok;
+        if (error.message.includes("social_facebook")) delete payload.social_facebook;
+        if (error.message.includes("social_telegram")) delete payload.social_telegram;
+        if (error.message.includes("has_delivery")) delete payload.has_delivery;
+
         const { error: retryError } = await supabase
           .from("restaurants")
           .update(payload)
           .eq("id", restaurantId);
-        if (retryError) throw retryError;
+        
+        if (retryError) {
+          delete payload.is_featured;
+          delete payload.district;
+          delete payload.social_instagram;
+          delete payload.social_x;
+          delete payload.social_tiktok;
+          delete payload.social_facebook;
+          delete payload.social_telegram;
+          delete payload.has_delivery;
+          const { error: finalRetry } = await supabase
+            .from("restaurants")
+            .update(payload)
+            .eq("id", restaurantId);
+          if (finalRetry) throw finalRetry;
+        }
       } else {
         throw error;
       }
@@ -380,6 +453,7 @@ export async function toggleMarquee(id: string, currentStatus: boolean) {
     
     revalidatePath("/");
     revalidatePath("/dashboard/admin/marquee");
+    revalidatePath("/dashboard/admin/sponsorships");
     revalidatePath("/dashboard/admin/settings");
     return { success: true };
 }
@@ -397,6 +471,7 @@ export async function toggleFeaturedAd(id: string, currentStatus: boolean) {
     
     revalidatePath("/");
     revalidatePath("/dashboard/admin/featured-ads");
+    revalidatePath("/dashboard/admin/sponsorships");
     return { success: true };
 }
 
@@ -413,5 +488,71 @@ export async function updateRestaurantStatus(id: string, status: 'approved' | 'r
     
     revalidatePath("/");
     revalidatePath("/dashboard/admin");
+    return { success: true };
+}
+
+export async function toggleDeliveryStatus(id: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ has_delivery: !currentStatus })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin/delivery");
+    revalidatePath("/dashboard/admin/sponsorships");
+    return { success: true };
+}
+
+export async function toggleDeliveryAdStatus(id: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ is_delivery_ad: !currentStatus })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin/delivery");
+    revalidatePath("/dashboard/admin/sponsorships");
+    return { success: true };
+}
+
+export async function toggleFeaturedStatus(id: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ is_featured: !currentStatus })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin/sponsorships");
+    return { success: true };
+}
+
+export async function toggleAdOnlyStatus(id: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("restaurants")
+        .update({ is_ad_only: !currentStatus })
+        .eq("id", id);
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/dashboard/admin/sponsorships");
     return { success: true };
 }

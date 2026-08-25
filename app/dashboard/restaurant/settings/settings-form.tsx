@@ -17,6 +17,7 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [logoUrl, setLogoUrl] = useState(restaurant.logo_url || "");
     const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [hasDelivery, setHasDelivery] = useState(restaurant.has_delivery || false);
     const [supabase] = useState(() => createClient());
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -233,6 +234,63 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                     </div>
                 </div>
 
+                {/* Sosyal Medya Linkleri */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">Sosyal Medya Linkleri (Zorunlu Değildir)</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">Instagram</label>
+                            <input 
+                                type="text" 
+                                name="social_instagram" 
+                                defaultValue={restaurant.social_instagram || ""} 
+                                placeholder="https://instagram.com/kullaniciadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">X (Twitter)</label>
+                            <input 
+                                type="text" 
+                                name="social_x" 
+                                defaultValue={restaurant.social_x || ""} 
+                                placeholder="https://x.com/kullaniciadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">TikTok</label>
+                            <input 
+                                type="text" 
+                                name="social_tiktok" 
+                                defaultValue={restaurant.social_tiktok || ""} 
+                                placeholder="https://tiktok.com/@kullaniciadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">Facebook</label>
+                            <input 
+                                type="text" 
+                                name="social_facebook" 
+                                defaultValue={restaurant.social_facebook || ""} 
+                                placeholder="https://facebook.com/sayfaadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">Telegram</label>
+                            <input 
+                                type="text" 
+                                name="social_telegram" 
+                                defaultValue={restaurant.social_telegram || ""} 
+                                placeholder="https://t.me/kanaladi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Logo Ayarları */}
                 <div className="pt-6 border-t border-white/5 space-y-4">
                     <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">İşletme Logosu (Kayan Bant İçin)</label>
@@ -270,6 +328,24 @@ export default function RestaurantSettingsForm({ restaurant }: { restaurant: any
                         <div className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider flex-1">
                             Sayfanın en üstündeki kayan logo bandında gösterilmek üzere işletmenizin logosunu (PNG/SVG önerilir) buraya yükleyin.
                         </div>
+                    </div>
+                </div>
+
+                {/* Paket Servis Ayarı */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">Paket Servis Hizmeti</label>
+                    <input type="hidden" name="has_delivery" value={hasDelivery ? "true" : "false"} />
+                    <div className="flex items-center gap-4">
+                        <button
+                            type="button"
+                            onClick={() => setHasDelivery(!hasDelivery)}
+                            className={`w-14 h-8 rounded-full transition-all duration-300 relative p-1 cursor-pointer ${hasDelivery ? "bg-accent" : "bg-white/10 border border-white/10"}`}
+                        >
+                            <div className={`w-6 h-6 rounded-full transition-transform duration-300 ${hasDelivery ? "translate-x-6 bg-black" : "translate-x-0 bg-white"}`} />
+                        </button>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-zinc-300">
+                            {hasDelivery ? "PAKET SERVİS AKTİF" : "PAKET SERVİS PASİF"}
+                        </span>
                     </div>
                 </div>
 

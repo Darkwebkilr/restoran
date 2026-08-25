@@ -24,7 +24,9 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
     const [logoUrl, setLogoUrl] = useState(restaurant.logo_url || "");
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [showInMarquee, setShowInMarquee] = useState(restaurant.show_in_marquee || false);
+    const [isAdOnly, setIsAdOnly] = useState(restaurant.is_ad_only || false);
     const [isFeatured, setIsFeatured] = useState<boolean>(restaurant.is_featured || false);
+    const [hasDelivery, setHasDelivery] = useState(restaurant.has_delivery || false);
     const [supabase] = useState(() => createClient());
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -299,8 +301,65 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                     </div>
                 </div>
 
+                {/* Sosyal Medya Linkleri */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">Sosyal Medya Linkleri (Zorunlu Değildir)</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">Instagram</label>
+                            <input 
+                                type="text" 
+                                name="social_instagram" 
+                                defaultValue={restaurant.social_instagram || ""} 
+                                placeholder="https://instagram.com/kullaniciadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">X (Twitter)</label>
+                            <input 
+                                type="text" 
+                                name="social_x" 
+                                defaultValue={restaurant.social_x || ""} 
+                                placeholder="https://x.com/kullaniciadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">TikTok</label>
+                            <input 
+                                type="text" 
+                                name="social_tiktok" 
+                                defaultValue={restaurant.social_tiktok || ""} 
+                                placeholder="https://tiktok.com/@kullaniciadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">Facebook</label>
+                            <input 
+                                type="text" 
+                                name="social_facebook" 
+                                defaultValue={restaurant.social_facebook || ""} 
+                                placeholder="https://facebook.com/sayfaadi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">Telegram</label>
+                            <input 
+                                type="text" 
+                                name="social_telegram" 
+                                defaultValue={restaurant.social_telegram || ""} 
+                                placeholder="https://t.me/kanaladi"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20" 
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Logo & Kayan Bant Ayarları */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-white/5">
                     <div className="space-y-4">
                         <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">İşletme Logosu (Kayan Bant İçin)</label>
                         <input type="hidden" name="logoUrl" value={logoUrl} />

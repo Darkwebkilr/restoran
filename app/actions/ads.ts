@@ -70,7 +70,7 @@ export async function updateAdByAdmin(prevState: any, formData: FormData) {
     if (resultError) throw resultError;
 
     revalidatePath("/");
-    revalidatePath("/dashboard/admin/ads");
+    revalidatePath("/dashboard/admin/sponsorships");
     return { success: true };
 
   } catch (e: any) {

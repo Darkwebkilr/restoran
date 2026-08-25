@@ -151,7 +151,7 @@ export default async function RestaurantsPage({
                         </div>
                     ) : (
                         restaurants.map((res) => (
-                            <Link key={res.id} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-100">
+                            <Link key={res.id} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-200 ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
                                 <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
                                     <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                     {/* Kategori Badge (Sol Üst) - Mor arka plan */}
@@ -162,17 +162,27 @@ export default async function RestaurantsPage({
                                     <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
                                         <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
                                     </div>
+                                    {/* Reklam/Sponsorlu Badge (Sağ Üst) - Altın sarısı */}
+                                    {res.is_featured_ad && (
+                                        <div className="absolute top-4 right-4 bg-accent px-3 py-1.5 rounded-lg shadow-lg z-20 animate-pulse">
+                                            <span className="text-[9px] font-black text-black uppercase tracking-widest">★ SPONSORLU</span>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="pt-4 px-4 pb-3 flex-1 flex flex-col justify-between relative">
+                                <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                     {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                    <div className="absolute -top-4 left-4 w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20">
-                                        <span className="text-[10px] font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                    <div className="absolute -top-7 left-5 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
+                                        {res.logo_url ? (
+                                            <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-lg font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                        )}
                                     </div>
-                                    <div className="mt-2 flex flex-col gap-1.5">
-                                        <h3 className="font-display text-sm font-black text-gray-900 uppercase leading-tight tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
-                                        <div className="flex items-center gap-1 text-gray-500">
-                                            <span className="text-[10px]">📞</span>
-                                            <span className="text-[9px] font-black uppercase tracking-wider leading-none">
+                                    <div className="mt-2 flex flex-col gap-2">
+                                        <h3 className="font-display text-lg font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                        <div className="flex items-center gap-1.5 text-gray-600">
+                                            <span className="text-sm">📞</span>
+                                            <span className="text-xs md:text-sm font-black uppercase tracking-wider leading-none">
                                                 {res.phone || "Telefon Belirtilmedi"}
                                             </span>
                                         </div>

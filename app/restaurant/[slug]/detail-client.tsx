@@ -79,7 +79,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
       {/* Video Modal */}
       {isVideoOpen && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4" onClick={() => setIsVideoOpen(false)}>
-           <div className="relative w-full max-w-4xl aspect-video rounded-[3rem] overflow-hidden border border-white/10 bg-black flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+           <div className="relative w-full max-w-4xl aspect-video rounded-[3rem] overflow-hidden border border-white/20 bg-black flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
                  {restaurant?.videos && restaurant.videos.length > 0 ? (
                      <video src={restaurant.videos[0]} controls autoPlay className="w-full h-full object-contain" />
                  ) : (
@@ -97,7 +97,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
       <div className="max-w-7xl mx-auto px-6 pt-8 mb-6">
         <Link
           href="/restaurants"
-          className="px-6 py-3.5 glass text-white/80 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic inline-block"
+          className="px-6 py-3.5 glass text-white/80 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/20 hover:bg-white/5 transition-all italic inline-block"
         >
           ← Geri Dön
         </Link>
@@ -106,7 +106,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
       <div className="max-w-7xl mx-auto px-6 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Sol İçerik: Restoran Bilgileri */}
         <div className="lg:col-span-2">
-          <div className="relative aspect-video rounded-[3rem] md:rounded-[4rem] overflow-hidden border-2 border-white/10 mb-10 shadow-2xl group">
+          <div className="relative aspect-video rounded-[3rem] md:rounded-[4rem] overflow-hidden border-2 border-white/20 mb-10 shadow-2xl group">
             <Image 
                 src={restaurant?.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1200&auto=format&fit=crop"} 
                 alt={restaurant?.name} 
@@ -114,8 +114,8 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                 className="object-cover group-hover:scale-105 transition-transform duration-[10s]" 
                 priority 
             />
-            <div className="absolute top-8 left-8 glass px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase italic border border-white/20">Onaylı Mekan</div>
-            <div className="absolute bottom-8 right-8 glass px-6 py-3 rounded-2xl border border-white/10">
+            <div className="absolute top-8 left-8 glass px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase italic border border-white/30">Onaylı Mekan</div>
+            <div className="absolute bottom-8 right-8 glass px-6 py-3 rounded-2xl border border-white/20">
                 <span className="text-xs font-black text-accent uppercase italic">⭐ {restaurant?.rating || '4.9'} | {restaurant?.reviews || '120'} Yorum</span>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
           <div className="mb-12">
             <Link
                 href="/restaurants"
-                className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6"
+                className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/20 hover:bg-white/5 transition-all italic mb-6"
             >
                 ← KEŞFET'E GERİ DÖN
             </Link>
@@ -134,11 +134,11 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
             
             <div className="flex gap-4 mb-12">
               <button onClick={() => setSelectedIndex(0)} className="px-10 py-5 bg-accent text-black font-black rounded-2xl text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase italic shadow-xl">GÖRSELLER</button>
-              <button onClick={() => setIsVideoOpen(true)} className="px-10 py-5 glass text-white font-black rounded-2xl text-[10px] tracking-widest border border-white/20 hover:border-accent transition-all uppercase italic">VİDEO</button>
+              <button onClick={() => setIsVideoOpen(true)} className="px-10 py-5 glass text-white font-black rounded-2xl text-[10px] tracking-widest border border-white/30 hover:border-accent transition-all uppercase italic">VİDEO</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
+                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/20">
                     <span className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl">📍</span>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-accent font-black tracking-widest uppercase italic mb-1">Konum</span>
@@ -147,14 +147,14 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                         </span>
                     </div>
                 </div>
-                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
+                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/20">
                     <span className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl">🍽️</span>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-accent font-black tracking-widest uppercase italic mb-1">Mutfak Türü</span>
                         <span className="text-sm font-bold uppercase text-white/90">{restaurant?.category || 'Dünya Mutfağı'}</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
+                <div className="flex items-center gap-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/20">
                     <span className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl">📞</span>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-accent font-black tracking-widest uppercase italic mb-1">Rezervasyon Hattı</span>
@@ -167,14 +167,14 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
 
             <div className="flex flex-wrap gap-3 mb-20">
                 {(restaurant?.features || ['Vale Park', 'Dış Mekan', 'VIP Salon', 'Alkol Servisi']).map((f: string) => (
-                    <span key={f} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-black tracking-widest uppercase text-zinc-300 hover:text-accent hover:border-accent transition-colors cursor-default">{f}</span>
+                    <span key={f} className="px-6 py-3 rounded-full bg-white/5 border border-white/20 text-[10px] font-black tracking-widest uppercase text-zinc-300 hover:text-accent hover:border-accent transition-colors cursor-default">{f}</span>
                 ))}
             </div>
 
             {/* Google Haritalar */}
             <div className="mb-20">
                 <h2 className="font-display text-3xl md:text-5xl font-black mb-8 tracking-tighter uppercase italic">MEKAN <span className="text-accent">KONUMU.</span></h2>
-                <div className="w-full aspect-[21/9] rounded-[3.5rem] overflow-hidden border border-white/10 relative bg-white/5 shadow-2xl group mb-6">
+                <div className="w-full aspect-[21/9] rounded-[3.5rem] overflow-hidden border border-white/20 relative bg-white/5 shadow-2xl group mb-6">
                     <iframe 
                         src={getEmbedUrl(restaurant.address, restaurant.name, restaurant.district)} 
                         width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) contrast(1.2) brightness(0.8)' }} allowFullScreen={true} loading="lazy" className="opacity-80 group-hover:opacity-100 group-hover:filter-none transition-all duration-700"
@@ -198,7 +198,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
 
         {/* Sağ İçerik: Rezervasyon */}
         <div className="lg:col-span-1">
-          <div className="sticky top-32 glass p-8 md:p-10 rounded-[3.5rem] border border-white/10 shadow-2xl">
+          <div className="sticky top-32 glass p-8 md:p-10 rounded-[3.5rem] border border-white/20 shadow-2xl">
             <h3 className="font-display text-2xl md:text-3xl font-black mb-10 italic uppercase tracking-tighter">Rezervasyon</h3>
             
             {userRole === "admin" ? (
@@ -215,7 +215,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
 
                     <div className="space-y-4">
                         <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2">MİSAFİR SAYISI</label>
-                        <select name="partySize" required className="w-full bg-black border border-white/10 rounded-[1.5rem] px-6 py-5 outline-none focus:border-accent font-black text-sm text-white appearance-none cursor-pointer uppercase tracking-widest">
+                        <select name="partySize" required className="w-full bg-black border border-white/20 rounded-[1.5rem] px-6 py-5 outline-none focus:border-accent font-black text-sm text-white appearance-none cursor-pointer uppercase tracking-widest">
                             <option value="2">2 KİŞİ</option>
                             <option value="3">3 KİŞİ</option>
                             <option value="4">4 KİŞİ</option>
@@ -227,7 +227,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                         <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2">TARİH SEÇİMİ</label>
                         <div className="grid grid-cols-4 gap-2">
                             {availableDates.map(d => (
-                                <button type="button" key={d.full} onClick={() => setSelectedDate(d.full)} className={`flex flex-col items-center justify-center py-4 rounded-[1.2rem] border transition-all ${selectedDate === d.full ? "bg-white text-black border-white scale-105 shadow-xl" : "bg-white/5 border-white/10 hover:border-white/30 text-zinc-300"}`}>
+                                <button type="button" key={d.full} onClick={() => setSelectedDate(d.full)} className={`flex flex-col items-center justify-center py-4 rounded-[1.2rem] border transition-all ${selectedDate === d.full ? "bg-white text-black border-white scale-105 shadow-xl" : "bg-white/5 border-white/20 hover:border-white/30 text-zinc-300"}`}>
                                     <span className="text-[8px] font-black uppercase opacity-60 mb-1">{d.weekday}</span>
                                     <span className="text-base font-black">{d.day}</span>
                                     <span className="text-[8px] font-black uppercase opacity-60 mt-1">{d.month}</span>
@@ -242,7 +242,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                             {times.map(t => {
                                 const isBooked = bookedTimes.includes(t);
                                 return (
-                                    <button type="button" key={t} disabled={isBooked} onClick={() => setSelectedTime(t)} className={`py-4 text-[11px] font-black rounded-[1.2rem] border transition-all uppercase tracking-widest ${selectedTime === t ? "bg-accent text-black border-accent shadow-[0_0_30px_rgba(245,158,11,0.3)] scale-105" : isBooked ? "bg-white/5 text-white/10 border-white/5 cursor-not-allowed line-through" : "bg-white/5 border-white/10 hover:border-white/30 text-zinc-300"}`}>
+                                    <button type="button" key={t} disabled={isBooked} onClick={() => setSelectedTime(t)} className={`py-4 text-[11px] font-black rounded-[1.2rem] border transition-all uppercase tracking-widest ${selectedTime === t ? "bg-accent text-black border-accent shadow-[0_0_30px_rgba(245,158,11,0.3)] scale-105" : isBooked ? "bg-white/5 text-white/10 border-white/15 cursor-not-allowed line-through" : "bg-white/5 border-white/20 hover:border-white/30 text-zinc-300"}`}>
                                         {isBooked ? "DOLU" : t}
                                     </button>
                                 );
@@ -254,7 +254,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-red-500 text-[10px] font-black uppercase italic tracking-widest">{resState.error}</div>
                     )}
 
-                    <button type="submit" disabled={!selectedDate || !selectedTime || isPending} className={`w-full py-6 font-black rounded-[1.5rem] text-center text-[11px] tracking-[0.3em] transition-all uppercase disabled:opacity-50 ${selectedDate && selectedTime ? "bg-accent text-black shadow-[0_0_40px_rgba(245,158,11,0.2)] hover:scale-[1.02]" : "bg-white/5 text-white/20 border border-white/5"}`}>
+                    <button type="submit" disabled={!selectedDate || !selectedTime || isPending} className={`w-full py-6 font-black rounded-[1.5rem] text-center text-[11px] tracking-[0.3em] transition-all uppercase disabled:opacity-50 ${selectedDate && selectedTime ? "bg-accent text-black shadow-[0_0_40px_rgba(245,158,11,0.2)] hover:scale-[1.02]" : "bg-white/5 text-white/20 border border-white/15"}`}>
                         {isPending ? "İŞLENİYOR..." : (selectedDate && selectedTime ? "REZERVASYONU TAMAMLA" : "TARİH VE SAAT SEÇİN")}
                     </button>
                 </form>

@@ -50,6 +50,25 @@ export default async function Home() {
         restaurants = data || [];
     }
 
+    // Paket servis veren restoranları çek
+    let deliveryRestaurants: any[] = [];
+    try {
+        const { data } = await supabase
+            .from("restaurants")
+            .select("*")
+            .eq("status", "approved")
+            .eq("has_delivery", true)
+            .order("rating", { ascending: false })
+            .order("created_at", { ascending: false })
+            .limit(20);
+        
+        deliveryRestaurants = data || [];
+    } catch (e: any) {
+        console.warn("has_delivery kolonu bulunamadı veya sorgu başarısız oldu:", e.message);
+        // Fallback: ilk 20 restoranı alıp in-memory olarak delivery listesini simüle et
+        deliveryRestaurants = restaurants.slice(0, 20);
+    }
+
     // Marquee restoran logolarını çek (Tablo yoksa veya kolon yoksa çökmesini önlemek için try-catch)
     let marqueeLogos: any[] = [];
     try {
@@ -141,7 +160,7 @@ export default async function Home() {
     // Seçkin masalar içine reklam restoranları enjekte etme mantığı
     let finalRestaurants: any[] = [];
     try {
-        const regularList = restaurants.filter(r => !r.is_featured_ad);
+        const regularList = restaurants.filter(r => !r.is_featured_ad && !r.is_ad_only);
         const adList = restaurants.filter(r => r.is_featured_ad);
         const frequencyStr = getSetting("featured_ad_frequency", "3");
         const frequency = parseInt(frequencyStr, 10);
@@ -261,6 +280,61 @@ export default async function Home() {
                 </div>
             </section>
 
+            {/* 5.5. EN İYİ PAKET SERVİSLERİ (Yeni Bölüm) */}
+            <section className="w-full max-w-[92rem] px-4 py-12 z-10 border-b border-white/5">
+                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-6">
+                    <div>
+                        <h2 className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.8] text-white">
+                            EN İYİ <br />
+                            <span className="text-accent italic">PAKET SERVİSLERİ</span>
+                        </h2>
+                    </div>
+                    <Link href="/restaurants" className="px-8 py-4 glass text-white font-black rounded-xl hover:bg-black hover:text-accent border border-white/20 transition-all uppercase tracking-widest text-[9px] shadow-md">Tümünü Gör</Link>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 gap-3">
+                    {deliveryRestaurants && deliveryRestaurants.map((res, idx) => (
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-2xl overflow-hidden shadow-lg hover:-translate-y-1.5 transition-all duration-500 flex flex-col border border-gray-200 ${res.is_delivery_ad ? 'hover:border-accent hover:ring-1 hover:ring-accent/20' : ''}`}>
+                            <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
+                                <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                                {/* Kategori Badge - Mor arka plan */}
+                                <div className="absolute top-2 left-2 bg-[#7C3AED] px-2 py-0.5 rounded shadow-sm z-10">
+                                    <span className="text-[7px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
+                                </div>
+                                {/* İlçe/Bölge Badge - Kırmızı arka plan */}
+                                <div className="absolute bottom-2 right-2 bg-[#FF0000] px-2 py-0.5 rounded shadow-sm z-10">
+                                    <span className="text-[7px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
+                                </div>
+                                {/* Reklam/Sponsorlu Badge - Altın sarısı */}
+                                {res.is_delivery_ad && (
+                                    <div className="absolute top-2 right-2 bg-accent px-1.5 py-0.5 rounded shadow-sm z-20 animate-pulse">
+                                        <span className="text-[6px] font-black text-black uppercase tracking-widest">★ SPONSORLU</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="pt-4 px-2 pb-3 flex-1 flex flex-col justify-between relative">
+                                {/* Siyah Daire Logo Overlay */}
+                                <div className="absolute -top-[18px] left-3 w-9 h-9 rounded-full bg-black flex items-center justify-center shadow border border-white z-20 overflow-hidden">
+                                    {res.logo_url ? (
+                                        <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-xs font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                    )}
+                                </div>
+                                <div className="mt-1.5 flex flex-col gap-1">
+                                    <h3 className="font-display text-xs font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                        <span className="text-[10px]">📞</span>
+                                        <span className="text-[8px] font-black uppercase tracking-wider leading-none">
+                                            {res.phone || "Telefon Belirtilmedi"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
             {/* 6. FEATURED RESTAURANTS (Sunucudan Gelen Veri) */}
             <section className="w-full max-w-[92rem] px-4 py-20 z-10">
                 <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
@@ -274,7 +348,7 @@ export default async function Home() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {finalRestaurants && finalRestaurants.map((res, idx) => (
-                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border ${res.is_featured_ad ? 'border-accent ring-2 ring-accent/20' : 'border-gray-100'}`}>
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-200 ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
                             <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                 {/* Kategori Badge (Sol Üst) - Mor arka plan */}
@@ -292,16 +366,20 @@ export default async function Home() {
                                     </div>
                                 )}
                             </div>
-                            <div className="pt-4 px-4 pb-3 flex-1 flex flex-col justify-between relative">
+                            <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                 {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                <div className="absolute -top-4 left-4 w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20">
-                                    <span className="text-[10px] font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                <div className="absolute -top-7 left-5 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
+                                    {res.logo_url ? (
+                                        <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-lg font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                    )}
                                 </div>
-                                <div className="mt-2 flex flex-col gap-1.5">
-                                    <h3 className="font-display text-sm font-black text-gray-900 uppercase leading-tight tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
-                                    <div className="flex items-center gap-1 text-gray-500">
-                                        <span className="text-[10px]">📞</span>
-                                        <span className="text-[9px] font-black uppercase tracking-wider leading-none">
+                                <div className="mt-2 flex flex-col gap-2">
+                                    <h3 className="font-display text-lg font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                    <div className="flex items-center gap-1.5 text-gray-600">
+                                        <span className="text-sm">📞</span>
+                                        <span className="text-xs md:text-sm font-black uppercase tracking-wider leading-none">
                                             {res.phone || "Telefon Belirtilmedi"}
                                         </span>
                                     </div>

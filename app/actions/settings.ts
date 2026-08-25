@@ -106,6 +106,6 @@ export async function updateAdFrequency(frequency: string) {
     }
 
     revalidatePath("/");
-    revalidatePath("/dashboard/admin/featured-ads");
+    revalidatePath("/dashboard/admin/sponsorships");
     return { success: true };
 }
