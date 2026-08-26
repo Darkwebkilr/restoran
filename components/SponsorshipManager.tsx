@@ -156,11 +156,11 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                 <div>
                                     <div className="flex flex-wrap items-center gap-3">
                                         <h4 className="font-display text-lg font-black uppercase tracking-tight text-white">{res.name}</h4>
-                                        <span className="text-[8px] bg-white/5 px-2.5 py-1 rounded-full text-zinc-400 font-bold uppercase tracking-widest">
+                                        <span className="text-[8px] bg-white/10 border border-white/20 px-2.5 py-1 rounded-full text-white font-black uppercase tracking-widest">
                                             {res.category || "Genel"}
                                         </span>
                                         {res.district && (
-                                            <span className="text-[8px] bg-red-500/10 px-2.5 py-1 rounded-full text-red-400 font-bold uppercase tracking-widest">
+                                            <span className="text-[8px] bg-red-500/15 border border-red-500/30 px-2.5 py-1 rounded-full text-white font-black uppercase tracking-widest">
                                                 {res.district}
                                             </span>
                                         )}
@@ -185,7 +185,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.show_in_marquee
                                                 ? "bg-[#7C3AED] text-white hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/10 hover:bg-white/10 text-white/50"
+                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-marquee`] ? "..." : (res.show_in_marquee ? "✓ Kayan Bantta" : "Kayan Bant")}
@@ -198,7 +198,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.is_featured
                                                 ? "bg-accent text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/10 hover:bg-white/10 text-white/50"
+                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-featured`] ? "..." : (res.is_featured ? "✓ Seçkin Masa" : "Seçkin Masa")}
@@ -211,7 +211,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.is_featured_ad
                                                 ? "bg-yellow-500 text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/10 hover:bg-white/10 text-white/50"
+                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-featured_ad`] ? "..." : (res.is_featured_ad ? "★ Seçkin Reklamı" : "Seçkin Reklamı")}
@@ -224,7 +224,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.has_delivery
                                                 ? "bg-blue-600 text-white hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/10 hover:bg-white/10 text-white/50"
+                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-delivery`] ? "..." : (res.has_delivery ? "✓ Paket Servis" : "Paket Servis")}
@@ -237,7 +237,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.is_delivery_ad
                                                 ? "bg-amber-600 text-white hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/10 hover:bg-white/10 text-white/50"
+                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-delivery_ad`] ? "..." : (res.is_delivery_ad ? "★ Paket Reklamı" : "Paket Reklamı")}
@@ -250,7 +250,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.is_ad_only
                                                 ? "bg-red-600 text-white hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/10 hover:bg-white/10 text-white/50"
+                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-ad_only`] ? "..." : (res.is_ad_only ? "👁 Sadece Reklam" : "Sadece Reklam")}

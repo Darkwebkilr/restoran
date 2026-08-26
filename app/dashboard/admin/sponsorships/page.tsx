@@ -95,7 +95,7 @@ export default async function AdminSponsorshipsPage() {
                     </div>
                     <Link
                         href="/dashboard/admin"
-                        className="px-6 py-3.5 glass text-white/80 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic"
+                        className="px-6 py-3.5 bg-black hover:bg-white hover:text-black text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/20 transition-all italic shadow-lg shadow-black/40"
                     >
                         ← Yönetim Paneli
                     </Link>
