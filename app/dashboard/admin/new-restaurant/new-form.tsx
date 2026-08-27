@@ -399,20 +399,7 @@ export default function AdminRestaurantNewForm() {
                                 </div>
                             </label>
 
-                            <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
-                                <input 
-                                    type="checkbox" 
-                                    name="isDeliveryAd" 
-                                    value="true"
-                                    checked={isDeliveryAd}
-                                    onChange={(e) => setIsDeliveryAd(e.target.checked)}
-                                    className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
-                                />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">⚡ Paket Serviste Sponsor Yap</span>
-                                    <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan Paket Servis listesinde reklamlı/sponsorlu olarak işaretlensin.</span>
-                                </div>
-                            </label>
+
 
                             <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full sm:col-span-2">
                                 <input 

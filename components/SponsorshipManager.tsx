@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
     toggleMarquee, 
     toggleFeaturedAd, 
@@ -42,6 +42,7 @@ interface SponsorshipManagerProps {
 }
 
 export default function SponsorshipManager({ initialRestaurants, adsList, currentFrequency }: SponsorshipManagerProps) {
+    const [restaurants, setRestaurants] = useState(initialRestaurants);
     const [activeTab, setActiveTab] = useState<"restaurants" | "banners">("restaurants");
     const [searchTerm, setSearchTerm] = useState("");
     
@@ -51,7 +52,11 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
     const [savingFrequency, setSavingFrequency] = useState(false);
     const router = useRouter();
 
-    const filtered = initialRestaurants.filter(r => 
+    useEffect(() => {
+        setRestaurants(initialRestaurants);
+    }, [initialRestaurants]);
+
+    const filtered = restaurants.filter(r => 
         r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (r.district && r.district.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (r.category && r.category.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -60,6 +65,21 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
     const handleToggle = async (id: string, field: "marquee" | "featured" | "featured_ad" | "delivery" | "delivery_ad" | "ad_only", currentValue: boolean) => {
         const actionKey = `${id}-${field}`;
         setLoadingIds(prev => ({ ...prev, [actionKey]: true }));
+        
+        // Optimistically/instantly update local state to reflect change in UI
+        setRestaurants(prev => prev.map(r => {
+            if (r.id === id) {
+                const updated = { ...r };
+                if (field === "marquee") updated.show_in_marquee = !currentValue;
+                else if (field === "featured") updated.is_featured = !currentValue;
+                else if (field === "featured_ad") updated.is_featured_ad = !currentValue;
+                else if (field === "delivery") updated.has_delivery = !currentValue;
+                else if (field === "ad_only") updated.is_ad_only = !currentValue;
+                return updated;
+            }
+            return r;
+        }));
+
         try {
             if (field === "marquee") await toggleMarquee(id, currentValue);
             else if (field === "featured") await toggleFeaturedStatus(id, currentValue);
@@ -71,6 +91,8 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
         } catch (e: any) {
             console.error("Toggle error:", e);
             alert("İşlem başarısız oldu. Lütfen veritabanınızda ilgili sütunların tanımlandığından emin olun. Hata: " + e.message);
+            // Revert state if error
+            setRestaurants(initialRestaurants);
         } finally {
             setLoadingIds(prev => ({ ...prev, [actionKey]: false }));
         }
@@ -170,21 +192,21 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         {res.is_featured ? "✓ Seçkin Masalar " : ""}
                                         {res.is_featured_ad ? "★ Seçkin Reklamı " : ""}
                                         {res.has_delivery ? "✓ Paket Servis " : ""}
-                                        {res.is_delivery_ad ? "★ Paket Reklamı " : ""}
+                                        
                                         {res.is_ad_only ? "👁 Sadece Reklam " : ""}
                                         {(!res.show_in_marquee && !res.is_featured && !res.is_featured_ad && !res.has_delivery && !res.is_delivery_ad) && "Herhangi bir reklam/listeleme grubu aktif değil."}
                                     </p>
                                 </div>
 
                                 {/* Right Side: 5 Toggles */}
-                                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 shrink-0">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 shrink-0">
                                     {/* 1. Marquee */}
                                     <button
                                         onClick={() => handleToggle(res.id, "marquee", res.show_in_marquee)}
                                         disabled={loadingIds[`${res.id}-marquee`]}
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.show_in_marquee
-                                                ? "bg-[#7C3AED] text-white hover:scale-105 shadow-md"
+                                                ? "bg-accent text-black hover:scale-105 shadow-md"
                                                 : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
@@ -210,7 +232,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         disabled={loadingIds[`${res.id}-featured_ad`]}
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.is_featured_ad
-                                                ? "bg-yellow-500 text-black hover:scale-105 shadow-md"
+                                                ? "bg-accent text-black hover:scale-105 shadow-md"
                                                 : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
@@ -223,24 +245,11 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         disabled={loadingIds[`${res.id}-delivery`]}
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.has_delivery
-                                                ? "bg-blue-600 text-white hover:scale-105 shadow-md"
+                                                ? "bg-accent text-black hover:scale-105 shadow-md"
                                                 : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >
                                         {loadingIds[`${res.id}-delivery`] ? "..." : (res.has_delivery ? "✓ Paket Servis" : "Paket Servis")}
-                                    </button>
-
-                                    {/* 5. Delivery Ad */}
-                                    <button
-                                        onClick={() => handleToggle(res.id, "delivery_ad", res.is_delivery_ad)}
-                                        disabled={loadingIds[`${res.id}-delivery_ad`]}
-                                        className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
-                                            res.is_delivery_ad
-                                                ? "bg-amber-600 text-white hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
-                                        }`}
-                                    >
-                                        {loadingIds[`${res.id}-delivery_ad`] ? "..." : (res.is_delivery_ad ? "★ Paket Reklamı" : "Paket Reklamı")}
                                     </button>
 
                                     {/* 6. Ad Only */}
@@ -249,7 +258,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                         disabled={loadingIds[`${res.id}-ad_only`]}
                                         className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
                                             res.is_ad_only
-                                                ? "bg-red-600 text-white hover:scale-105 shadow-md"
+                                                ? "bg-accent text-black hover:scale-105 shadow-md"
                                                 : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
                                         }`}
                                     >

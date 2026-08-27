@@ -254,6 +254,63 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-center text-red-500 text-[10px] font-black uppercase italic tracking-widest">{resState.error}</div>
                     )}
 
+                    {/* Sosyal Medya İkonları */}
+                    <div className="space-y-4 pt-4 border-t border-white/10">
+                        <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2 block">SOSYAL MEDYA HESAPLARI</label>
+                        <div className="flex items-center justify-center gap-6 py-2">
+                            {/* Instagram */}
+                            <a 
+                                href={restaurant.social_instagram || "#"} 
+                                target={restaurant.social_instagram ? "_blank" : undefined}
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#E1306C] hover:shadow-[0_0_15px_rgba(225,48,108,0.4)]"
+                                title="Instagram"
+                            >
+                                📸
+                            </a>
+                            {/* X */}
+                            <a 
+                                href={restaurant.social_x || "#"} 
+                                target={restaurant.social_x ? "_blank" : undefined}
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-white hover:bg-black hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+                                title="X"
+                            >
+                                𝕏
+                            </a>
+                            {/* TikTok */}
+                            <a 
+                                href={restaurant.social_tiktok || "#"} 
+                                target={restaurant.social_tiktok ? "_blank" : undefined}
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#00f2fe] hover:shadow-[0_0_15px_rgba(0,242,254,0.4)]"
+                                title="TikTok"
+                            >
+                                🎵
+                            </a>
+                            {/* Facebook */}
+                            <a 
+                                href={restaurant.social_facebook || "#"} 
+                                target={restaurant.social_facebook ? "_blank" : undefined}
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#1877F2] hover:shadow-[0_0_15px_rgba(24,119,242,0.4)]"
+                                title="Facebook"
+                            >
+                                👤
+                            </a>
+                            {/* Telegram */}
+                            <a 
+                                href={restaurant.social_telegram || "#"} 
+                                target={restaurant.social_telegram ? "_blank" : undefined}
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#0088cc] hover:shadow-[0_0_15px_rgba(0,136,204,0.4)]"
+                                title="Telegram"
+                            >
+                                ✈️
+                            </a>
+                        </div>
+                    </div>
+
                     <button type="submit" disabled={!selectedDate || !selectedTime || isPending} className={`w-full py-6 font-black rounded-[1.5rem] text-center text-[11px] tracking-[0.3em] transition-all uppercase disabled:opacity-50 ${selectedDate && selectedTime ? "bg-accent text-black shadow-[0_0_40px_rgba(245,158,11,0.2)] hover:scale-[1.02]" : "bg-white/5 text-white/20 border border-white/15"}`}>
                         {isPending ? "İŞLENİYOR..." : (selectedDate && selectedTime ? "REZERVASYONU TAMAMLA" : "TARİH VE SAAT SEÇİN")}
                     </button>

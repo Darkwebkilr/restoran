@@ -162,16 +162,10 @@ export default async function RestaurantsPage({
                                     <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
                                         <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
                                     </div>
-                                    {/* Reklam/Sponsorlu Badge (Sağ Üst) - Altın sarısı */}
-                                    {res.is_featured_ad && (
-                                        <div className="absolute top-4 right-4 bg-accent px-3 py-1.5 rounded-lg shadow-lg z-20 animate-pulse">
-                                            <span className="text-[9px] font-black text-black uppercase tracking-widest">★ SPONSORLU</span>
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                     {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                    <div className="absolute -top-7 left-5 w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
+                                    <div className="absolute -top-7 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
                                         {res.logo_url ? (
                                             <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                         ) : (
