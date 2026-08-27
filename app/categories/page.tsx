@@ -20,7 +20,7 @@ export default function CategoriesPage() {
                 <div className="mb-16 md:mb-24 text-center md:text-left">
                     <Link
                         href="/"
-                        className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6"
+                        className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border-[3px] border-white/20 hover:bg-white/5 transition-all italic mb-6"
                     >
                         ← ANASAYFAYA GERİ DÖN
                     </Link>
@@ -36,7 +36,7 @@ export default function CategoriesPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                     {CATEGORIES.map((cat) => (
                         <Link key={cat.name} href={`/restaurants?category=${cat.name}`} className="group relative">
-                            <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl bg-card transition-all duration-700 hover:border-accent/30">
+                            <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden border-4 border-accent shadow-2xl bg-card transition-all duration-700">
                                 <Image
                                     src={cat.image}
                                     alt={cat.name}

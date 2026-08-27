@@ -257,7 +257,7 @@ export default async function Home() {
                             : "/login/restaurant?mode=register";
                         
                         return (
-                            <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-2 border-accent/40 overflow-hidden bg-black shadow-xl">
+                            <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-4 border-accent overflow-hidden bg-black shadow-xl">
                                 <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
                                     <Image 
                                         src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop')} 
@@ -289,11 +289,11 @@ export default async function Home() {
                             <span className="text-accent italic">PAKET SERVİSLERİ</span>
                         </h2>
                     </div>
-                    <Link href="/restaurants" className="px-8 py-4 glass text-white font-black rounded-xl hover:bg-black hover:text-accent border border-white/20 transition-all uppercase tracking-widest text-[9px] shadow-md">Tümünü Gör</Link>
+                    <Link href="/restaurants" className="px-8 py-4 glass text-white font-black rounded-xl hover:bg-black hover:text-accent border-[3px] border-accent transition-all uppercase tracking-widest text-[9px] shadow-md">Tümünü Gör</Link>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {deliveryRestaurants && deliveryRestaurants.map((res, idx) => (
-                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-200">
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-4 border-accent">
                             <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                 {/* Kategori Badge (Sol Üst) - Mor arka plan */}
@@ -307,7 +307,7 @@ export default async function Home() {
                             </div>
                             <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                 {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                <div className="absolute -top-8 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
+                                <div className="absolute -top-8 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-4 border-accent z-20 overflow-hidden">
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
@@ -338,11 +338,11 @@ export default async function Home() {
                             dangerouslySetInnerHTML={{ __html: featuredTitle }}
                         />
                     </div>
-                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-2 border-white/40 transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
+                    <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-[3px] border-accent transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {finalRestaurants && finalRestaurants.map((res, idx) => (
-                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-200 ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-4 border-accent ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
                             <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                 {/* Kategori Badge (Sol Üst) - Mor arka plan */}
@@ -356,7 +356,7 @@ export default async function Home() {
                             </div>
                             <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                 {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                <div className="absolute -top-8 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
+                                <div className="absolute -top-8 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-4 border-accent z-20 overflow-hidden">
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
@@ -387,7 +387,7 @@ export default async function Home() {
                             : "/login/restaurant?mode=register";
                         
                         return (
-                            <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-2 border-accent/40 overflow-hidden bg-black shadow-xl">
+                            <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-4 border-accent overflow-hidden bg-black shadow-xl">
                                 <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
                                     <Image 
                                         src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800&auto=format&fit=crop')} 
@@ -412,7 +412,7 @@ export default async function Home() {
 
             {/* 7. HOW IT WORKS */}
             <section className="w-full max-w-7xl px-6 py-32 z-10">
-                <div className="bg-black/40 backdrop-blur-3xl rounded-[4rem] border border-white/10 p-12 md:p-24 shadow-2xl relative overflow-hidden">
+                <div className="bg-black/40 backdrop-blur-3xl rounded-[4rem] border-4 border-accent p-12 md:p-24 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-[120px] -z-10" />
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div>

@@ -87,7 +87,7 @@ export default async function RestaurantsPage({
                 <div className="mb-20 text-center md:text-left">
                     <Link
                         href="/"
-                        className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border border-white/10 hover:bg-white/5 transition-all italic mb-6"
+                        className="inline-flex px-5 py-2.5 glass text-white/70 hover:text-white font-black rounded-xl text-[9px] tracking-widest uppercase border-4 border-accent hover:bg-white/5 transition-all italic mb-6"
                     >
                         ← ANASAYFAYA GERİ DÖN
                     </Link>
@@ -104,7 +104,7 @@ export default async function RestaurantsPage({
                                 name="query"
                                 defaultValue={query}
                                 placeholder="Mekan adı ara..."
-                                className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] pl-14 pr-6 py-4 md:py-6 outline-none focus:border-accent transition-all font-bold text-sm placeholder:text-white/20 text-white"
+                                className="w-full bg-white/5 border-4 border-accent rounded-[1.5rem] md:rounded-[2rem] pl-14 pr-6 py-4 md:py-6 outline-none focus:border-accent transition-all font-bold text-sm placeholder:text-white/20 text-white"
                             />
                         </div>
                         <div className="flex-1 w-full relative">
@@ -117,7 +117,7 @@ export default async function RestaurantsPage({
                             <button type="submit" className="flex-1 md:flex-initial px-8 py-4 md:py-6 bg-accent text-black font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-black hover:text-accent border-2 border-accent transition-all uppercase whitespace-nowrap">FİLTRELE</button>
                             <Link 
                                 href="/restaurants"
-                                className="flex-1 md:flex-initial px-6 py-4 md:py-6 bg-white/5 border border-white/10 text-white font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-white/10 transition-all uppercase text-center whitespace-nowrap flex items-center justify-center"
+                                className="flex-1 md:flex-initial px-6 py-4 md:py-6 bg-white/5 border-[3px] border-accent text-white font-black rounded-[1.5rem] md:rounded-[2rem] text-[10px] tracking-widest hover:bg-white/10 transition-all uppercase text-center whitespace-nowrap flex items-center justify-center"
                             >
                                 TEMİZLE
                             </Link>
@@ -131,10 +131,10 @@ export default async function RestaurantsPage({
                         <Link
                             key={cat.name}
                             href={cat.name === "Hepsi" ? "/restaurants" : `/restaurants?category=${cat.name}`}
-                            className={`flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                            className={`flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest border-[3px] transition-all ${
                                 (category === cat.name || (!category && cat.name === "Hepsi"))
-                                ? "bg-white text-black border-white scale-105 shadow-xl" 
-                                : "bg-white/5 border-white/10 hover:border-white/30 text-zinc-300"
+                                ? "bg-white text-black border-accent scale-105 shadow-xl" 
+                                : "bg-white/5 border-white/25 hover:border-white/50 text-zinc-300"
                             }`}
                         >
                             <span>{cat.icon}</span>
@@ -146,12 +146,12 @@ export default async function RestaurantsPage({
                 {/* Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
                     {!restaurants || restaurants.length === 0 ? (
-                        <div className="col-span-full py-32 text-center glass rounded-[3rem] border border-white/10">
+                        <div className="col-span-full py-32 text-center glass rounded-[3rem] border-4 border-accent">
                             <p className="text-zinc-300 font-black uppercase tracking-[0.5em] text-sm italic">Aradığınız kriterlerde bir mekan bulunamadı.</p>
                         </div>
                     ) : (
                         restaurants.map((res) => (
-                            <Link key={res.id} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border border-gray-200 ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
+                            <Link key={res.id} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-4 border-accent ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
                                 <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
                                     <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                     {/* Kategori Badge (Sol Üst) - Mor arka plan */}
@@ -165,7 +165,7 @@ export default async function RestaurantsPage({
                                 </div>
                                 <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                     {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                    <div className="absolute -top-7 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
+                                    <div className="absolute -top-7 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-4 border-accent z-20 overflow-hidden">
                                         {res.logo_url ? (
                                             <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                         ) : (

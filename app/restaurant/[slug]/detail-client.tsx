@@ -107,7 +107,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
       <div className="max-w-7xl mx-auto px-6 pt-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Sol İçerik: Restoran Bilgileri */}
         <div className="lg:col-span-2">
-          <div className="relative aspect-video rounded-[3rem] md:rounded-[4rem] overflow-hidden border-2 border-white/20 mb-10 shadow-2xl group">
+          <div className="relative aspect-video rounded-[3rem] md:rounded-[4rem] overflow-hidden border-4 border-accent mb-10 shadow-2xl group">
             <Image 
                 src={restaurant?.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1200&auto=format&fit=crop"} 
                 alt={restaurant?.name} 
@@ -168,14 +168,14 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
 
             <div className="flex flex-wrap gap-3 mb-20">
                 {(restaurant?.features || ['Vale Park', 'Dış Mekan', 'VIP Salon', 'Alkol Servisi']).map((f: string) => (
-                    <span key={f} className="px-6 py-3 rounded-full bg-white/5 border border-white/20 text-[10px] font-black tracking-widest uppercase text-zinc-300 hover:text-accent hover:border-accent transition-colors cursor-default">{f}</span>
+                    <span key={f} className="px-6 py-3 rounded-full bg-white/5 border-[3px] border-accent/30 text-[10px] font-black tracking-widest uppercase text-zinc-300 hover:text-accent hover:border-accent transition-colors cursor-default">{f}</span>
                 ))}
             </div>
 
             {/* Google Haritalar */}
             <div className="mb-20">
                 <h2 className="font-display text-3xl md:text-5xl font-black mb-8 tracking-tighter uppercase italic">MEKAN <span className="text-accent">KONUMU.</span></h2>
-                <div className="w-full aspect-[21/9] rounded-[3.5rem] overflow-hidden border border-white/20 relative bg-white/5 shadow-2xl group mb-6">
+                <div className="w-full aspect-[21/9] rounded-[3.5rem] overflow-hidden border-4 border-accent relative bg-white/5 shadow-2xl group mb-6">
                     <iframe 
                         src={getEmbedUrl(restaurant.address, restaurant.name, restaurant.district)} 
                         width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) contrast(1.2) brightness(0.8)' }} allowFullScreen={true} loading="lazy" className="opacity-80 group-hover:opacity-100 group-hover:filter-none transition-all duration-700"
@@ -199,7 +199,7 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
 
         {/* Sağ İçerik: Rezervasyon */}
         <div className="lg:col-span-1">
-          <div className="sticky top-32 glass p-8 md:p-10 rounded-[3.5rem] border border-white/20 shadow-2xl">
+          <div className="sticky top-32 glass p-8 md:p-10 rounded-[3.5rem] border-4 border-accent shadow-2xl">
             <h3 className="font-display text-2xl md:text-3xl font-black mb-10 italic uppercase tracking-tighter">Rezervasyon</h3>
             
             {userRole === "admin" ? (

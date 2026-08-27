@@ -173,7 +173,7 @@ export default function Header() {
 
     return (
         <>
-            <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-4 glass border-b border-white/5 md:px-12 md:py-6 transition-all duration-500">
+            <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-4 glass border-b-4 border-accent md:px-12 md:py-6 transition-all duration-500">
                 {/* Logo */}
                 <div className="flex-1 flex justify-start lg:justify-center">
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 group relative z-[110]">
@@ -188,7 +188,7 @@ export default function Header() {
                                 </div>
                             </div>
                         )}
-                        <span className="text-white font-display text-xs md:text-sm font-black uppercase tracking-widest leading-none border-l border-white/20 pl-4">
+                        <span className="text-white font-display text-xs md:text-sm font-black uppercase tracking-widest leading-none border-l-4 border-accent pl-4">
                             Bodrumun Mekanları
                         </span>
                     </Link>
