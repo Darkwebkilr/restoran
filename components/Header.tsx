@@ -176,18 +176,21 @@ export default function Header() {
             <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-4 glass border-b border-white/5 md:px-12 md:py-6 transition-all duration-500">
                 {/* Logo */}
                 <div className="flex-1 flex justify-start lg:justify-center">
-                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 group relative z-[110]">
+                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 group relative z-[110]">
                         {siteLogo ? (
-                            <img src={siteLogo} alt="Evolution Ajans" className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+                            <img src={siteLogo} alt="Bodrumun Mekanları" className="h-14 md:h-18 w-auto object-contain transition-transform group-hover:scale-105" />
                         ) : (
-                            <>
-                                <div className="w-8 h-8 md:w-10 md:h-10 bg-accent rounded-xl flex items-center justify-center font-display font-black text-lg md:text-xl text-black italic group-hover:scale-110 transition-transform">E</div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-accent rounded-xl flex items-center justify-center font-display font-black text-xl md:text-2xl text-black italic group-hover:scale-110 transition-transform">E</div>
                                 <div className="flex flex-col">
                                     <span className="font-display text-base md:text-lg font-black tracking-tighter uppercase text-white leading-none">Evolution</span>
                                     <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-accent uppercase leading-none mt-1">Ajans</span>
                                 </div>
-                            </>
+                            </div>
                         )}
+                        <span className="text-white font-display text-xs md:text-sm font-black uppercase tracking-widest leading-none border-l border-white/20 pl-4">
+                            Bodrumun Mekanları
+                        </span>
                     </Link>
                 </div>
 

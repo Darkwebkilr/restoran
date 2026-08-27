@@ -311,7 +311,7 @@ export default async function Home() {
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-lg font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                        <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
                                     )}
                                 </div>
                                 <div className="mt-2 flex flex-col gap-2">
@@ -360,7 +360,7 @@ export default async function Home() {
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-lg font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                        <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
                                     )}
                                 </div>
                                 <div className="mt-2 flex flex-col gap-2">

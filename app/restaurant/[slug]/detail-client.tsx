@@ -7,6 +7,7 @@ import { getAddressLabel, getEmbedUrl, getAddressDistrict } from "@/utils/maps";
 import { makeReservation } from "@/app/actions/reservations";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { SiInstagram, SiFacebook, SiX, SiTiktok, SiTelegram } from '@icons-pack/react-simple-icons';
 
 export default function RestaurantDetailClient({ restaurant, userRole }: { restaurant: any, userRole: string | null }) {
   const router = useRouter();
@@ -255,58 +256,58 @@ export default function RestaurantDetailClient({ restaurant, userRole }: { resta
                     )}
 
                     {/* Sosyal Medya İkonları */}
-                    <div className="space-y-4 pt-4 border-t border-white/10">
-                        <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] ml-2 block">SOSYAL MEDYA HESAPLARI</label>
+                    <div className="space-y-4 pt-6 border-t border-white/10">
+                        <label className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] block text-center">SOSYAL MEDYA HESAPLARI</label>
                         <div className="flex items-center justify-center gap-6 py-2">
                             {/* Instagram */}
                             <a 
                                 href={restaurant.social_instagram || "#"} 
                                 target={restaurant.social_instagram ? "_blank" : undefined}
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#E1306C] hover:shadow-[0_0_15px_rgba(225,48,108,0.4)]"
+                                className="hover:opacity-85 transition-all"
                                 title="Instagram"
                             >
-                                📸
+                                <SiInstagram color="default" size={22} />
                             </a>
                             {/* X */}
                             <a 
                                 href={restaurant.social_x || "#"} 
                                 target={restaurant.social_x ? "_blank" : undefined}
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-white hover:bg-black hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+                                className="hover:opacity-85 transition-all text-white"
                                 title="X"
                             >
-                                𝕏
+                                <SiX color="#FFFFFF" size={20} />
                             </a>
                             {/* TikTok */}
                             <a 
                                 href={restaurant.social_tiktok || "#"} 
                                 target={restaurant.social_tiktok ? "_blank" : undefined}
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#00f2fe] hover:shadow-[0_0_15px_rgba(0,242,254,0.4)]"
+                                className="hover:opacity-85 transition-all text-white"
                                 title="TikTok"
                             >
-                                🎵
+                                <SiTiktok color="#FFFFFF" size={22} />
                             </a>
                             {/* Facebook */}
                             <a 
                                 href={restaurant.social_facebook || "#"} 
                                 target={restaurant.social_facebook ? "_blank" : undefined}
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#1877F2] hover:shadow-[0_0_15px_rgba(24,119,242,0.4)]"
+                                className="hover:opacity-85 transition-all"
                                 title="Facebook"
                             >
-                                👤
+                                <SiFacebook color="default" size={22} />
                             </a>
                             {/* Telegram */}
                             <a 
                                 href={restaurant.social_telegram || "#"} 
                                 target={restaurant.social_telegram ? "_blank" : undefined}
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:scale-110 transition-all cursor-pointer text-[#0088cc] hover:shadow-[0_0_15px_rgba(0,136,204,0.4)]"
+                                className="hover:opacity-85 transition-all"
                                 title="Telegram"
                             >
-                                ✈️
+                                <SiTelegram color="default" size={22} />
                             </a>
                         </div>
                     </div>
