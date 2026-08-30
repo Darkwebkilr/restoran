@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -37,7 +38,7 @@ export default async function AdminSponsorshipsPage() {
     try {
         const { data, error } = await supabase
             .from("restaurants")
-            .select("id, name, slug, show_in_marquee, is_featured, is_featured_ad, has_delivery, is_delivery_ad, category, district")
+            .select("id, name, slug, show_in_marquee, is_featured, is_featured_ad, has_delivery, category, district")
             .eq("status", "approved")
             .order("name");
         
@@ -58,8 +59,7 @@ export default async function AdminSponsorshipsPage() {
                 show_in_marquee: (r as any).show_in_marquee || false,
                 is_featured: (r as any).is_featured || false,
                 is_featured_ad: (r as any).is_featured_ad || false,
-                has_delivery: (r as any).has_delivery || false,
-                is_delivery_ad: (r as any).is_delivery_ad || false
+                has_delivery: (r as any).has_delivery || false
             }));
         } catch (innerError: any) {
             console.error("Failed to query approved restaurants:", innerError.message);

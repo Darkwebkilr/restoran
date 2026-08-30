@@ -165,7 +165,7 @@ export default async function RestaurantsPage({
                                 </div>
                                 <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
                                     {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                    <div className="absolute -top-7 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-4 border-accent z-20 overflow-hidden">
+                                    <div className="absolute -top-7 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
                                         {res.logo_url ? (
                                             <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                         ) : (

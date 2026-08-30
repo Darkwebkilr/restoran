@@ -27,7 +27,7 @@ const CATEGORIES = [
 
 export default async function Home() {
     const supabase = await createClient();
-    
+
     // Veritabanından onaylı restoranları çek (is_featured DESC, created_at DESC)
     let restaurants: any[] = [];
     try {
@@ -61,7 +61,7 @@ export default async function Home() {
             .order("rating", { ascending: false })
             .order("created_at", { ascending: false })
             .limit(20);
-        
+
         deliveryRestaurants = data || [];
     } catch (e: any) {
         console.warn("has_delivery kolonu bulunamadı veya sorgu başarısız oldu:", e.message);
@@ -77,7 +77,7 @@ export default async function Home() {
             .select("name, slug, show_in_marquee")
             .eq("status", "approved")
             .eq("show_in_marquee", true);
-        
+
         marqueeLogos = data || [];
     } catch (e) {
         console.warn("restaurants tablosunda show_in_marquee kolonu bulunamadı, varsayılanlar kullanılacak.");
@@ -184,16 +184,16 @@ export default async function Home() {
             // Eğer normal liste boşsa, sıklık 0 ise veya hiç reklam mekan seçilmediyse normal listeyi göster
             finalRestaurants = restaurants;
         }
-    } catch(e) {
+    } catch (e) {
         console.warn("Reklam restoran enjeksiyonu başarısız oldu, normal liste gösteriliyor:", e);
         finalRestaurants = restaurants;
     }
 
     return (
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
-            
+
             {/* 1. TOP MARQUEE */}
-            <div className="fixed top-16 md:top-22 z-50 w-full bg-gray-400/70 border-y border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
+            <div className="fixed top-[74px] md:top-[96px] z-50 w-full bg-gray-400/70 border-b border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="flex items-center">
@@ -228,7 +228,7 @@ export default async function Home() {
 
             {/* 4. CATEGORIES */}
             <section className="w-full max-w-7xl px-6 py-20 z-10">
-                <h2 
+                <h2
                     className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.9] text-white mb-12 animate-in fade-in duration-500"
                     dangerouslySetInnerHTML={{ __html: categoriesTitle }}
                 />
@@ -252,18 +252,18 @@ export default async function Home() {
             <section className="w-full max-w-[92rem] px-4 py-12 z-30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {finalAds.map((ad, idx) => {
-                        const href = ad.restaurants?.slug 
+                        const href = ad.restaurants?.slug
                             ? `/restaurant/${ad.restaurants.slug}`
                             : "/login/restaurant?mode=register";
-                        
+
                         return (
                             <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-4 border-accent overflow-hidden bg-black shadow-xl">
                                 <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
-                                    <Image 
-                                        src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop')} 
-                                        alt="Ad" 
-                                        fill 
-                                        className="object-cover" 
+                                    <Image
+                                        src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=800&auto=format&fit=crop')}
+                                        alt="Ad"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </div>
                                 <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-black/60" />
@@ -291,34 +291,34 @@ export default async function Home() {
                     </div>
                     <Link href="/restaurants" className="px-8 py-4 glass text-white font-black rounded-xl hover:bg-black hover:text-accent border-[3px] border-accent transition-all uppercase tracking-widest text-[9px] shadow-md">Tümünü Gör</Link>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-5">
                     {deliveryRestaurants && deliveryRestaurants.map((res, idx) => (
-                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-4 border-accent">
-                            <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className="group bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-2 md:border-4 border-accent">
+                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                                {/* Kategori Badge (Sol Üst) - Mor arka plan */}
-                                <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
+                                {/* Kategori Badge (Sol Üst) */}
+                                <div className="absolute top-2.5 left-2.5 md:top-4 md:left-4 bg-[#7C3AED] px-2.5 py-1 md:px-4 md:py-1.5 rounded-md md:rounded-lg shadow-lg">
+                                    <span className="text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
                                 </div>
-                                {/* İlçe/Bölge Badge (Sağ Alt) - Kırmızı arka plan */}
-                                <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
+                                {/* İlçe/Bölge Badge (Sağ Alt) */}
+                                <div className="absolute bottom-2.5 right-2.5 md:bottom-4 md:right-4 bg-[#FF0000] px-2.5 py-1 md:px-4 md:py-1.5 rounded-md md:rounded-lg shadow-lg">
+                                    <span className="text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
                                 </div>
                             </div>
-                            <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
-                                {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                <div className="absolute -top-8 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-4 border-accent z-20 overflow-hidden">
+                            <div className="pt-6 px-3.5 pb-3.5 md:pt-8 md:px-5 md:pb-5 flex-1 flex flex-col justify-between relative">
+                                {/* Siyah Daire Logo Overlay */}
+                                <div className="absolute -top-6 left-3 w-12 h-12 md:-top-8 md:left-5 md:w-16 md:h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-2 border-white z-20 overflow-hidden">
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                        <span className="text-sm md:text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
                                     )}
                                 </div>
-                                <div className="mt-2 flex flex-col gap-2">
-                                    <h3 className="font-display text-lg font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
-                                    <div className="flex items-center gap-1.5 text-gray-600">
-                                        <span className="text-sm">📞</span>
-                                        <span className="text-xs md:text-sm font-black uppercase tracking-wider leading-none">
+                                <div className="mt-1.5 flex flex-col gap-1 md:gap-2">
+                                    <h3 className="font-display text-sm md:text-lg lg:text-xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                    <div className="flex items-center gap-1 md:gap-1.5 text-gray-600">
+                                        <span className="text-xs md:text-sm">📞</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider leading-none">
                                             {res.phone || "Telefon Belirtilmedi"}
                                         </span>
                                     </div>
@@ -333,41 +333,41 @@ export default async function Home() {
             <section className="w-full max-w-[92rem] px-4 py-20 z-10">
                 <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
                     <div>
-                        <h2 
+                        <h2
                             className="font-display text-5xl md:text-8xl font-black uppercase leading-[0.8] text-white animate-in fade-in duration-500"
                             dangerouslySetInnerHTML={{ __html: featuredTitle }}
                         />
                     </div>
                     <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-[3px] border-accent transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-5">
                     {finalRestaurants && finalRestaurants.map((res, idx) => (
-                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[2rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-4 border-accent ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
-                            <div className="relative aspect-[4/3.3] w-full overflow-hidden bg-gray-100">
+                        <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-2 md:border-4 border-accent ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
+                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                                {/* Kategori Badge (Sol Üst) - Mor arka plan */}
-                                <div className="absolute top-4 left-4 bg-[#7C3AED] px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
+                                {/* Kategori Badge (Sol Üst) */}
+                                <div className="absolute top-2.5 left-2.5 md:top-4 md:left-4 bg-[#7C3AED] px-2.5 py-1 md:px-4 md:py-1.5 rounded-md md:rounded-lg shadow-lg">
+                                    <span className="text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest">{res.category || 'Lüks'}</span>
                                 </div>
-                                {/* İlçe/Bölge Badge (Sağ Alt) - Kırmızı arka plan */}
-                                <div className="absolute bottom-4 right-4 bg-[#FF0000] px-4 py-1.5 rounded-lg shadow-lg">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
+                                {/* İlçe/Bölge Badge (Sağ Alt) */}
+                                <div className="absolute bottom-2.5 right-2.5 md:bottom-4 md:right-4 bg-[#FF0000] px-2.5 py-1 md:px-4 md:py-1.5 rounded-md md:rounded-lg shadow-lg">
+                                    <span className="text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
                                 </div>
                             </div>
-                            <div className="pt-7 px-5 pb-5 flex-1 flex flex-col justify-between relative">
-                                {/* Siyah Daire Logo Overlay (Sol Alt, resmin altına taşacak şekilde konumlandırıldı) */}
-                                <div className="absolute -top-8 left-5 w-16 h-16 rounded-full bg-black flex items-center justify-center shadow-lg border-4 border-accent z-20 overflow-hidden">
+                            <div className="pt-6 px-3.5 pb-3.5 md:pt-9 md:px-6 md:pb-6 flex-1 flex flex-col justify-between relative">
+                                {/* Siyah Daire Logo Overlay */}
+                                <div className="absolute -top-6 left-3 w-12 h-12 md:-top-10 md:left-6 md:w-20 md:h-20 rounded-full bg-black flex items-center justify-center shadow-xl border-2 border-white z-20 overflow-hidden">
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                        <span className="text-sm md:text-2xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
                                     )}
                                 </div>
-                                <div className="mt-2 flex flex-col gap-2">
-                                    <h3 className="font-display text-lg font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
-                                    <div className="flex items-center gap-1.5 text-gray-600">
-                                        <span className="text-sm">📞</span>
-                                        <span className="text-xs md:text-sm font-black uppercase tracking-wider leading-none">
+                                <div className="mt-1.5 flex flex-col gap-1 md:gap-2.5">
+                                    <h3 className="font-display text-sm md:text-xl lg:text-2xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                    <div className="flex items-center gap-1 md:gap-2 text-gray-600">
+                                        <span className="text-xs md:text-base">📞</span>
+                                        <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider leading-none">
                                             {res.phone || "Telefon Belirtilmedi"}
                                         </span>
                                     </div>
@@ -382,18 +382,18 @@ export default async function Home() {
             <section className="w-full max-w-[92rem] px-4 pt-24 pb-12 z-30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {secondFinalAds.map((ad, idx) => {
-                        const href = ad.restaurants?.slug 
+                        const href = ad.restaurants?.slug
                             ? `/restaurant/${ad.restaurants.slug}`
                             : "/login/restaurant?mode=register";
-                        
+
                         return (
                             <Link key={idx} href={href} className="group relative h-48 rounded-[2.5rem] border-4 border-accent overflow-hidden bg-black shadow-xl">
                                 <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
-                                    <Image 
-                                        src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800&auto=format&fit=crop')} 
-                                        alt="Ad" 
-                                        fill 
-                                        className="object-cover" 
+                                    <Image
+                                        src={ad.image_url || (idx === 0 ? 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800&auto=format&fit=crop')}
+                                        alt="Ad"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </div>
                                 <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-black/60" />
@@ -416,7 +416,7 @@ export default async function Home() {
                     <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-[120px] -z-10" />
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div>
-                            <h2 
+                            <h2
                                 className="font-display text-5xl md:text-7xl font-black text-white uppercase leading-none mb-8 animate-in fade-in duration-500"
                                 dangerouslySetInnerHTML={{ __html: howItWorksTitle }}
                             />
@@ -448,7 +448,7 @@ export default async function Home() {
                         <div className="relative bg-[#0A0A0A] rounded-[2.9rem] px-8 py-20 md:py-32 flex flex-col items-center text-center overflow-hidden">
                             {/* Dekoratif Arka Plan Elemanları - Çok Hafif */}
                             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50" />
-                            
+
                             <div className="relative z-10 max-w-4xl">
                                 <span className="inline-block px-4 py-1.5 bg-accent/10 text-accent text-[10px] font-black rounded-full uppercase tracking-[0.3em] mb-8 border border-accent/20">
                                     Ayrıcalıklı Dünya

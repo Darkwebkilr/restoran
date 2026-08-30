@@ -24,17 +24,16 @@ export default async function AdminDeliveryPage() {
     try {
         const { data, error } = await supabase
             .from("restaurants")
-            .select("id, name, slug, has_delivery, is_delivery_ad, category, district")
+            .select("id, name, slug, has_delivery, category, district")
             .eq("status", "approved")
             .order("name");
         
         if (error) throw error;
         restaurants = data || [];
     } catch (e: any) {
-        console.warn("has_delivery or is_delivery_ad column not found in database, running fallback query:", e.message);
+        console.warn("has_delivery column not found in database, running fallback query:", e.message);
         isMigrationMissing = true;
         try {
-            // Fallback 1: check if we can query without is_delivery_ad
             const { data, error } = await supabase
                 .from("restaurants")
                 .select("id, name, slug, category, district")
@@ -43,11 +42,9 @@ export default async function AdminDeliveryPage() {
             
             if (error) throw error;
             
-            // Map with defaults
             restaurants = (data || []).map(r => ({
                 ...r,
-                has_delivery: (r as any).has_delivery || false,
-                is_delivery_ad: false
+                has_delivery: (r as any).has_delivery || false
             }));
         } catch (innerError: any) {
             console.error("Failed to load restaurant list:", innerError.message);

@@ -156,6 +156,8 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
 
             {activeTab === "restaurants" ? (
                 <div className="space-y-6">
+
+
                     {/* Search Input */}
                     <div className="relative">
                         <input
@@ -163,7 +165,7 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Mekan adı, kategori veya bölgeye göre ara..."
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4.5 outline-none focus:border-accent transition-all font-bold text-sm text-white placeholder:text-white/20 shadow-lg"
+                            className="w-full bg-white/5 border-2 border-white/10 rounded-3xl px-8 py-5.5 outline-none focus:border-accent transition-all font-black text-base text-white placeholder:text-white/20 shadow-xl"
                         />
                     </div>
 
@@ -177,92 +179,67 @@ export default function SponsorshipManager({ initialRestaurants, adsList, curren
                                 {/* Left Side: Details */}
                                 <div>
                                     <div className="flex flex-wrap items-center gap-3">
-                                        <h4 className="font-display text-lg font-black uppercase tracking-tight text-white">{res.name}</h4>
-                                        <span className="text-[8px] bg-white/10 border border-white/20 px-2.5 py-1 rounded-full text-white font-black uppercase tracking-widest">
+                                        <h4 className="font-display text-2xl md:text-3xl font-black uppercase tracking-tight text-white">{res.name}</h4>
+                                        <span className="text-[11px] bg-white/10 border-2 border-white/20 px-4 py-1.5 rounded-full text-white font-black uppercase tracking-widest">
                                             {res.category || "Genel"}
                                         </span>
                                         {res.district && (
-                                            <span className="text-[8px] bg-red-500/15 border border-red-500/30 px-2.5 py-1 rounded-full text-white font-black uppercase tracking-widest">
+                                            <span className="text-[11px] bg-red-500/15 border-2 border-red-500/30 px-4 py-1.5 rounded-full text-white font-black uppercase tracking-widest">
                                                 {res.district}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-[8px] text-zinc-400 font-bold uppercase tracking-widest mt-1">
+                                    <p className="text-xs md:text-sm text-zinc-400 font-black uppercase tracking-widest mt-3">
                                         {res.show_in_marquee ? "✓ Kayan Bant " : ""}
                                         {res.is_featured ? "✓ Seçkin Masalar " : ""}
-                                        {res.is_featured_ad ? "★ Seçkin Reklamı " : ""}
                                         {res.has_delivery ? "✓ Paket Servis " : ""}
                                         
-                                        {res.is_ad_only ? "👁 Sadece Reklam " : ""}
-                                        {(!res.show_in_marquee && !res.is_featured && !res.is_featured_ad && !res.has_delivery && !res.is_delivery_ad) && "Herhangi bir reklam/listeleme grubu aktif değil."}
+                                        {(!res.show_in_marquee && !res.is_featured && !res.has_delivery) && "Herhangi bir reklam/listeleme grubu aktif değil."}
                                     </p>
                                 </div>
 
-                                {/* Right Side: 5 Toggles */}
-                                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 shrink-0">
-                                    {/* 1. Marquee */}
-                                    <button
-                                        onClick={() => handleToggle(res.id, "marquee", res.show_in_marquee)}
-                                        disabled={loadingIds[`${res.id}-marquee`]}
-                                        className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
-                                            res.show_in_marquee
-                                                ? "bg-accent text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
-                                        }`}
-                                    >
-                                        {loadingIds[`${res.id}-marquee`] ? "..." : (res.show_in_marquee ? "✓ Kayan Bantta" : "Kayan Bant")}
-                                    </button>
-
-                                    {/* 2. Featured */}
+                                {/* Right Side: 3 Simple Toggles */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0 lg:max-w-xl w-full md:w-auto">
+                                    {/* 1. Seçkin Masa */}
                                     <button
                                         onClick={() => handleToggle(res.id, "featured", res.is_featured)}
                                         disabled={loadingIds[`${res.id}-featured`]}
-                                        className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
+                                        className={`px-4 py-4 rounded-[1.25rem] text-[11px] md:text-xs font-black tracking-widest uppercase transition-all text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 min-w-[120px] md:min-w-[140px] ${
                                             res.is_featured
-                                                ? "bg-accent text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
+                                                ? "bg-yellow-400 text-black border-[3px] border-yellow-400 hover:scale-105 shadow-lg font-black"
+                                                : "bg-white/5 border-[3px] border-white/15 hover:bg-white/10 text-zinc-300"
                                         }`}
                                     >
-                                        {loadingIds[`${res.id}-featured`] ? "..." : (res.is_featured ? "✓ Seçkin Masa" : "Seçkin Masa")}
+                                        <span className="text-xs md:text-sm">{res.is_featured ? "🏆 Seçkin Masa" : "Seçkin Masa"}</span>
+                                        <span className="text-[8px] md:text-[9px] opacity-75 font-bold tracking-wider">Anasayfa Vitrini</span>
                                     </button>
 
-                                    {/* 3. Featured Ad */}
-                                    <button
-                                        onClick={() => handleToggle(res.id, "featured_ad", res.is_featured_ad)}
-                                        disabled={loadingIds[`${res.id}-featured_ad`]}
-                                        className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
-                                            res.is_featured_ad
-                                                ? "bg-accent text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
-                                        }`}
-                                    >
-                                        {loadingIds[`${res.id}-featured_ad`] ? "..." : (res.is_featured_ad ? "★ Seçkin Reklamı" : "Seçkin Reklamı")}
-                                    </button>
-
-                                    {/* 4. Delivery */}
+                                    {/* 2. Paket Servis */}
                                     <button
                                         onClick={() => handleToggle(res.id, "delivery", res.has_delivery)}
                                         disabled={loadingIds[`${res.id}-delivery`]}
-                                        className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
+                                        className={`px-4 py-4 rounded-[1.25rem] text-[11px] md:text-xs font-black tracking-widest uppercase transition-all text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 min-w-[120px] md:min-w-[140px] ${
                                             res.has_delivery
-                                                ? "bg-accent text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
+                                                ? "bg-yellow-400 text-black border-[3px] border-yellow-400 hover:scale-105 shadow-lg font-black"
+                                                : "bg-white/5 border-[3px] border-white/15 hover:bg-white/10 text-zinc-300"
                                         }`}
                                     >
-                                        {loadingIds[`${res.id}-delivery`] ? "..." : (res.has_delivery ? "✓ Paket Servis" : "Paket Servis")}
+                                        <span className="text-xs md:text-sm">{res.has_delivery ? "🚀 Paket Servis" : "Paket Servis"}</span>
+                                        <span className="text-[8px] md:text-[9px] opacity-75 font-bold tracking-wider">Paket Servis Grubu</span>
                                     </button>
 
-                                    {/* 6. Ad Only */}
+                                    {/* 4. Kayan Yazılar */}
                                     <button
-                                        onClick={() => handleToggle(res.id, "ad_only", res.is_ad_only)}
-                                        disabled={loadingIds[`${res.id}-ad_only`]}
-                                        className={`px-4 py-3 rounded-xl text-[8px] font-black tracking-widest uppercase transition-all text-center cursor-pointer ${
-                                            res.is_ad_only
-                                                ? "bg-accent text-black hover:scale-105 shadow-md"
-                                                : "bg-white/5 border border-white/25 hover:bg-white/10 text-white font-bold"
+                                        onClick={() => handleToggle(res.id, "marquee", res.show_in_marquee)}
+                                        disabled={loadingIds[`${res.id}-marquee`]}
+                                        className={`px-4 py-4 rounded-[1.25rem] text-[11px] md:text-xs font-black tracking-widest uppercase transition-all text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 min-w-[120px] md:min-w-[140px] ${
+                                            res.show_in_marquee
+                                                ? "bg-yellow-400 text-black border-[3px] border-yellow-400 hover:scale-105 shadow-lg font-black"
+                                                : "bg-white/5 border-[3px] border-white/15 hover:bg-white/10 text-zinc-300"
                                         }`}
                                     >
-                                        {loadingIds[`${res.id}-ad_only`] ? "..." : (res.is_ad_only ? "👁 Sadece Reklam" : "Sadece Reklam")}
+                                        <span className="text-xs md:text-sm">{res.show_in_marquee ? "✨ Kayan Yazı" : "Kayan Yazı"}</span>
+                                        <span className="text-[8px] md:text-[9px] opacity-75 font-bold tracking-wider">En Üst Kayan Şerit</span>
                                     </button>
                                 </div>
                             </div>

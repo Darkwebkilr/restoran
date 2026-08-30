@@ -176,21 +176,10 @@ export default function Header() {
             <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-4 glass border-b-4 border-accent md:px-12 md:py-6 transition-all duration-500">
                 {/* Logo */}
                 <div className="flex-1 flex justify-start lg:justify-center">
-                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 group relative z-[110]">
-                        {siteLogo ? (
-                            <img src={siteLogo} alt="Bodrumun Mekanları" className="h-14 md:h-18 w-auto object-contain transition-transform group-hover:scale-105" />
-                        ) : (
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 md:w-12 md:h-12 bg-accent rounded-xl flex items-center justify-center font-display font-black text-xl md:text-2xl text-black italic group-hover:scale-110 transition-transform">E</div>
-                                <div className="flex flex-col">
-                                    <span className="font-display text-base md:text-lg font-black tracking-tighter uppercase text-white leading-none">Evolution</span>
-                                    <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-accent uppercase leading-none mt-1">Ajans</span>
-                                </div>
-                            </div>
-                        )}
-                        <span className="text-white font-display text-xs md:text-sm font-black uppercase tracking-widest leading-none border-l-4 border-accent pl-4">
-                            Bodrumun Mekanları
-                        </span>
+                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="group relative z-[110]">
+                        <div className="border-[3px] border-accent px-5 py-2.5 rounded-2xl bg-black/50 backdrop-blur-md shadow-[0_0_20px_rgba(245,158,11,0.2)] flex items-center justify-center font-display text-sm md:text-lg font-black uppercase tracking-wider italic hover:border-white hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:scale-105 transition-all duration-300">
+                            <span className="text-white">BODRUMUN MEKANLARI.COM</span>
+                        </div>
                     </Link>
                 </div>
 

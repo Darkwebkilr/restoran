@@ -296,48 +296,40 @@ export default function AdminRestaurantNewForm() {
                     </div>
                 </div>
 
-                {/* Logo & Kayan Bant Ayarları */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-white/5">
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">İşletme Logosu (Kayan Bant İçin)</label>
-                        <input type="hidden" name="logoUrl" value={logoUrl} />
-                        <div className="flex items-center gap-6">
-                            {logoUrl ? (
-                                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center p-2">
-                                    <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setLogoUrl("")}
-                                        className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors shadow-lg text-[10px] font-bold cursor-pointer"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            ) : (
-                                uploadingLogo ? (
-                                    <div className="w-24 h-24 bg-white/5 border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center animate-pulse">
-                                        <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">YÜKLENİYOR...</span>
-                                    </div>
-                                ) : (
-                                    <label className="w-24 h-24 bg-white/5 border border-dashed border-white/10 hover:border-accent/40 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-white/[0.08] group">
-                                        <input 
-                                            type="file" 
-                                            accept="image/*" 
-                                            onChange={handleLogoUpload} 
-                                            className="hidden" 
-                                        />
-                                        <span className="text-xl mb-1 text-zinc-400 group-hover:text-accent group-hover:scale-110 transition-all">+</span>
-                                        <span className="text-[8px] font-black text-zinc-400 group-hover:text-accent uppercase tracking-widest text-center px-1">Logo Yükle</span>
-                                    </label>
-                                )
-                            )}
-                            <div className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider flex-1">
-                                Sayfanın en üstündeki kayan logo bandında gösterilmek üzere işletmenin logosunu (PNG/SVG önerilir) buraya yükleyin.
+                {/* Görünürlük Ayarları */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">Görünürlük Ayarları</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
+                            <input 
+                                type="checkbox" 
+                                name="isFeatured" 
+                                value="true"
+                                checked={isFeatured}
+                                onChange={(e) => setIsFeatured(e.target.checked)}
+                                className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
+                            />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">🏆 Seçkin Masalarda Göster</span>
+                                <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan öne çıkarılan "Seçkin Masalar" listesinde yer alsın.</span>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-6">
+                        </label>
+
+                        <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
+                            <input 
+                                type="checkbox" 
+                                name="hasDelivery" 
+                                value="true"
+                                checked={hasDelivery}
+                                onChange={(e) => setHasDelivery(e.target.checked)}
+                                className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
+                            />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">🚀 Paket Servisinde Göster</span>
+                                <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan Paket Servis listesinde listelensin.</span>
+                            </div>
+                        </label>
+
                         <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
                             <input 
                                 type="checkbox" 
@@ -348,74 +340,10 @@ export default function AdminRestaurantNewForm() {
                                 className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
                             />
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">⭐ Üst Kayan Bantta Göster</span>
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">✨ En Üst Kayan Yazıda Göster</span>
                                 <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Bu mekanın logosu ana sayfanın en üstündeki kayan bantta yer alsın.</span>
                             </div>
                         </label>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
-                                <input 
-                                    type="checkbox" 
-                                    name="isFeatured" 
-                                    value="true"
-                                    checked={isFeatured}
-                                    onChange={(e) => setIsFeatured(e.target.checked)}
-                                    className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
-                                />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">🏆 Seçkin Masalarda Listele</span>
-                                    <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan öne çıkarılan "Seçkin Masalar" listesinde yer alsın.</span>
-                                </div>
-                            </label>
-
-                            <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
-                                <input 
-                                    type="checkbox" 
-                                    name="isFeaturedAd" 
-                                    value="true"
-                                    checked={isFeaturedAd}
-                                    onChange={(e) => setIsFeaturedAd(e.target.checked)}
-                                    className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
-                                />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">🔥 Seçkin Masalarda Sponsor Yap</span>
-                                    <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan Seçkin Masalar listesinde reklamlı/sponsorlu olarak işaretlensin.</span>
-                                </div>
-                            </label>
-
-                            <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
-                                <input 
-                                    type="checkbox" 
-                                    name="hasDelivery" 
-                                    value="true"
-                                    checked={hasDelivery}
-                                    onChange={(e) => setHasDelivery(e.target.checked)}
-                                    className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
-                                />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">🚀 Paket Servis Listesine Ekle</span>
-                                    <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan Paket Servis listesinde listelensin.</span>
-                                </div>
-                            </label>
-
-
-
-                            <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full sm:col-span-2">
-                                <input 
-                                    type="checkbox" 
-                                    name="isAdOnly" 
-                                    value="true"
-                                    checked={isAdOnly}
-                                    onChange={(e) => setIsAdOnly(e.target.checked)}
-                                    className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
-                                />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">👁 Sadece Reklam Olarak Göster (Arama Sonuçlarında Gizle)</span>
-                                    <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Bu mekan genel arama listelerinde listelenmez, sadece parasını ödediği sponsorlu alanlarda gösterilir.</span>
-                                </div>
-                            </label>
-                        </div>
                     </div>
                 </div>
 

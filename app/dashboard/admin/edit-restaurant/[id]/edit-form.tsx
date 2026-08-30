@@ -27,6 +27,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
     const [isAdOnly, setIsAdOnly] = useState(restaurant.is_ad_only || false);
     const [isFeatured, setIsFeatured] = useState<boolean>(restaurant.is_featured || false);
     const [hasDelivery, setHasDelivery] = useState(restaurant.has_delivery || false);
+    const [isFeaturedAd, setIsFeaturedAd] = useState(restaurant.is_featured_ad || false);
     const [supabase] = useState(() => createClient());
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,7 +178,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
             <input type="hidden" name="restaurantId" value={restaurant.id} />
             <input type="hidden" name="photosJson" value={JSON.stringify(photos)} />
             <input type="hidden" name="videosJson" value={JSON.stringify(videos)} />
-            <input type="hidden" name="isFeatured" value={isFeatured ? "true" : "false"} />
+            
 
             <div className="glass p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-8">
                 
@@ -358,49 +359,44 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                     </div>
                 </div>
 
-                {/* Logo & Kayan Bant Ayarları */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-white/5">
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">İşletme Logosu (Kayan Bant İçin)</label>
-                        <input type="hidden" name="logoUrl" value={logoUrl} />
-                        <div className="flex items-center gap-6">
-                            {logoUrl ? (
-                                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center p-2">
-                                    <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setLogoUrl("")}
-                                        className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors shadow-lg text-[10px] font-bold cursor-pointer"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            ) : (
-                                uploadingLogo ? (
-                                    <div className="w-24 h-24 bg-white/5 border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center animate-pulse">
-                                        <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">YÜKLENİYOR...</span>
-                                    </div>
-                                ) : (
-                                    <label className="w-24 h-24 bg-white/5 border border-dashed border-white/10 hover:border-accent/40 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-white/[0.08] group">
-                                        <input 
-                                            type="file" 
-                                            accept="image/*" 
-                                            onChange={handleLogoUpload} 
-                                            className="hidden" 
-                                        />
-                                        <span className="text-xl mb-1 text-zinc-400 group-hover:text-accent group-hover:scale-110 transition-all">+</span>
-                                        <span className="text-[8px] font-black text-zinc-400 group-hover:text-accent uppercase tracking-widest text-center px-1">Logo Yükle</span>
-                                    </label>
-                                )
-                            )}
-                            <div className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider flex-1">
-                                Sayfanın en üstündeki kayan logo bandında gösterilmek üzere işletmenin logosunu (PNG/SVG önerilir) buraya yükleyin.
+                {/* Görünürlük Ayarları */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1 block">Görünürlük Ayarları</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        {/* 1. Seçkin Masa */}
+                        <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
+                            <input 
+                                type="checkbox" 
+                                name="isFeatured" 
+                                value="true"
+                                checked={isFeatured}
+                                onChange={(e) => setIsFeatured(e.target.checked)}
+                                className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
+                            />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">🏆 Seçkin Masalarda Göster</span>
+                                <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan öne çıkarılan "Seçkin Masalar" listesinde yer alsın.</span>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div className="flex items-center">
-                        <label className="flex items-center gap-3 px-6 py-5 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
+                        </label>
+
+                        {/* 2. Paket Servis */}
+                        <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
+                            <input 
+                                type="checkbox" 
+                                name="hasDelivery" 
+                                value="true"
+                                checked={hasDelivery}
+                                onChange={(e) => setHasDelivery(e.target.checked)}
+                                className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
+                            />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">🚀 Paket Servisinde Göster</span>
+                                <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Mekan Paket Servis listesinde listelensin.</span>
+                            </div>
+                        </label>
+
+                        {/* 3. Kayan Yazılar */}
+                        <label className="flex items-center gap-3 px-6 py-4 rounded-2xl border bg-white/5 border-white/10 hover:border-white/20 cursor-pointer transition-all w-full">
                             <input 
                                 type="checkbox" 
                                 name="showInMarquee" 
@@ -410,7 +406,7 @@ export default function AdminRestaurantEditForm({ restaurant }: { restaurant: an
                                 className="w-5 h-5 rounded border-white/10 bg-black text-accent focus:ring-0 focus:ring-offset-0 cursor-pointer" 
                             />
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">⭐ Üst Kayan Bantta Göster</span>
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">✨ En Üst Kayan Yazıda Göster</span>
                                 <span className="text-[7px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">Bu mekanın logosu ana sayfanın en üstündeki kayan bantta yer alsın.</span>
                             </div>
                         </label>
