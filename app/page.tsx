@@ -193,7 +193,7 @@ export default async function Home() {
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
 
             {/* 1. TOP MARQUEE */}
-            <div className="fixed top-[80px] md:top-[108px] z-50 w-full bg-gray-400/70 border-b border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
+            <div className="fixed top-[92px] md:top-[136px] z-50 w-full bg-gray-400/70 border-b border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="flex items-center">

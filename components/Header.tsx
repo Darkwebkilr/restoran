@@ -173,14 +173,14 @@ export default function Header() {
 
     return (
         <>
-            <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-2.5 glass border-b-4 border-accent md:px-12 md:py-3 transition-all duration-500">
+            <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-2 glass border-b-4 border-accent md:px-12 md:py-2.5 transition-all duration-500">
                 {/* Logo */}
                 <div className="flex-1 flex justify-start lg:justify-center">
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center group relative z-[110]">
                         <img 
                             src="/logo 2.jpeg" 
                             alt="Bodrumun Mekanları" 
-                            className="h-14 md:h-20 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl shadow-lg border border-white/10" 
+                            className="h-18 md:h-28 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl shadow-lg border border-white/10" 
                         />
                     </Link>
                 </div>
