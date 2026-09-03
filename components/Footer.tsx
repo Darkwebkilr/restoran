@@ -42,14 +42,7 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-start gap-16 md:gap-24 text-center md:text-left">
                 <div className="max-w-md flex flex-col items-center md:items-start">
                     <div className="flex items-center gap-4 mb-8 md:mb-10">
-                        {siteLogo ? (
-                            <img src={siteLogo} alt="Evolution Ajans" className="h-12 md:h-14 w-auto object-contain" />
-                        ) : (
-                            <>
-                                <div className="w-12 h-12 md:w-14 md:h-14 bg-accent rounded-xl flex items-center justify-center font-display font-black text-2xl md:text-3xl text-black italic">E</div>
-                                <span className="font-display text-3xl md:text-4xl font-black tracking-tighter uppercase leading-none text-left">Evolution <br /><span className="text-accent text-[10px] md:text-sm tracking-[0.5em]">Ajans</span></span>
-                            </>
-                        )}
+                        <img src={siteLogo || "/logo 2.jpeg"} alt="Bodrumun Mekanları" className="h-14 md:h-18 w-auto object-contain rounded-xl shadow-lg border border-white/10" />
                     </div>
                     <p className="text-muted font-medium text-base md:text-lg leading-relaxed text-balance opacity-80 max-w-sm md:max-w-none">
                         Gastronomi dünyasında dijital dönüşümün öncüsü, Evolution Ajans. Sınırları zorlayan, cesur ve akıllı deneyimler için buradayız.

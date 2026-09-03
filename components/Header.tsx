@@ -173,13 +173,15 @@ export default function Header() {
 
     return (
         <>
-            <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-4 glass border-b-4 border-accent md:px-12 md:py-6 transition-all duration-500">
+            <nav className="fixed top-0 z-[100] w-full flex items-center justify-between px-4 py-2.5 glass border-b-4 border-accent md:px-12 md:py-3 transition-all duration-500">
                 {/* Logo */}
                 <div className="flex-1 flex justify-start lg:justify-center">
-                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="group relative z-[110]">
-                        <div className="border-[3px] border-accent px-5 py-2.5 rounded-2xl bg-black/50 backdrop-blur-md shadow-[0_0_20px_rgba(245,158,11,0.2)] flex items-center justify-center font-display text-sm md:text-lg font-black uppercase tracking-wider italic hover:border-white hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:scale-105 transition-all duration-300">
-                            <span className="text-white">BODRUMUN MEKANLARI.COM</span>
-                        </div>
+                    <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center group relative z-[110]">
+                        <img 
+                            src="/logo 2.jpeg" 
+                            alt="Bodrumun Mekanları" 
+                            className="h-14 md:h-20 w-auto object-contain transition-transform group-hover:scale-105 rounded-xl shadow-lg border border-white/10" 
+                        />
                     </Link>
                 </div>
 
