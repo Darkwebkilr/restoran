@@ -5,7 +5,11 @@ import { updateSettingsByAdmin } from "@/app/actions/settings";
 import { createClient } from "@/utils/supabase/client";
 
 interface Settings {
+  site_meta_title: string;
+  site_meta_description: string;
+  site_meta_keywords: string;
   hero_title: string;
+  delivery_title: string;
   categories_title: string;
   featured_title: string;
   how_it_works_title: string;
@@ -33,6 +37,8 @@ export default function AdminSettingsForm({
   allRestaurants?: RestaurantMarqueeInfo[];
 }) {
     const [state, action, isPending] = useActionState(updateSettingsByAdmin, null);
+    const [metaTitle, setMetaTitle] = useState(initialSettings.site_meta_title || "");
+    const [metaDesc, setMetaDesc] = useState(initialSettings.site_meta_description || "");
     const [logoUrl, setLogoUrl] = useState(initialSettings.site_logo_url || "");
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [selectedMarqueeIds, setSelectedMarqueeIds] = useState<string[]>(
@@ -76,6 +82,78 @@ export default function AdminSettingsForm({
 
     return (
         <form action={action} className="glass p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-8">
+            
+            {/* 1. SEO & META TAGLARI BÖLÜMÜ */}
+            <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] border-2 border-accent/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                <div className="flex items-center gap-3">
+                    <span className="text-2xl">🌐</span>
+                    <div>
+                        <h3 className="text-base md:text-lg font-display font-black uppercase text-white tracking-wider flex items-center gap-2">
+                            SEO & META TAG YÖNETİMİ
+                            <span className="text-[9px] bg-accent/20 text-accent border border-accent/40 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-widest">Arama Motoru Ayarları</span>
+                        </h3>
+                        <p className="text-[10px] text-zinc-400 font-medium">Google, Yandex ve sosyal medya paylaşımlarında sitenizin nasıl görüneceğini buradan belirleyin.</p>
+                    </div>
+                </div>
+
+                {/* Google Snippet Önizlemesi */}
+                <div className="bg-black/60 border border-white/10 rounded-2xl p-5 space-y-1.5 shadow-inner">
+                    <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                        <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">🔍</span>
+                        <span className="font-mono text-zinc-400 text-xs truncate">bodrumunmekanlari.com</span>
+                    </div>
+                    <h4 className="text-base md:text-lg font-semibold text-[#8ab4f8] hover:underline cursor-pointer line-clamp-1">
+                        {metaTitle || "Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"}
+                    </h4>
+                    <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
+                        {metaDesc || "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi. En iyi masalarda yerinizi hemen ayırtın."}
+                    </p>
+                </div>
+
+                {/* Meta Title */}
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Site Başlığı (Meta Title / Tarayıcı Sekme Yazısı)</label>
+                        <span className="text-[9px] text-zinc-400 font-mono">{metaTitle.length} / 60 karakter önerilir</span>
+                    </div>
+                    <input
+                        name="site_meta_title"
+                        required
+                        value={metaTitle}
+                        onChange={(e) => setMetaTitle(e.target.value)}
+                        placeholder="Örn. Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                    />
+                </div>
+
+                {/* Meta Description */}
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Meta Açıklaması (Arama Motoru Özeti)</label>
+                        <span className="text-[9px] text-zinc-400 font-mono">{metaDesc.length} / 160 karakter önerilir</span>
+                    </div>
+                    <textarea
+                        name="site_meta_description"
+                        required
+                        value={metaDesc}
+                        onChange={(e) => setMetaDesc(e.target.value)}
+                        rows={2}
+                        placeholder="Örn. Bodrum'un en seçkin restoranlarında yerinizi ayırtın. VIP rezervasyon ve en hızlı paket servis seçenekleri..."
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                    />
+                </div>
+
+                {/* Meta Keywords */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Meta Anahtar Kelimeleri (Virgülle Ayırarak Yazın)</label>
+                    <input
+                        name="site_meta_keywords"
+                        defaultValue={initialSettings.site_meta_keywords}
+                        placeholder="bodrum restoran, bodrum mekanları, vip masa, paket servis, akşam yemeği"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                    />
+                </div>
+            </div>
             
             {/* Hero Sloganı */}
             <div className="space-y-2">
@@ -160,6 +238,17 @@ export default function AdminSettingsForm({
                     name="featured_title"
                     required
                     defaultValue={initialSettings.featured_title}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                />
+            </div>
+
+            {/* En İyi Paket Servisleri Başlığı */}
+            <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">En İyi Paket Servisleri Başlığı</label>
+                <input
+                    name="delivery_title"
+                    required
+                    defaultValue={initialSettings.delivery_title}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
                 />
             </div>

@@ -23,7 +23,11 @@ export async function updateSettingsByAdmin(prevState: any, formData: FormData) 
   }
 
   const keys = [
+    "site_meta_title",
+    "site_meta_description",
+    "site_meta_keywords",
     "hero_title", 
+    "delivery_title",
     "categories_title", 
     "featured_title", 
     "how_it_works_title", 

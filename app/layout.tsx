@@ -16,10 +16,40 @@ const inter = Inter({
     subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-    title: "Evolution Ajans | Akıllı Rezervasyon & Giriş Sistemi",
-    description: "En seçkin restoranlarda yerini ayırt, kapıda sıra bekleme.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    try {
+        const supabase = await createClient();
+        const { data } = await supabase.from("settings").select("*");
+        const getVal = (key: string, fallback: string) => data?.find(s => s.key === key)?.value || fallback;
+
+        const title = getVal("site_meta_title", "Bodrumun Mekanları | Akıllı Rezervasyon & Giriş Sistemi");
+        const description = getVal("site_meta_description", "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi. En iyi masalarda yerinizi hemen ayırtın.");
+        const keywords = getVal("site_meta_keywords", "bodrum restoranları, bodrum mekanları, vip rezervasyon, paket servis, akşam yemeği");
+
+        return {
+            title,
+            description,
+            keywords: keywords ? keywords.split(",").map((k: string) => k.trim()) : undefined,
+            openGraph: {
+                title,
+                description,
+                siteName: "Bodrumun Mekanları",
+                locale: "tr_TR",
+                type: "website",
+            },
+            twitter: {
+                card: "summary_large_image",
+                title,
+                description,
+            }
+        };
+    } catch (e) {
+        return {
+            title: "Bodrumun Mekanları | Akıllı Rezervasyon & Giriş Sistemi",
+            description: "En seçkin restoranlarda yerini ayırt, kapıda sıra bekleme.",
+        };
+    }
+}
 
 export default async function RootLayout({
     children,

@@ -48,7 +48,11 @@ export default async function AdminSettingsPage() {
   };
 
   const currentSettings = {
+    site_meta_title: getSetting("site_meta_title", "Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"),
+    site_meta_description: getSetting("site_meta_description", "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi."),
+    site_meta_keywords: getSetting("site_meta_keywords", "bodrum restoranları, bodrum mekanları, vip rezervasyon, paket servis"),
     hero_title: getSetting("hero_title", "BODRUMUN EN İYİ MASALARI."),
+    delivery_title: getSetting("delivery_title", "EN İYİ PAKET SERVİSLERİ"),
     categories_title: getSetting("categories_title", "ÖNE ÇIKAN KATEGORİLER"),
     featured_title: getSetting("featured_title", "SEÇKİN MASALAR"),
     how_it_works_title: getSetting("how_it_works_title", "SİSTEM NASIL İŞLER?"),

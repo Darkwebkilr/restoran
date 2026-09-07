@@ -137,7 +137,7 @@ export default async function AdminDashboard() {
                 href="/dashboard/admin/settings"
                 className="px-8 py-4.5 glass text-white hover:text-accent font-black rounded-2xl text-[10px] tracking-widest hover:scale-[1.03] transition-all border border-white/10 uppercase italic flex items-center gap-2"
             >
-                ⚙️ SAYFA BAŞLIKLARINI DÜZENLE
+                ⚙️ META TAGLARI & BAŞLIKLARI DÜZENLE
             </Link>
         </section>
 

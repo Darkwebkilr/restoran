@@ -154,6 +154,7 @@ export default async function Home() {
     const heroTitle = getSetting("hero_title", "BODRUMUN EN İYİ MASALARI.");
     const categoriesTitle = getSetting("categories_title", "ÖNE ÇIKAN <br /><span class=\"text-accent italic\">KATEGORİLER</span>");
     const featuredTitle = getSetting("featured_title", "SEÇKİN <br /><span class=\"text-accent italic\">MASALAR</span>");
+    const deliveryTitle = getSetting("delivery_title", "EN İYİ <br /><span class=\"text-accent italic\">PAKET SERVİSLERİ</span>");
     const howItWorksTitle = getSetting("how_it_works_title", "SİSTEM NASIL <br /><span class=\"text-accent italic\">İŞLER?</span>");
     const marqueeText = getSetting("marquee_text", "EVOLUTION AJANS • %100 GERÇEK REZERVASYON • ŞEHRİN EN İYİLERİ");
 
@@ -193,7 +194,7 @@ export default async function Home() {
         <main className="relative min-h-screen flex flex-col items-center overflow-x-hidden selection:bg-accent selection:text-black">
 
             {/* 1. TOP MARQUEE */}
-            <div className="fixed top-[92px] md:top-[136px] z-50 w-full bg-gray-400/70 border-b border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
+            <div className="fixed top-[84px] md:top-[116px] z-50 w-full bg-gray-400/70 border-b border-black/10 py-3 md:py-4 overflow-hidden backdrop-blur-md">
                 <div className="animate-marquee whitespace-nowrap flex items-center">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="flex items-center">
@@ -284,10 +285,10 @@ export default async function Home() {
             <section className="w-full max-w-[92rem] px-4 py-12 z-10 border-b border-white/5">
                 <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-6">
                     <div>
-                        <h2 className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.8] text-white">
-                            EN İYİ <br />
-                            <span className="text-accent italic">PAKET SERVİSLERİ</span>
-                        </h2>
+                        <h2 
+                            className="font-display text-4xl md:text-6xl font-black uppercase leading-[0.8] text-white"
+                            dangerouslySetInnerHTML={{ __html: deliveryTitle }}
+                        />
                     </div>
                     <Link href="/restaurants" className="px-8 py-4 glass text-white font-black rounded-xl hover:bg-black hover:text-accent border-[3px] border-accent transition-all uppercase tracking-widest text-[9px] shadow-md">Tümünü Gör</Link>
                 </div>
@@ -340,10 +341,10 @@ export default async function Home() {
                     </div>
                     <Link href="/restaurants" className="px-10 py-5 glass text-white font-black rounded-2xl hover:bg-black hover:text-accent border-[3px] border-accent transition-all uppercase tracking-widest text-[10px] shadow-lg">Tümünü Gör</Link>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 md:gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-5">
                     {finalRestaurants && finalRestaurants.map((res, idx) => (
                         <Link key={`${res.id}-${idx}`} href={`/restaurant/${res.slug}`} className={`group bg-white rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col border-2 md:border-4 border-accent ${res.is_featured_ad ? 'hover:border-accent hover:ring-2 hover:ring-accent/20' : ''}`}>
-                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+                            <div className="relative aspect-[16/10] sm:aspect-[4/3] w-full overflow-hidden bg-gray-100">
                                 <Image src={res.photos?.[0] || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop"} alt={res.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                 {/* Kategori Badge (Sol Üst) */}
                                 <div className="absolute top-2.5 left-2.5 md:top-4 md:left-4 bg-[#7C3AED] px-2.5 py-1 md:px-4 md:py-1.5 rounded-md md:rounded-lg shadow-lg">
@@ -354,17 +355,17 @@ export default async function Home() {
                                     <span className="text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest">{getAddressDistrict(res.address, res.district)}</span>
                                 </div>
                             </div>
-                            <div className="pt-6 px-3.5 pb-3.5 md:pt-9 md:px-6 md:pb-6 flex-1 flex flex-col justify-between relative">
+                            <div className="pt-7 px-5 pb-5 md:pt-9 md:px-6 md:pb-6 flex-1 flex flex-col justify-between relative">
                                 {/* Siyah Daire Logo Overlay */}
-                                <div className="absolute -top-6 left-3 w-12 h-12 md:-top-10 md:left-6 md:w-20 md:h-20 rounded-full bg-black flex items-center justify-center shadow-xl border-2 border-white z-20 overflow-hidden">
+                                <div className="absolute -top-7 left-4 w-14 h-14 md:-top-10 md:left-6 md:w-20 md:h-20 rounded-full bg-black flex items-center justify-center shadow-xl border-2 border-white z-20 overflow-hidden">
                                     {res.logo_url ? (
                                         <img src={res.logo_url} alt={`${res.name} Logo`} className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-sm md:text-2xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
+                                        <span className="text-base md:text-2xl font-display font-black text-white uppercase tracking-wider">{res.name?.charAt(0)}</span>
                                     )}
                                 </div>
                                 <div className="mt-1.5 flex flex-col gap-1 md:gap-2.5">
-                                    <h3 className="font-display text-sm md:text-xl lg:text-2xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
+                                    <h3 className="font-display text-base sm:text-sm md:text-xl lg:text-2xl font-black text-gray-900 uppercase leading-none tracking-tight group-hover:text-[#7C3AED] transition-colors truncate">{res.name}</h3>
                                     <div className="flex items-center gap-1 md:gap-2 text-gray-600">
                                         <span className="text-xs md:text-base">📞</span>
                                         <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase tracking-wider leading-none">
