@@ -43,7 +43,7 @@ export default function Footer() {
                 <div className="max-w-md flex flex-col items-center md:items-start">
                     <div className="flex items-center gap-4 mb-8 md:mb-10">
                         <img 
-                            src="/logo 2.jpeg" 
+                            src="/Logo 3.png" 
                             alt="Bodrumun Mekanları" 
                             className="h-24 md:h-32 w-auto object-contain rounded-2xl shadow-2xl border border-white/10" 
                         />

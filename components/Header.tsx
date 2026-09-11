@@ -178,7 +178,7 @@ export default function Header() {
                 <div className="flex-1 h-full flex justify-start lg:justify-center items-center">
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="h-full flex items-center group relative z-[110]">
                         <img 
-                            src="/logo 2.jpeg" 
+                            src="/Logo 3.png" 
                             alt="Bodrumun Mekanları" 
                             className="h-full w-auto object-contain transition-transform group-hover:scale-105" 
                         />
