@@ -26,6 +26,8 @@ export async function updateSettingsByAdmin(prevState: any, formData: FormData) 
     "site_meta_title",
     "site_meta_description",
     "site_meta_keywords",
+    "site_url",
+    "site_og_image",
     "hero_title", 
     "delivery_title",
     "categories_title", 

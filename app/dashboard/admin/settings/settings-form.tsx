@@ -8,6 +8,8 @@ interface Settings {
   site_meta_title: string;
   site_meta_description: string;
   site_meta_keywords: string;
+  site_url?: string;
+  site_og_image?: string;
   hero_title: string;
   delivery_title: string;
   categories_title: string;
@@ -39,12 +41,48 @@ export default function AdminSettingsForm({
     const [state, action, isPending] = useActionState(updateSettingsByAdmin, null);
     const [metaTitle, setMetaTitle] = useState(initialSettings.site_meta_title || "");
     const [metaDesc, setMetaDesc] = useState(initialSettings.site_meta_description || "");
+    const [siteUrl, setSiteUrl] = useState(initialSettings.site_url || "https://restoran.ismethaktan39.workers.dev");
+    const [ogImageUrl, setOgImageUrl] = useState(initialSettings.site_og_image || "/og-image.jpg");
+    const [uploadingOgImage, setUploadingOgImage] = useState(false);
     const [logoUrl, setLogoUrl] = useState(initialSettings.site_logo_url || "");
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [selectedMarqueeIds, setSelectedMarqueeIds] = useState<string[]>(
         allRestaurants.filter(r => r.show_in_marquee).map(r => r.id)
     );
     const [supabase] = useState(() => createClient());
+
+    const handleOgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingOgImage(true);
+        try {
+            const fileExt = file.name.split('.').pop() || 'jpg';
+            const fileName = `site_assets/og_${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('restaurant-photos')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+
+            if (uploadError) {
+                throw new Error(uploadError.message);
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('restaurant-photos')
+                .getPublicUrl(fileName);
+
+            setOgImageUrl(publicUrl);
+        } catch (err: any) {
+            console.error("Paylaşım görseli yükleme hatası:", err);
+            alert("Paylaşım görseli yüklenirken hata oluştu: " + err.message);
+        } finally {
+            setUploadingOgImage(false);
+        }
+    };
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -96,18 +134,97 @@ export default function AdminSettingsForm({
                     </div>
                 </div>
 
-                {/* Google Snippet Önizlemesi */}
-                <div className="bg-black/60 border border-white/10 rounded-2xl p-5 space-y-1.5 shadow-inner">
-                    <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-                        <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">🔍</span>
-                        <span className="font-mono text-zinc-400 text-xs truncate">bodrumunmekanlari.com</span>
+                {/* Canlı Önizleme Kartları (Google + WhatsApp / Sosyal Medya) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Google Snippet Önizlemesi */}
+                    <div className="bg-black/60 border border-white/10 rounded-2xl p-5 space-y-2 shadow-inner flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center gap-2 text-[11px] text-zinc-400 mb-2">
+                                <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">🔍</span>
+                                <span className="font-bold text-white text-[11px] tracking-wide">Google Arama Önizlemesi</span>
+                            </div>
+                            <div className="text-[11px] font-mono text-zinc-400 truncate">
+                                {siteUrl ? siteUrl.replace(/\/$/, '') : 'bodrumunmekanlari.com'}
+                            </div>
+                            <h4 className="text-base font-semibold text-[#8ab4f8] hover:underline cursor-pointer line-clamp-1 mt-1">
+                                {metaTitle || "Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"}
+                            </h4>
+                            <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed mt-1">
+                                {metaDesc || "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi. En iyi masalarda yerinizi hemen ayırtın."}
+                            </p>
+                        </div>
+                        <span className="text-[9px] text-zinc-500 uppercase font-mono mt-2">Arama Motoru Kartı</span>
                     </div>
-                    <h4 className="text-base md:text-lg font-semibold text-[#8ab4f8] hover:underline cursor-pointer line-clamp-1">
-                        {metaTitle || "Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"}
-                    </h4>
-                    <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
-                        {metaDesc || "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi. En iyi masalarda yerinizi hemen ayırtın."}
-                    </p>
+
+                    {/* WhatsApp & Sosyal Medya Link Önizlemesi */}
+                    <div className="bg-[#0b141a] border border-[#202c33] rounded-2xl p-4 space-y-2 shadow-inner">
+                        <div className="flex items-center gap-2 text-[11px] text-[#25d366] font-bold">
+                            <span>💬</span>
+                            <span>WhatsApp / Sosyal Medya Link Önizlemesi</span>
+                        </div>
+                        <div className="bg-[#111b21] rounded-xl overflow-hidden border border-white/10">
+                            <div className="aspect-[1.91/1] w-full bg-black relative overflow-hidden flex items-center justify-center">
+                                {ogImageUrl ? (
+                                    <img src={ogImageUrl} alt="Sosyal Medya Paylaşım Görseli" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="text-xs text-white/30">Görsel Yok</div>
+                                )}
+                            </div>
+                            <div className="p-3 space-y-1">
+                                <h5 className="text-xs font-bold text-white line-clamp-1">
+                                    {metaTitle || "Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"}
+                                </h5>
+                                <p className="text-[11px] text-[#8696a0] line-clamp-2 leading-snug">
+                                    {metaDesc || "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi."}
+                                </p>
+                                <p className="text-[10px] text-[#8696a0]/70 font-mono truncate pt-0.5">
+                                    {siteUrl.replace(/^https?:\/\//, '')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Site URL / Alan Adı */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Canlı Web Sitesi Adresi (Domain / URL)</label>
+                    <input
+                        name="site_url"
+                        required
+                        value={siteUrl}
+                        onChange={(e) => setSiteUrl(e.target.value)}
+                        placeholder="https://bodrumunmekanlari.com veya https://restoran.ismethaktan39.workers.dev"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                    />
+                    <p className="text-[9px] text-zinc-400 ml-1">Sosyal medya link paylaşımlarında doğru link önizlemesinin oluşması için sitenizin tam adresini girin.</p>
+                </div>
+
+                {/* WhatsApp & Sosyal Medya Paylaşım Görseli (OG Image) */}
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-black text-accent uppercase tracking-widest ml-1">Sosyal Medya Paylaşım Görseli (WhatsApp / Twitter / Meta Kartı)</label>
+                        <span className="text-[9px] text-zinc-400 font-mono">1200x630 piksel</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 items-center">
+                        <input
+                            name="site_og_image"
+                            value={ogImageUrl}
+                            onChange={(e) => setOgImageUrl(e.target.value)}
+                            placeholder="/og-image.jpg veya https://..."
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-accent transition-all font-bold text-sm text-white"
+                        />
+                        <label className="cursor-pointer shrink-0 bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-2xl transition-all border border-white/10 flex items-center gap-2">
+                            {uploadingOgImage ? "Yükleniyor..." : "📁 Görsel Değiştir"}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleOgImageUpload}
+                                disabled={uploadingOgImage}
+                                className="hidden"
+                            />
+                        </label>
+                    </div>
+                    <p className="text-[9px] text-zinc-400 ml-1">WhatsApp, Telegram veya X (Twitter)'da sitenin linki paylaşıldığında çıkan kapak görselidir. Varsayılan: <code>/og-image.jpg</code></p>
                 </div>
 
                 {/* Meta Title */}

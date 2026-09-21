@@ -17,23 +17,52 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
+    const defaultSiteUrl = "https://restoran.ismethaktan39.workers.dev";
+    const defaultTitle = "Bodrumun Mekanları | Akıllı Rezervasyon & Giriş Sistemi";
+    const defaultDesc = "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi. En iyi masalarda yerinizi hemen ayırtın.";
+    const defaultOgImage = "/og-image.jpg";
+
     try {
         const supabase = createPublicClient();
         const { data } = await supabase.from("settings").select("*");
         const getVal = (key: string, fallback: string) => data?.find(s => s.key === key)?.value || fallback;
 
-        const title = getVal("site_meta_title", "Bodrumun Mekanları | Akıllı Rezervasyon & Giriş Sistemi");
-        const description = getVal("site_meta_description", "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi. En iyi masalarda yerinizi hemen ayırtın.");
+        const rawUrl = getVal("site_url", defaultSiteUrl);
+        const siteUrl = rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`;
+        const title = getVal("site_meta_title", defaultTitle);
+        const description = getVal("site_meta_description", defaultDesc);
         const keywords = getVal("site_meta_keywords", "bodrum restoranları, bodrum mekanları, vip rezervasyon, paket servis, akşam yemeği");
+        const ogImage = getVal("site_og_image", defaultOgImage);
 
         return {
-            title,
+            metadataBase: new URL(siteUrl),
+            title: {
+                default: title,
+                template: `%s | ${title}`,
+            },
             description,
             keywords: keywords ? keywords.split(",").map((k: string) => k.trim()) : undefined,
+            alternates: {
+                canonical: "/",
+            },
+            icons: {
+                icon: "/logo-3.png",
+                shortcut: "/logo-3.png",
+                apple: "/logo-3.png",
+            },
             openGraph: {
                 title,
                 description,
+                url: siteUrl,
                 siteName: "Bodrumun Mekanları",
+                images: [
+                    {
+                        url: ogImage,
+                        width: 1200,
+                        height: 630,
+                        alt: title,
+                    },
+                ],
                 locale: "tr_TR",
                 type: "website",
             },
@@ -41,12 +70,38 @@ export async function generateMetadata(): Promise<Metadata> {
                 card: "summary_large_image",
                 title,
                 description,
-            }
+                images: [ogImage],
+            },
         };
     } catch (e) {
         return {
-            title: "Bodrumun Mekanları | Akıllı Rezervasyon & Giriş Sistemi",
-            description: "En seçkin restoranlarda yerini ayırt, kapıda sıra bekleme.",
+            metadataBase: new URL(defaultSiteUrl),
+            title: defaultTitle,
+            description: defaultDesc,
+            icons: {
+                icon: "/logo-3.png",
+            },
+            openGraph: {
+                title: defaultTitle,
+                description: defaultDesc,
+                url: defaultSiteUrl,
+                images: [
+                    {
+                        url: defaultOgImage,
+                        width: 1200,
+                        height: 630,
+                        alt: defaultTitle,
+                    },
+                ],
+                locale: "tr_TR",
+                type: "website",
+            },
+            twitter: {
+                card: "summary_large_image",
+                title: defaultTitle,
+                description: defaultDesc,
+                images: [defaultOgImage],
+            },
         };
     }
 }

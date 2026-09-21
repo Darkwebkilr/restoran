@@ -51,6 +51,8 @@ export default async function AdminSettingsPage() {
     site_meta_title: getSetting("site_meta_title", "Bodrumun Mekanları | En İyi Restoranlar & Rezervasyon"),
     site_meta_description: getSetting("site_meta_description", "Bodrum'un en seçkin mekanları, paket servis ve rezervasyon sistemi."),
     site_meta_keywords: getSetting("site_meta_keywords", "bodrum restoranları, bodrum mekanları, vip rezervasyon, paket servis"),
+    site_url: getSetting("site_url", "https://restoran.ismethaktan39.workers.dev"),
+    site_og_image: getSetting("site_og_image", "/og-image.jpg"),
     hero_title: getSetting("hero_title", "BODRUMUN EN İYİ MASALARI."),
     delivery_title: getSetting("delivery_title", "EN İYİ PAKET SERVİSLERİ"),
     categories_title: getSetting("categories_title", "ÖNE ÇIKAN KATEGORİLER"),
