@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SiWhatsapp } from "@icons-pack/react-simple-icons";
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/server";
 
 const bricolage = Bricolage_Grotesque({
     variable: "--font-display",
@@ -18,7 +18,7 @@ const inter = Inter({
 
 export async function generateMetadata(): Promise<Metadata> {
     try {
-        const supabase = await createClient();
+        const supabase = createPublicClient();
         const { data } = await supabase.from("settings").select("*");
         const getVal = (key: string, fallback: string) => data?.find(s => s.key === key)?.value || fallback;
 
@@ -58,7 +58,7 @@ export default async function RootLayout({
 }>) {
     let whatsappNumber = "";
     try {
-        const supabase = await createClient();
+        const supabase = createPublicClient();
         const { data } = await supabase
             .from("settings")
             .select("value")
